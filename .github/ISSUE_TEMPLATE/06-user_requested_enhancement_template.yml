@@ -1,0 +1,31 @@
+name: "✨ User-Requested Enhancement"
+description: "Suggest an enhancement based on user feedback."
+title: "✨ [User Enhancement] "
+labels: ["✨ type/enhancement"]
+assignees:
+  - nad
+body:
+  - type: textarea
+    id: enhancement_summary
+    attributes:
+      label: "💡 Enhancement Summary"
+      description: "A brief overview of the enhancement requested by users."
+      placeholder: "Describe the enhancement in one or two sentences."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_benefits
+    attributes:
+      label: "🎯 Expected Benefits"
+      description: "What benefits do you expect this enhancement to bring?"
+      placeholder: "Discuss how this enhancement could improve user experience."
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: "📜 Additional Notes"
+      description: "Any other relevant information or context?"
+      placeholder: "Include any other thoughts or considerations."

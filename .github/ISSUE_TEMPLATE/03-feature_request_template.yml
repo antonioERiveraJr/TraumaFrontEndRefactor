@@ -1,0 +1,49 @@
+name: "🚀 Feature Request"
+description: "Request a new feature or enhancement for the application."
+title: "🚀 [Feature] "
+labels: ["🚀 type/feature"]
+assignees:
+  - nad
+body:
+  - type: textarea
+    id: feature_summary
+    attributes:
+      label: "✨ Feature Summary"
+      description: "A brief overview of the feature you want."
+      placeholder: "Describe the feature in one or two sentences."
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: "📌 Use Case"
+      description: "How will this feature be used?"
+      placeholder: "Explain the context in which this feature will be applied."
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: "🎯 Benefits"
+      description: "What benefits will this feature bring?"
+      placeholder: "Describe the advantages of implementing this feature."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "🔄 Alternatives"
+      description: "Are there any alternative solutions or workarounds?"
+      placeholder: "List any existing solutions you are aware of."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: "📜 Additional Notes"
+      description: "Any other relevant information or context?"
+      placeholder: "Include any other thoughts or considerations."

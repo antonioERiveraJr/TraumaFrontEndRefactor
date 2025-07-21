@@ -1,0 +1,23 @@
+import { fileURLToPath, URL } from 'node:url';
+
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import compress from 'vite-plugin-compression';
+
+// https://vitejs.dev/config/
+export default defineConfig(({ command }) => {
+    return {
+        plugins: [vue(), compress()],
+        // base: command === 'production' ? '/injury' : '/',
+        // base: '/injury/',
+
+        resolve: {
+            alias: {
+                '@': fileURLToPath(new URL('./src', import.meta.url))
+            }
+        },
+        preview: {
+            port: 5173
+        }
+    };
+});

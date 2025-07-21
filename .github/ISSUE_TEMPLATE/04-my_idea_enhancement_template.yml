@@ -1,0 +1,49 @@
+name: "✨ My Idea for Enhancement"
+description: "Suggest an enhancement to improve the application based on my insights."
+title: "✨ [My Idea] "
+labels: ["✨ type/enhancement"]
+assignees:
+  - nad
+body:
+  - type: textarea
+    id: enhancement_summary
+    attributes:
+      label: "💡 Enhancement Summary"
+      description: "A brief overview of the enhancement you propose."
+      placeholder: "Describe the proposed enhancement in one or two sentences."
+    validations:
+      required: true
+
+  - type: textarea
+    id: rationale
+    attributes:
+      label: "🔍 Rationale"
+      description: "Why do you think this enhancement is necessary?"
+      placeholder: "Explain the reasoning behind your proposal."
+    validations:
+      required: true
+
+  - type: textarea
+    id: potential_impact
+    attributes:
+      label: "📈 Potential Impact"
+      description: "What impact do you expect this enhancement to have?"
+      placeholder: "Discuss how this enhancement could improve the application."
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation_considerations
+    attributes:
+      label: "🛠 Implementation Considerations"
+      description: "Any thoughts on how this enhancement could be implemented?"
+      placeholder: "Include any ideas or suggestions for implementation."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_notes
+    attributes:
+      label: "📜 Additional Notes"
+      description: "Any other relevant information or context?"
+      placeholder: "Include any other thoughts or considerations."

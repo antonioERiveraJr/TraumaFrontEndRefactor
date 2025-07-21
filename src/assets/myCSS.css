@@ -1,0 +1,38 @@
+.myCSS-inputtext-required {
+    border: 2px solid green;
+}
+
+.myCSS-button-green {
+    background-color: #0d9133;
+    /* color: white; */
+}
+
+.myCSS-button-red {
+    background-color: #d62020;
+    /* color: white; */
+}
+
+
+.loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .loader {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    animation: spin .5s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }

@@ -1,0 +1,31 @@
+name: "📚 Documentation Update"
+description: "Request a change or update to the documentation."
+title: "📚 [Documentation] "
+labels: ["📚 type/documentation"]
+assignees:
+  - nad
+body:
+  - type: textarea
+    id: doc_summary
+    attributes:
+      label: "📝 Summary of Changes"
+      description: "What needs to be changed in the documentation?"
+      placeholder: "Briefly describe the required changes."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: "🔍 Reason for Update"
+      description: "Why is this update necessary?"
+      placeholder: "Explain why this documentation change is needed."
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: "📜 Additional Context"
+      description: "Any other relevant information or resources?"
+      placeholder: "Include any links or references that might help."

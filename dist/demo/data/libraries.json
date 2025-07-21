@@ -1,0 +1,511 @@
+{
+    "root": {
+        "injuryIntents": [
+            {
+                "inj_intent_code": "01",
+                "inj_intent_desc": "Unintentional/Accidental"
+            },
+            {
+                "inj_intent_code": "02",
+                "inj_intent_desc": "Intentional (Violence)"
+            },
+            {
+                "inj_intent_code": "03",
+                "inj_intent_desc": "Intentional (Self-inflicted)"
+            },
+            {
+                "inj_intent_code": "04",
+                "inj_intent_desc": "VAWC"
+            },
+            {
+                "inj_intent_code": "99",
+                "inj_intent_desc": "Undetermined"
+            }
+        ],
+        "firstAidGivens": [
+            {
+                "first_aid_code": "N",
+                "first_aid_desc": "No"
+            },
+            {
+                "first_aid_code": "Y",
+                "first_aid_desc": "Yes, Specify"
+            },
+            {
+                "first_aid_code": "U",
+                "first_aid_desc": "Unknown"
+            }
+        ],
+        "modesOfTransport": [
+            {
+                "mode_code": "",
+                "mode_desc": ""
+            },
+            {
+                "mode_code": "01",
+                "mode_desc": "Ambulance"
+            },
+            {
+                "mode_code": "03",
+                "mode_desc": "Private Vehicle"
+            },
+            {
+                "mode_code": "02",
+                "mode_desc": "Police Vehicle"
+            },
+            {
+                "mode_code": "04",
+                "mode_desc": "Others"
+            }
+        ],
+        "statusReaching": [
+            {
+                "status_code": "",
+                "status_desc": ""
+            },
+            {
+                "status_code": "01",
+                "status_desc": "Dead on Arrival"
+            },
+            {
+                "status_code": "02",
+                "status_desc": "Alive - Unconscious"
+            },
+            {
+                "status_code": "03",
+                "status_desc": "Alive - Conscious"
+            }
+        ],
+        "places": [
+            {
+                "place_occ_code": "10",
+                "place_occ_desc": "Home"
+            },
+            {
+                "place_occ_code": "50",
+                "place_occ_desc": "Road/Highway"
+            },
+            {
+                "place_occ_code": "30",
+                "place_occ_desc": "School"
+            },
+            {
+                "place_occ_code": "60",
+                "place_occ_desc": "Videoke Bars"
+            },
+            {
+                "place_occ_code": "70",
+                "place_occ_desc": "Workplace"
+            },
+            {
+                "place_occ_code": "99",
+                "place_occ_desc": "Unknown"
+            },
+            {
+                "place_occ_code": "88",
+                "place_occ_desc": "Others"
+            }
+        ],
+        "activities": [
+            {
+                "activity_code": "",
+                "activity_desc": ""
+            },
+            {
+                "activity_code": "30",
+                "activity_desc": "Work Related"
+            },
+            {
+                "activity_code": "20",
+                "activity_desc": "Leisure"
+            },
+            {
+                "activity_code": "10",
+                "activity_desc": "Sports"
+            },
+            {
+                "activity_code": "99",
+                "activity_desc": "Unknown"
+            },
+            {
+                "activity_code": "88",
+                "activity_desc": "Others"
+            }
+        ],
+        "burnDetails": [
+            {
+                "ref_burn_code": "01",
+                "ref_burn_desc": "Heat"
+            },
+            {
+                "ref_burn_code": "02",
+                "ref_burn_desc": "Fire"
+            },
+            {
+                "ref_burn_code": "03",
+                "ref_burn_desc": "Electricity"
+            },
+            {
+                "ref_burn_code": "04",
+                "ref_burn_desc": "Oil"
+            },
+            {
+                "ref_burn_code": "88",
+                "ref_burn_desc": "Others, specify"
+            }
+        ],
+        "drowningDetails": [
+            {
+                "ref_drowning_cope": "01",
+                "ref_drowning_desc": "Sea"
+            },
+            {
+                "ref_drowning_cope": "02",
+                "ref_drowning_desc": "River"
+            },
+            {
+                "ref_drowning_cope": "03",
+                "ref_drowning_desc": "Lake"
+            },
+            {
+                "ref_drowning_cope": "04",
+                "ref_drowning_desc": "Pool"
+            },
+            {
+                "ref_drowning_cope": "05",
+                "ref_drowning_desc": "Bathtub"
+            },
+            {
+                "ref_drowning_cope": "06",
+                "ref_drowning_desc": "Others, specify"
+            }
+        ],
+        "exposureDetails": [
+            {
+                "ref_expnature_code": "01",
+                "ref_expnature_desc": "Earthquake"
+            },
+            {
+                "ref_expnature_code": "02",
+                "ref_expnature_desc": "Volcanic eruption"
+            },
+            {
+                "ref_expnature_code": "03",
+                "ref_expnature_desc": "Typhoon"
+            },
+            {
+                "ref_expnature_code": "04",
+                "ref_expnature_desc": "Land slide"
+            },
+            {
+                "ref_expnature_code": "05",
+                "ref_expnature_desc": "Tidle wave"
+            },
+            {
+                "ref_expnature_code": "06",
+                "ref_expnature_desc": "Flood"
+            },
+            {
+                "ref_expnature_code": "07",
+                "ref_expnature_desc": "Others, specify"
+            }
+        ],
+        "firecrackerDetails": [
+            {
+                "firecracker_code": "01",
+                "firecracker_desc": "Piccolo"
+            },
+            {
+                "firecracker_code": "02",
+                "firecracker_desc": "Kwitis"
+            },
+            {
+                "firecracker_code": "03",
+                "firecracker_desc": "5-Star"
+            },
+            {
+                "firecracker_code": "04",
+                "firecracker_desc": "Home-made firecackers"
+            },
+            {
+                "firecracker_code": "88",
+                "firecracker_desc": "Others, specify"
+            }
+        ],
+        "vehicleTypes": [
+            {
+                "vehicle_type_id": "01",
+                "vehicle_type_desc": "Land"
+            },
+            {
+                "vehicle_type_id": "02",
+                "vehicle_type_desc": "Water"
+            },
+            {
+                "vehicle_type_id": "03",
+                "vehicle_type_desc": "Air"
+            }
+        ],
+        "collisionTypes": [
+            {
+                "ref_veh_acctype_code": "10",
+                "ref_veh_acctype_desc": "Collision"
+            },
+            {
+                "ref_veh_acctype_code": "20",
+                "ref_veh_acctype_desc": "Non-collision"
+            }
+        ],
+        "positions": [
+            {
+                "position_code": "50",
+                "position_desc": "Captain"
+            },
+            {
+                "position_code": "60",
+                "position_desc": "Crew"
+            },
+            {
+                "position_code": "20",
+                "position_desc": "Driver"
+            },
+            {
+                "position_code": "30",
+                "position_desc": "Front Passenger"
+            },
+            {
+                "position_code": "10",
+                "position_desc": "Pedestrian"
+            },
+            {
+                "position_code": "40",
+                "position_desc": "Pilot"
+            },
+            {
+                "position_code": "35",
+                "position_desc": "Rear Passenger"
+            },
+            {
+                "position_code": "99",
+                "position_desc": "Unknown"
+            },
+            {
+                "position_code": "88",
+                "position_desc": "Others"
+            }
+        ],
+        "landVehicles": [
+            {
+                "vehicle_code": "00",
+                "vehicle_desc": ""
+            },
+            {
+                "vehicle_code": "50",
+                "vehicle_desc": "Bicycle"
+            },
+            {
+                "vehicle_code": "30",
+                "vehicle_desc": "Bus"
+            },
+            {
+                "vehicle_code": "10",
+                "vehicle_desc": "Car"
+            },
+            {
+                "vehicle_code": "71",
+                "vehicle_desc": "Jeepney"
+            },
+            {
+                "vehicle_code": "40",
+                "vehicle_desc": "Motorcycle"
+            },
+            {
+                "vehicle_code": "60",
+                "vehicle_desc": "Tricycle"
+            },
+            {
+                "vehicle_code": "72",
+                "vehicle_desc": "Truck"
+            },
+            {
+                "vehicle_code": "73",
+                "vehicle_desc": "Van"
+            },
+            {
+                "vehicle_code": "99",
+                "vehicle_desc": "Unknown"
+            },
+            {
+                "vehicle_code": "88",
+                "vehicle_desc": "Others"
+            }
+        ],
+        "airVehicles": [
+            {
+                "vehicle_code": "00",
+                "vehicle_desc": ""
+            },
+            {
+                "vehicle_code": "11",
+                "vehicle_desc": "Airplane"
+            },
+            {
+                "vehicle_code": "15",
+                "vehicle_desc": "Glider"
+            },
+            {
+                "vehicle_code": "12",
+                "vehicle_desc": "Helicopter"
+            },
+            {
+                "vehicle_code": "14",
+                "vehicle_desc": "Hot Air Balloon"
+            },
+            {
+                "vehicle_code": "13",
+                "vehicle_desc": "Parachute"
+            },
+            {
+                "vehicle_code": "00",
+                "vehicle_desc": "Unknown"
+            },
+            {
+                "vehicle_code": "88",
+                "vehicle_desc": "Others"
+            }
+        ],
+        "waterVehicles": [
+            {
+                "vehicle_code": "00",
+                "vehicle_desc": ""
+            },
+            {
+                "vehicle_code": "05",
+                "vehicle_desc": "Banana Boat"
+            },
+            {
+                "vehicle_code": "01",
+                "vehicle_desc": "Boat"
+            },
+            {
+                "vehicle_code": "04",
+                "vehicle_desc": "Ferry"
+            },
+            {
+                "vehicle_code": "06",
+                "vehicle_desc": "Inflatable Boat"
+            },
+            {
+                "vehicle_code": "02",
+                "vehicle_desc": "Jetski"
+            },
+            {
+                "vehicle_code": "03",
+                "vehicle_desc": "Ship"
+            },
+            {
+                "vehicle_code": "88",
+                "vehicle_desc": "Others"
+            },
+            {
+                "vehicle_code": "99",
+                "vehicle_desc": "Unknown"
+            }
+        ],
+        "disposition_code": [
+            {
+                "disposition_code": "ABSCN",
+                "disposition_desc": "Absconded"
+            },
+            {
+                "disposition_code": "ADMIT",
+                "disposition_desc": "Admitted"
+            },
+            {
+                "disposition_code": "DIEDD",
+                "disposition_desc": "Died"
+            },
+            {
+                "disposition_code": "DIEDD",
+                "disposition_desc": "Died"
+            },
+            {
+                "disposition_code": "HAMAA",
+                "disposition_desc": "HAMA"
+            },
+            {
+                "disposition_code": "oth",
+                "disposition_desc": "Others, specify"
+            },
+            {
+                "disposition_code": "REFAD",
+                "disposition_desc": "Refused Admission"
+            },
+            {
+                "disposition_code": "TRASH",
+                "disposition_desc": "Sent Home"
+            },
+            {
+                "disposition_code": "REFER",
+                "disposition_desc": "Transferred to another facility/hospital, specify"
+            },
+            {
+                "disposition_code": "TTOF",
+                "disposition_desc": "Transferred to another facility/hospital, specify"
+            }
+        ],
+        "outcome_code": [
+            {
+                "outcome_code": "10",
+                "outcome_desc": "Improved"
+            },
+            {
+                "outcome_code": "20",
+                "outcome_desc": "Unimproved"
+            },
+            {
+                "outcome_code": "30",
+                "outcome_desc": "Died"
+            }
+        ],
+        "condition_code": [
+            {
+                "adm_cond": "IMPRO",
+                "adm_cond_desc": "Improved"
+            },
+            {
+                "adm_cond": "ADMIT",
+                "adm_cond_desc": "Admitted"
+            },
+            {
+                "adm_cond": "UNIMP",
+                "adm_cond_desc": "Un-Improved"
+            },
+            {
+                "adm_cond": "RECOV",
+                "adm_cond_desc": "Recovered"
+            },
+            {
+                "adm_cond": "DIEDD",
+                "adm_cond_desc": "Died"
+            },
+            {
+                "adm_cond": "DIEMI",
+                "adm_cond_desc": "Died < 48 hours Autopsied"
+            },
+            {
+                "adm_cond": "DIEPO",
+                "adm_cond_desc": "Died > 48 hours Autopsied"
+            },
+            {
+                "adm_cond": "DIENA",
+                "adm_cond_desc": "Died < 48 hours Not Autopsied"
+            },
+            {
+                "adm_cond": "DILNA",
+                "adm_cond_desc": "Died > 48 hours Not Autopsied"
+            },
+            { "adm_cond": "TTOF", "adm_cond_desc": "Transferred from another Facility/Hospital" }
+        ]
+    }
+}

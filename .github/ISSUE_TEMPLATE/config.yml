@@ -1,0 +1,90 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Support"
+    url: "https://your-support-url.com"
+    about: "For general support inquiries."
+
+issue_templates:
+  - name: "🐞 Bug Report"
+    description: "Report a bug or issue in the application."
+    title: "[Bug] "
+    labels: ["bug"]
+    body:
+      - type: textarea
+        id: summary
+        attributes:
+          label: "🔍 Summary"
+          description: "A brief overview of the bug."
+          placeholder: "Describe the bug in one or two sentences."
+        validations:
+          required: true
+
+  - name: "📚 Documentation Update"
+    description: "Request a change or update to the documentation."
+    title: "[Documentation] "
+    labels: ["documentation"]
+    body:
+      - type: textarea
+        id: doc_summary
+        attributes:
+          label: "📝 Summary of Changes"
+          description: "What needs to be changed in the documentation?"
+          placeholder: "Briefly describe the required changes."
+        validations:
+          required: true
+
+  - name: "🚀 Feature Request"
+    description: "Request a new feature or enhancement."
+    title: "[Feature] "
+    labels: ["feature"]
+    body:
+      - type: textarea
+        id: feature_summary
+        attributes:
+          label: "✨ Feature Summary"
+          description: "A brief overview of the feature you want."
+          placeholder: "Describe the feature in one or two sentences."
+        validations:
+          required: true
+
+  - name: "💡 My Idea for Enhancement"
+    description: "Suggest an enhancement based on your insights."
+    title: "[Enhancement] "
+    labels: ["enhancement"]
+    body:
+      - type: textarea
+        id: enhancement_summary
+        attributes:
+          label: "💡 Enhancement Summary"
+          description: "A brief overview of the enhancement you propose."
+          placeholder: "Describe the proposed enhancement in one or two sentences."
+        validations:
+          required: true
+
+  - name: "📌 Task"
+    description: "Create a new task with a checklist."
+    title: "[Task] "
+    labels: ["task"]
+    body:
+      - type: textarea
+        id: task_overview
+        attributes:
+          label: "📌 Task Overview"
+          description: "Provide a brief description of the task."
+          placeholder: "What needs to be done?"
+        validations:
+          required: true
+
+  - name: "✨ User-Requested Enhancement"
+    description: "Suggest an enhancement based on user feedback."
+    title: "[User Enhancement] "
+    labels: ["user enhancement"]
+    body:
+      - type: textarea
+        id: user_feedback
+        attributes:
+          label: "🗣 User Feedback"
+          description: "Include the user's feedback or request that prompted this enhancement."
+          placeholder: "Detail the specific user request."
+        validations:
+          required: true
