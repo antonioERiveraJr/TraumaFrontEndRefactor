@@ -1,59 +1,25 @@
 <script setup>
 import { usePatientStore } from '../../../../store/injury/patientStore';
 import { ref, watch, defineEmits, onUnmounted } from 'vue';
-import createValidationRules from '../../../../validation/injuryValidations';
-import useVuelidate from '@vuelidate/core';
 import Swal from 'sweetalert2';
 import LibraryService from '@/service/LibraryService';
-import InputTextCheckBoxDoctor2 from '../../../custom/inputTextCheckBoxDoctor2.vue';
-import InputTextCheckBoxDoctor from '../../../custom/inputTextCheckBoxDoctor.vue';
 import Textarea from 'primevue/textarea';
-import BiteForm from '../doctorsForm/subForm/biteForm.vue';
-import VawcForm from '../../injury/doctorsForm/subForm/vawcForm.vue';
-import VehicularAccidentForm from '../doctorsForm/subForm/vehicularAccidentForm.vue';
+import UntickedExternalSwiches from './formInterfaces/untickedSwitches/untickedExternalSwiches.vue';
+import TickedExternalSwitches from './formInterfaces/tickedSwitches/tickedExternalSwitches.vue';
 
 const patientStore = usePatientStore();
 const loading = ref(true);
-const validationRules = createValidationRules();
 const libraryService = new LibraryService();
-const getRequiredValidation = (field) => {
-    return v$.value.$silentErrors.some((error) => error.$property === field);
-};
 const biteDialog = ref(false);
-const vawcDialog = ref(false);
 const biteButton = ref(false);
 const compiledOtherExternal = ref();
 const compiledOtherPhysical = ref();
-const v$ = useVuelidate(validationRules, patientStore.details);
-const burnDetails = libraryService.getBurnDetails();
-const burnDetailsDoctor = libraryService.getBurnDetailsDoctor();
-const drowningDetails = libraryService.getDrowningDetails();
-const exposureDetails = libraryService.getExposureDetails();
-const firecrackerDetails = libraryService.getFireCrackerDetails();
-const vehicleTypes = libraryService.getVehicleTypes();
-const collisionTypes = libraryService.getCollisionTypes();
-const positions = libraryService.getPositions();
 const landVehicles = libraryService.getLandVehicles();
 const airVehicles = libraryService.getAirVehicles();
 const waterVehicles = libraryService.getWaterVehicles();
 const displayGeneratedDiagnosis = ref(false);
-const isImpressionInputNeeded = ref(false);
 const openTransportVehicularDialog = ref(false);
-const isInputNull = async () => {
-    vawcDialog.value = false;
-    if (!patientStore.details.ExternalCauseOfInjury.vawc_impression_input && isImpressionInputNeeded.value) {
-        await Swal.fire({
-            icon: 'warning',
-            title: 'Input Value Needed',
-            text: 'Please input a Value',
-            confirmButtonText: 'OK'
-        });
-
-        return true;
-    }
-
-    return false;
-};
+const dataIsLoaded = ref(false);
 const vehicleCodes = ref([]);
 const generatedText = ref('');
 
@@ -153,8 +119,6 @@ const updateRequiredFieldCount = () => {
     if (patientStore.details.ExternalCauseOfInjury.ext_firecracker_r === 'Y' && patientStore.details.ExternalCauseOfInjury.firecracker_code === '88' && !patientStore.details.ExternalCauseOfInjury.ext_firecracker_sp)
         requiredCountExternalCauses.value++;
     if (patientStore.details.ExternalCauseOfInjury.ext_foreign_body === 'Y' && !patientStore.details.ExternalCauseOfInjury.ext_foreign_body_sp) requiredCountExternalCauses.value++;
-    // if (patientStore.details.ExternalCauseOfInjury.ext_battery === 'Y' && !patientStore.details.ExternalCauseOfInjury.ext_battery_sp) requiredCountExternalCauses.value++;
-    // if (patientStore.details.ExternalCauseOfInjury.ext_assault === 'Y' && !patientStore.details.ExternalCauseOfInjury.ext_assault_sp) requiredCountExternalCauses.value++;
     if (patientStore.details.ExternalCauseOfInjury.ext_caustic_ingestion === 'Y' && !patientStore.details.ExternalCauseOfInjury.ext_caustic_ingestion_sp) requiredCountExternalCauses.value++;
     if (patientStore.details.ExternalCauseOfInjury.ext_encavement === 'Y' && !patientStore.details.ExternalCauseOfInjury.ext_encavement_sp) requiredCountExternalCauses.value++;
     if (patientStore.details.ExternalCauseOfInjury.ext_crushing === 'Y' && !patientStore.details.ExternalCauseOfInjury.ext_crushing_sp) requiredCountExternalCauses.value++;
@@ -172,15 +136,6 @@ const updateRequiredFieldCount = () => {
         if (patientStore.details.forTransportVehicularAccident.position_code === '88' && !patientStore.details.forTransportVehicularAccident.pos_pat_sp) requiredCountExternalCauses.value++;
     }
     if (patientStore.details.ExternalCauseOfInjury.ext_other === 'Y' && !patientStore.details.ExternalCauseOfInjury.ext_other_sp) requiredCountExternalCauses.value++;
-};
-
-
-const autoOpenDialogTranspo = () => {
-    if (patientStore.details.ExternalCauseOfInjury.ext_transport == 'N') {
-        openTransportVehicularDialog.value = true;
-        patientStore.details.forTransportVehicularAccident.risk_none = 'Y';
-        patientStore.details.forTransportVehicularAccident.safe_none = 'Y';
-    }
 };
 const generateText = () => {
     try {
@@ -671,21 +626,10 @@ const generateText = () => {
                 specifyExternalDetails.push(`Hanging/Strangulation: ${patientStore.details.ExternalCauseOfInjury.ext_hang_sp}\n`);
             }
         }
-        // if (patientStore.details.ExternalCauseOfInjury.ext_maul === 'Y') {
-        //     externalCauses.push(' Mauling/Assault');
-        //     if (patientStore.details.ExternalCauseOfInjury.ext_maul_sp) {
-        //         specifyExternalDetails.push(`Mauling/Assault: ${patientStore.details.ExternalCauseOfInjury.ext_maul_sp}\n`);
-        //     }
-        // }
-
-        //batery and assault
         if (patientStore.details.ExternalCauseOfInjury.ext_battery === 'Y') {
             externalCauses.push(' Battery');
-            // console.log('hit');
-            //trigger perpetrator (REQUIRED)
             patientStore.details.generalData.perpetrator = 'Y';
             if (patientStore.details.generalData.perpetrator_sp) {
-                // storeOtherExternal.push(`Battery: ${patientStore.details.ExternalCauseOfInjury.ext_battery_sp}`);
                 if (patientStore.details.generalData.perpetrator_sp === '11') {
                     specifyExternalDetails.push(`Battery: ${patientStore.details.generalData.perpetrator_oth_sp}\n`);
                 } else {
@@ -697,7 +641,6 @@ const generateText = () => {
             externalCauses.push(' Assault');
             patientStore.details.generalData.perpetrator = 'Y';
             if (patientStore.details.generalData.perpetrator_sp) {
-                // storeOtherExternal.push(`Battery: ${patientStore.details.ExternalCauseOfInjury.ext_battery_sp}`);
                 if (patientStore.details.generalData.perpetrator_sp === '11') {
                     specifyExternalDetails.push(`Assault: ${patientStore.details.generalData.perpetrator_oth_sp}\n`);
                 } else {
@@ -732,11 +675,7 @@ const generateText = () => {
         if (patientStore.details.ExternalCauseOfInjury.ext_sexual === 'Y') {
             externalCauses.push(' Sexual Abuse.');
             patientStore.details.generalData.perpetrator = 'Y';
-            // if (patientStore.details.ExternalCauseOfInjury.ext_sexual_sp) {
-            //     specifyExternalDetails.push(`Sexual Abuse: ${patientStore.details.ExternalCauseOfInjury.ext_sexual_sp}\n`);
-            // }
             if (patientStore.details.generalData.perpetrator_sp) {
-                // storeOtherExternal.push(`Battery: ${patientStore.details.ExternalCauseOfInjury.ext_battery_sp}`);
                 if (patientStore.details.generalData.perpetrator_sp === '11') {
                     specifyExternalDetails.push(`SA ${patientStore.details.generalData.perpetrator_oth_sp}\n`);
                 } else {
@@ -744,14 +683,6 @@ const generateText = () => {
                 }
             }
         }
-        // if (patientStore.details.ExternalCauseOfInjury.ext_physical === 'Y') {
-        //     externalCauses.push(' Physical Abuse.');
-        //     patientStore.details.generalData.perpetrator = 'Y';
-        //     // if (patientStore.details.ExternalCauseOfInjury.ext_sexual_sp) {
-        //     //     specifyExternalDetails.push(`Physical Abuse: ${patientStore.details.ExternalCauseOfInjury.ext_physical_sp}\n`);
-        //     // }
-
-        // }
         if (patientStore.details.ExternalCauseOfInjury.ext_neglect === 'Y') {
             externalCauses.push(' Neglect.');
         }
@@ -927,10 +858,9 @@ const patientDataIsLoaded = async () => {
         loadVehicles(patientStore.details.forTransportVehicularAccident.vehicle_type_id);
     }
     loading.value = false;
+
+    dataIsLoaded.value = true;
 };
-// const openVAWCDialog = () => {
-//     vawcDialog.value = true;
-// };
 const openBiteDialog = () => {
     biteDialog.value = true;
 };
@@ -953,33 +883,33 @@ watch(
     }
 );
 
-watch(
-    () => biteDialog.value,
-    async (newValue) => {
-        if (
-            (!newValue && patientStore.details.preAdmissionData.first_aid_code === 'Y' && patientStore.details.preAdmissionData.firstaid_others === '') ||
-            (!newValue && patientStore.details.preAdmissionData.first_aid_code === 'Y' && patientStore.details.preAdmissionData.firstaid_others2 === '')
-        ) {
-            if (patientStore.details.preAdmissionData.firstaid_others2 === '') {
-                await Swal.fire({
-                    icon: 'warning',
-                    title: 'INVALID INPUT',
-                    text: 'Please fill in the By Whom Field',
-                    confirmButtonText: 'OK'
-                });
-                biteDialog.value = true;
-            } else {
-                await Swal.fire({
-                    icon: 'warning',
-                    title: 'INVALID INPUT',
-                    text: 'Please fill in the Firs Aid Field',
-                    confirmButtonText: 'OK'
-                });
-                biteDialog.value = true;
-            }
-        }
-    }
-);
+// watch(
+//     () => biteDialog.value,
+//     async (newValue) => {
+//         if (
+//             (!newValue && patientStore.details.preAdmissionData.first_aid_code === 'Y' && patientStore.details.preAdmissionData.firstaid_others === '') ||
+//             (!newValue && patientStore.details.preAdmissionData.first_aid_code === 'Y' && patientStore.details.preAdmissionData.firstaid_others2 === '')
+//         ) {
+//             if (patientStore.details.preAdmissionData.firstaid_others2 === '') {
+//                 await Swal.fire({
+//                     icon: 'warning',
+//                     title: 'INVALID INPUT',
+//                     text: 'Please fill in the By Whom Field',
+//                     confirmButtonText: 'OK'
+//                 });
+//                 biteDialog.value = true;
+//             } else {
+//                 await Swal.fire({
+//                     icon: 'warning',
+//                     title: 'INVALID INPUT',
+//                     text: 'Please fill in the Firs Aid Field',
+//                     confirmButtonText: 'OK'
+//                 });
+//                 biteDialog.value = true;
+//             }
+//         }
+//     }
+// );
 watch(requiredCountExternalCauses, (newCount) => {
     emit('update:requiredCountExternalCauses', newCount);
 });
@@ -1061,438 +991,7 @@ watch(
 <template>
     <div :class="noExternal ? 'card custom-shadow mt-3 relative' : 'card mt-3'" style="width: 100%">
         <div :class="noExternal ? 'grid grid-cols-4 gap-2 flex justify-content-center mb-2' : 'grid grid-cols-4 gap-2 flex justify-content-center'">
-            <div :style="{ width: width < 950 ? '100%' : width < 1600 ? '49%' : '24%' }">
-                <Transition name="slide-fade" mode="out-in">
-                    <div class="flex flex-column" v-if="patientStore.details.ExternalCauseOfInjury.ext_bite !== 'Y'">
-                        <div class="flex justify-content-between items-center">
-                            <div v-if="patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ExternalCauseOfInjury.ext_bite_sp === ''">
-                                <small class="text-red-800 text-xs font-bold">Value is required</small>
-                            </div>
-                            <div v-if="patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y'">
-                                <button @click="openBiteDialog" style="font-size: 8px; background: none; border: none; cursor: pointer">
-                                    <div class="bite-details-container">
-                                        <strong>BITE DETAILS</strong>
-                                    </div>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="bite flex align-content-center mt-1">
-                            <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_bite" trueValue="Y" falseValue="N" id="inputswitch" />
-                            <label for="inputswitch" class="mx-2 align-self-center font-bold"> Bite/Sting </label>
-                        </div>
-                    </div>
-                </Transition>
-                <!-- <Transition name="slide-fade" mode="out-in">
-                    <div class="burns" v-if="patientStore.details.ExternalCauseOfInjury.ext_burn_r !== 'Y'">
-                        <div class="flex align-content-center align-items-center mt-1">
-                            <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_burn_r" trueValue="Y" falseValue="N" id="inputswitch" />
-                            <label for="inputswitch" class="mx-2 font-bold">Burns</label>
-                        </div>
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.ext_burn_r == 'Y'" class="mt-1 ml-4">
-                            <Dropdown
-                                id="ExternalCauseOfInjury.ref_burn_code"
-                                required
-                                v-model="patientStore.details.ExternalCauseOfInjury.ref_burn_code"
-                                placeholder="Select Burn Type"
-                                :options="burnDetails"
-                                optionLabel="ref_burn_desc"
-                                optionValue="ref_burn_code"
-                            />
-                            <div class="flex justify-content-end" v-if="patientStore.details.ExternalCauseOfInjury.ref_burn_code === ''">
-                                <small class="text-red-800 text-xs font-bold">Value is required</small>
-                            </div>
-                            <div v-if="patientStore.details.ExternalCauseOfInjury.ref_burn_code == '06'">
-                                <Textarea
-                                    v-model="patientStore.details.ExternalCauseOfInjury.ext_burn_sp"
-                                    id="ExternalCauseOfInjury.ext_burn_sp"
-                                    class="p-inputtext-filled font-bold max-w-full mt-1 w-25rem myCSS-inputtext-required text-xs"
-                                    autoresize
-                                    style="text-transform: uppercase"
-                                />
-                                <div class="flex justify-content-end" v-if="patientStore.details.ExternalCauseOfInjury.ext_burn_sp === ''">
-                                    <small class="text-red-800 text-xs font-bold">Value is required</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </Transition> -->
-                <Transition name="slide-fade" mode="out-in">
-                    <div class="burns" v-if="patientStore.details.ExternalCauseOfInjury.ext_burn_r_doctor !== 'Y'">
-                        <div class="flex align-content-center align-items-center mt-1">
-                            <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_burn_r_doctor" trueValue="Y" falseValue="N" id="inputswitch" />
-                            <label for="inputswitch" class="mx-2 font-bold">Burns</label>
-                        </div>
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.ext_burn_r_doctor == 'Y'" class="mt-1 ml-4">
-                            <Dropdown
-                                id="ExternalCauseOfInjury.ref_burn_code_doctor"
-                                required
-                                v-model="patientStore.details.ExternalCauseOfInjury.ref_burn_code_doctor"
-                                placeholder="Select Burn Type"
-                                :options="burnDetailsDoctor"
-                                optionLabel="ref_burn_desc"
-                                optionValue="ref_burn_code"
-                            />
-                            <div class="flex justify-content-end" v-if="patientStore.details.ExternalCauseOfInjury.ref_burn_code_doctor === ''">
-                                <small class="text-red-800 text-xs font-bold">Value is required</small>
-                            </div>
-                            <div v-if="patientStore.details.ExternalCauseOfInjury.ref_burn_code_doctor == '06'">
-                                <Textarea
-                                    v-model="patientStore.details.ExternalCauseOfInjury.ext_burn_sp_doctor"
-                                    id="ExternalCauseOfInjury.ext_burn_sp_doctor"
-                                    class="p-inputtext-filled font-bold max-w-full mt-1 w-25rem myCSS-inputtext-required text-xs"
-                                    autoresize
-                                    style="text-transform: uppercase"
-                                />
-                                <div class="flex justify-content-end" v-if="patientStore.details.ExternalCauseOfInjury.ext_burn_sp_doctor === ''">
-                                    <small class="text-red-800 text-xs font-bold">Value is required</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </Transition>
-                <InputTextCheckBoxDoctor2
-                    v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_chem"
-                    v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_chem_sp"
-                    label="Chemical Substance"
-                    :binary="true"
-                    :required="getRequiredValidation('ext_chem_sp')"
-                />
-                <Transition name="slide-fade" mode="out-in">
-                    <div class="drowns" v-if="patientStore.details.ExternalCauseOfInjury.ext_drown_r !== 'Y'">
-                        <div class="flex align-content-center align-items-center mt-1">
-                            <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_drown_r" trueValue="Y" falseValue="N" id="inputswitch" />
-                            <label for="inputswitch" class="mx-2 font-bold">Drowning</label>
-                        </div>
-
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.ext_drown_r == 'Y'" class="mt-1 ml-4">
-                            <Dropdown
-                                id="ExternalCauseOfInjury.ext_expo_nature_r"
-                                required
-                                v-model="patientStore.details.ExternalCauseOfInjury.ref_drowning_cope"
-                                placeholder="Please select"
-                                :options="drowningDetails"
-                                optionLabel="ref_drowning_desc"
-                                optionValue="ref_drowning_cope"
-                            />
-                            <div class="flex justify-content-end" v-if="patientStore.details.ExternalCauseOfInjury.ext_drown_r == 'Y' && patientStore.details.ExternalCauseOfInjury.ref_drowning_cope === ''">
-                                <small class="text-red-800 text-xs font-bold">Value is required</small>
-                            </div>
-                            <div v-if="patientStore.details.ExternalCauseOfInjury.ref_drowning_cope == '06'">
-                                <Textarea
-                                    v-model="patientStore.details.ExternalCauseOfInjury.ext_drown_sp"
-                                    id="ExternalCauseOfInjury.ext_drown_sp"
-                                    class="p-inputtext-filled font-bold max-w-full mt-1 w-25rem myCSS-inputtext-required text-xs"
-                                    autoresize
-                                    style="text-transform: uppercase"
-                                />
-                                <div class="flex justify-content-end" v-if="patientStore.details.ExternalCauseOfInjury.ext_drown_sp === ''">
-                                    <small class="text-red-800 text-xs font-bold">Value is required</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </Transition>
-                <Transition name="slide-fade" mode="out-in">
-                    <div class="exposure" v-if="patientStore.details.ExternalCauseOfInjury.ext_expo_nature_r !== 'Y'">
-                        <div class="flex align-content-center align-items-center mt-1">
-                            <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_expo_nature_r" trueValue="Y" falseValue="N" id="inputswitch" />
-                            <label for="inputswitch" class="mx-2 font-bold">Exposure to Forces of Nature</label>
-                        </div>
-
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.ext_expo_nature_r == 'Y'" class="mt-1 ml-4">
-                            <Dropdown
-                                id="ExternalCauseOfInjury.ext_expo_nature_r"
-                                required
-                                v-model="patientStore.details.ExternalCauseOfInjury.ref_expnature_code"
-                                placeholder="Please select"
-                                :options="exposureDetails"
-                                optionLabel="ref_expnature_desc"
-                                optionValue="ref_expnature_code"
-                                class="p-inputtext-filled font-bold max-w-full w-25rem myCSS-inputtext-required"
-                            />
-                            <div class="flex justify-content-end" v-if="patientStore.details.ExternalCauseOfInjury.ref_expnature_code === '' && patientStore.details.ExternalCauseOfInjury.ext_expo_nature_r === 'Y'">
-                                <small class="text-red-800 text-xs font-bold">Value is required</small>
-                            </div>
-
-                            <div v-if="patientStore.details.ExternalCauseOfInjury.ref_expnature_code == '07'">
-                                <Textarea
-                                    v-model="patientStore.details.ExternalCauseOfInjury.ext_expo_nature_sp"
-                                    id="ExternalCauseOfInjury.noi_burndtl"
-                                    class="p-inputtext-filled font-bold max-w-full mt-1 w-25rem myCSS-inputtext-required text-xs"
-                                    autoresize
-                                    style="text-transform: uppercase"
-                                />
-                                <div class="flex justify-content-end" v-if="patientStore.details.ExternalCauseOfInjury.ext_expo_nature_sp === ''">
-                                    <small class="text-red-800 text-xs font-bold">Value is required</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </Transition>
-                <InputTextCheckBoxDoctor2
-                    v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_fall"
-                    v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_falldtl"
-                    label=" Fall"
-                    :binary="true"
-                    :required="getRequiredValidation('ext_falldtl')"
-                />
-            </div>
-
-            <div :style="{ width: width < 950 ? '100%' : width < 1600 ? '49%' : '24%' }">
-                <Transition name="slide-fade" mode="out-in">
-                    <div class="firecrackers" v-if="patientStore.details.ExternalCauseOfInjury.ext_firecracker_r !== 'Y'">
-                        <div class="flex align-content-center align-items-center mt-1">
-                            <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_firecracker_r" trueValue="Y" falseValue="N" id="inputswitch" />
-                            <label for="inputswitch" class="mx-2 font-bold">Firecracker</label>
-                        </div>
-
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.ext_firecracker_r == 'Y'" class="mt-1 ml-4">
-                            <Dropdown
-                                id="ExternalCauseOfInjury.firecracker_code"
-                                required
-                                v-model="patientStore.details.ExternalCauseOfInjury.firecracker_code"
-                                placeholder="Please select"
-                                :options="firecrackerDetails"
-                                optionLabel="firecracker_desc"
-                                optionValue="firecracker_code"
-                            />
-                            <div class="flex justify-content-end" v-if="patientStore.details.ExternalCauseOfInjury.ext_firecracker_r == 'Y' && patientStore.details.ExternalCauseOfInjury.firecracker_code === ''">
-                                <small class="text-red-800 text-xs font-bold">Value is required</small>
-                            </div>
-
-                            <div v-if="patientStore.details.ExternalCauseOfInjury.firecracker_code == '88'">
-                                <Textarea
-                                    v-model="patientStore.details.ExternalCauseOfInjury.ext_firecracker_sp"
-                                    id="ExternalCauseOfInjury.ext_firecracker_sp"
-                                    class="p-inputtext-filled font-bold max-w-full mt-1 w-25rem myCSS-inputtext-required text-xs"
-                                    autoresize
-                                    style="text-transform: uppercase"
-                                />
-                                <div class="flex justify-content-end" v-if="patientStore.details.ExternalCauseOfInjury.ext_firecracker_sp === ''">
-                                    <small class="text-red-800 text-xs font-bold">Value is required</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </Transition>
-                <InputTextCheckBoxDoctor2
-                    v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_foreign_body"
-                    v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_foreign_body_sp"
-                    label="Foreign Body Ingestion"
-                    :binary="true"
-                    :required="getRequiredValidation('ext_foreign_body_sp')"
-                />
-                <InputTextCheckBoxDoctor2
-                    v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_caustic_ingestion"
-                    v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_caustic_ingestion_sp"
-                    label="Caustic Ingestion"
-                    :binary="true"
-                    :required="getRequiredValidation('ext_caustic_ingestion_sp')"
-                />
-                <Transition name="slide-fade" mode="out-in">
-                    <div class="hang flex align-content-center mt-1" v-if="patientStore.details.ExternalCauseOfInjury.ext_hang !== 'Y'">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_hang" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="mx-2 align-self-center font-bold"> Hanging/Strangulation </label>
-                    </div>
-                </Transition>
-                <InputTextCheckBoxDoctor2
-                    :isExternal="true"
-                    v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_crushing"
-                    v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_crushing_sp"
-                    label="Crushing"
-                    :binary="true"
-                    :required="getRequiredValidation('ext_crushing_sp')"
-                />
-                <InputTextCheckBoxDoctor2
-                    :isExternal="true"
-                    v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_stab_wound"
-                    v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_stab_wound_sp"
-                    label="Stab Wound"
-                    :binary="true"
-                    :required="getRequiredValidation('ext_stab_wound_sp')"
-                />
-            </div>
-
-            <div :style="{ width: width < 950 ? '100%' : width < 1600 ? '49%' : '24%' }">
-                <InputTextCheckBoxDoctor2
-                    :isExternal="true"
-                    v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_sharp"
-                    v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_sharp_sp"
-                    label=" Contact with sharp objects"
-                    :binary="true"
-                    :required="getRequiredValidation('ext_sharp_sp')"
-                />
-                <InputTextCheckBoxDoctor2
-                    :isExternal="true"
-                    v-model:modelValue="patientStore.details.ExternalCauseOfInjury.contact_blurt"
-                    v-model:desc="patientStore.details.ExternalCauseOfInjury.contact_blurt_sp"
-                    label="Contact with Blunt Object"
-                    :binary="true"
-                />
-                <Transition name="slide-fade" mode="out-in">
-                    <div class="htd flex align-content-center mt-1" v-if="patientStore.details.ExternalCauseOfInjury.ext_vape !== 'Y'">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_vape" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="mx-2 align-self-center font-bold"> Vapor/HTD Product </label>
-                    </div>
-                </Transition>
-                <Transition name="slide-fade" mode="out-in">
-                    <div class="gunshot flex align-content-center mt-1" v-if="patientStore.details.ExternalCauseOfInjury.ext_gun !== 'Y'">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_gun" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="mx-2 align-self-center font-bold"> Gunshot </label>
-                    </div>
-                </Transition>
-                <Transition name="slide-fade" mode="out-in">
-                    <div class="mauling flex align-content-center mt-1" v-if="patientStore.details.ExternalCauseOfInjury.ext_battery !== 'Y'">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_battery" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="mx-2 align-self-center font-bold"> Battery </label>
-                        <i class="pi pi-info-circle text-blue-500 ml-2" style="cursor: pointer" v-tooltip="'Battery involves intentional physical contact causing harm.'"></i>
-                    </div>
-                </Transition>
-                <Transition name="slide-fade" mode="out-in">
-                    <div class="mauling flex align-content-center mt-1" v-if="patientStore.details.ExternalCauseOfInjury.ext_assault !== 'Y'">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_assault" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="mx-2 align-self-center font-bold"> Assault </label>
-                        <i class="pi pi-info-circle text-blue-500 ml-2" style="cursor: pointer" v-tooltip="'Assault is an act that creates fear of imminent harm or injury.'"></i>
-                    </div>
-                </Transition>
-            </div>
-
-            <div :style="{ width: width < 950 ? '100%' : width < 1600 ? '49%' : '24%' }">
-                <Transition name="slide-fade" mode="out-in">
-                    <div class="vehicularAccident" v-if="patientStore.details.ExternalCauseOfInjury.ext_transport !== 'Y'">
-                        <div class="vehicularAccident flex align-content-center mt-1">
-                            <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_transport" trueValue="Y" falseValue="N" id="inputswitch" @click="autoOpenDialogTranspo" />
-                            <label for="inputswitch" class="mx-2 align-self-center font-bold"> Road Crash Incident</label>
-                        </div>
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.ext_transport == 'Y'" class="flex flex-wrap mt-1 ml-4">
-                            <label for="preAdmissionData.ext_transport" class="text-xs" style="color: #000080">Transport Type</label>
-                            <Dropdown
-                                id="ExternalCauseOfInjury.ext_transport"
-                                required
-                                v-model="patientStore.details.forTransportVehicularAccident.vehicle_type_id"
-                                placeholder="Please select"
-                                :options="vehicleTypes"
-                                optionLabel="vehicle_type_desc"
-                                optionValue="vehicle_type_id"
-                            />
-                            <label for="preAdmissionData.ref_veh_acctype_code" class="text-xs" style="color: #000080">Collision Type</label>
-                            <Dropdown
-                                id="ExternalCauseOfInjury.ref_veh_acctype_code"
-                                required
-                                v-model="patientStore.details.forTransportVehicularAccident.ref_veh_acctype_code"
-                                placeholder="Please select"
-                                :options="collisionTypes"
-                                optionLabel="ref_veh_acctype_desc"
-                                optionValue="ref_veh_acctype_code"
-                            />
-                            <label for="preAdmissionData.vehicle_code" class="text-xs" style="color: #000080">Vehicles Involved - Patient's Vehicle</label>
-                            <Dropdown
-                                id="forTransportVehicularAccident.vehicle_code"
-                                required
-                                v-model="patientStore.details.forTransportVehicularAccident.vehicle_code"
-                                placeholder="Please select"
-                                :options="vehicleCodes"
-                                optionLabel="vehicle_desc"
-                                optionValue="vehicle_code"
-                            />
-                            <div v-if="patientStore.details.forTransportVehicularAccident.vehicle_code == '88'" class="ml-3">
-                                <label for="forTransportVehicularAccident.pat_veh_sp" class="text-xs" style="color: #000080">Specify</label>
-
-                                <InputText
-                                    v-model="patientStore.details.forTransportVehicularAccident.pat_veh_sp"
-                                    id="forTransportVehicularAccident.pat_veh_sp"
-                                    placeholder=""
-                                    class="p-inputtext-filled font-bold max-w-full w-16rem mb-1 myCSS-inputtext-required text-xs"
-                                    autoresize
-                                    style="text-transform: uppercase"
-                                />
-                                <div class="flex justify-content-end" v-if="patientStore.details.forTransportVehicularAccident.pat_veh_sp === ''">
-                                    <small class="text-red-800 text-xs font -bold">Value is required</small>
-                                </div>
-                            </div>
-                            <div v-if="patientStore.details.forTransportVehicularAccident.ref_veh_acctype_code == '10'">
-                                <label for="preAdmissionData.etc_veh" class="text-xs" style="color: #000080">Vehicles Involved - Other Vehicle</label>
-                                <Dropdown
-                                    id="forTransportVehicularAccident.etc_veh"
-                                    required
-                                    v-model="patientStore.details.forTransportVehicularAccident.etc_veh"
-                                    placeholder="Please select"
-                                    :options="vehicleCodes"
-                                    optionLabel="vehicle_desc"
-                                    optionValue="vehicle_code"
-                                />
-                                <div v-if="patientStore.details.forTransportVehicularAccident.etc_veh == '88'" class="ml-3">
-                                    <label for="preAdmissionData.etc_veh" class="text-xs" style="color: #000080">Specify</label>
-                                    <InputText
-                                        v-model="patientStore.details.forTransportVehicularAccident.etc_veh_sp"
-                                        id="ExternalCauseOfInjury.etc_veh"
-                                        placeholder=""
-                                        class="p-inputtext-filled font-bold max-w-full w-23rem mb-1 myCSS-inputtext-required text-xs"
-                                        autoresize
-                                        style="text-transform: uppercase"
-                                    />
-                                    <div class="flex justify -content-end" v-if="patientStore.details.forTransportVehicularAccident.etc_veh_sp === ''">
-                                        <small class="text-red-800 text-xs font-bold">Value is required</small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <label for="preAdmissionData.position_code" class="text-xs" style="color: #000080">Position of Patient in Vehicle</label>
-                            <Dropdown
-                                id="ExternalCauseOfInjury.position_code"
-                                required
-                                v-model="patientStore.details.forTransportVehicularAccident.position_code"
-                                placeholder="Please select"
-                                :options="positions"
-                                optionLabel="position_desc"
-                                optionValue="position_code"
-                            />
-                            <div class="ml-3" v-if="patientStore.details.forTransportVehicularAccident.position_code == '88'">
-                                <label for="preAdmissionData.pos_pat_sp" class="text-xs" style="color: #000080">Specify</label>
-
-                                <InputText
-                                    v-model="patientStore.details.forTransportVehicularAccident.pos_pat_sp"
-                                    id="ExternalCauseOfInjury.pos_pat_sp"
-                                    placeholder=""
-                                    class="p-inputtext-filled font-bold max-w-full w-23rem mb-1 myCSS-inputtext-required text-xs"
-                                    autoresize
-                                    style="text-transform: uppercase"
-                                />
-                                <div class="flex justify-content-end" v-if="patientStore.details.forTransportVehicularAccident.pos_pat_sp === ''">
-                                    <small class="text-red-800 text-xs font-bold">Value is required</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </Transition>
-                <Transition name="slide-fade" mode="out-in">
-                    <div class="mauling flex align-content-center mt-1" v-if="patientStore.details.ExternalCauseOfInjury.ext_neglect !== 'Y'">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_neglect" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="mx-2 align-self-center font-bold"> Neglect </label>
-                    </div>
-                </Transition>
-                <Transition name="slide-fade" mode="out-in">
-                    <div class="mauling flex align-content-center mt-1" v-if="patientStore.details.ExternalCauseOfInjury.ext_sexual !== 'Y'">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_sexual" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="mx-2 align-self-center font-bold"> Sexual Abuse </label>
-                    </div>
-                </Transition>
-
-                <!-- <i @click="openVAWCDialog" class="flex badge-button" v-if="patientStore.details.ExternalCauseOfInjury.vawc === 'Y'"></i> -->
-                <!-- <Transition name="slide-fade" mode="out-in">
-                    <div class="mauling flex align-content-center mt-1" v-if="patientStore.details.ExternalCauseOfInjury.ext_physical !== 'Y'">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_physical" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="mx-2 align-self-center font-bold"> Physical Abuse </label>
-                    </div>
-                </Transition> -->
-                <InputTextCheckBoxDoctor2
-                    v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_other"
-                    v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_other_sp"
-                    label="Others, (Specify)"
-                    :binary="true"
-                    :required="getRequiredValidation('ext_other')"
-                />
-            </div>
+            <UntickedExternalSwiches :dataIsLoaded="dataIsLoaded" :width="width" :height="height" />
         </div>
         <div class="mt-4">
             <strong for="patientHistory" class="font-bold flex justify-content-center text-lg">History of the Patient</strong>
@@ -1522,678 +1021,7 @@ watch(
         </div>
         <div v-if="noExternal" class="bg-red-200 p-2 absolute bottom-0 left-0 text-center text-gray-700 font-semibold italic" style="border-radius: 0 0 1rem 1rem; width: 100%; font-size: 1rem; margin: 0 !important">Value is Required</div>
     </div>
-
-    <!-- ticked -->
-
-    <div>
-        <div style="width: 100%">
-            <Transition name="slide-fade" mode="out-in">
-                <div class="flex flex-column rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y'" style="border: 2px dashed #808080">
-                    <div
-                        v-if="
-                            patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
-                            (patientStore.details.ExternalCauseOfInjury.ext_bite_sp === '' ||
-                                patientStore.details.ExternalCauseOfInjury.dogbiteDegree === '' ||
-                                patientStore.details.ExternalCauseOfInjury.bleeding === '' ||
-                                patientStore.details.ExternalCauseOfInjury.bitingAnimal === '' ||
-                                patientStore.details.ExternalCauseOfInjury.observation === '' ||
-                                patientStore.details.ExternalCauseOfInjury.first_aid_code === '' ||
-                                patientStore.details.ExternalCauseOfInjury.washingDone === '' ||
-                                patientStore.details.ExternalCauseOfInjury.previousARV === '' ||
-                                patientStore.details.ExternalCauseOfInjury.tetanusVaccination === '' ||
-                                patientStore.details.ExternalCauseOfInjury.allergies === '' ||
-                                patientStore.details.ExternalCauseOfInjury.adverseReaction === '' ||
-                                (patientStore.details.ExternalCauseOfInjury.hrig !== 'Y' &&
-                                    patientStore.details.ExternalCauseOfInjury.pvrv !== 'Y' &&
-                                    patientStore.details.ExternalCauseOfInjury.pcec !== 'Y' &&
-                                    patientStore.details.ExternalCauseOfInjury.erig !== 'Y' &&
-                                    patientStore.details.ExternalCauseOfInjury.ats !== 'Y' &&
-                                    patientStore.details.ExternalCauseOfInjury.tt !== 'Y' &&
-                                    patientStore.details.ExternalCauseOfInjury.vaccine_none !== 'Y') ||
-                                (patientStore.details.ExternalCauseOfInjury.hrig === 'Y' && patientStore.details.ExternalCauseOfInjury.hrig_num === '') ||
-                                (patientStore.details.ExternalCauseOfInjury.erig === 'Y' && patientStore.details.ExternalCauseOfInjury.erig_num === '') ||
-                                (patientStore.details.ExternalCauseOfInjury.ats === 'Y' && patientStore.details.ExternalCauseOfInjury.ats_num === '') ||
-                                (patientStore.details.ExternalCauseOfInjury.pvrv === 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv_site_4 !== 'Y') ||
-                                (patientStore.details.ExternalCauseOfInjury.pcec === 'Y' && patientStore.details.ExternalCauseOfInjury.pcec_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pcec_site_4 !== 'Y'))
-                        "
-                        class="flex justify-content-end"
-                        style="width: 10rem"
-                    >
-                        <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                    </div>
-                    <div class="flex justify-content-between">
-                        <div class="bite flex align-content-center mt-1">
-                            <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_bite" trueValue="Y" falseValue="N" id="inputswitch" />
-                            <label for="inputswitch" class="mx-2 align-self-center font-bold"> Bite/Sting </label>
-                        </div>
-                        <i @click="openBiteDialog" class="badge-button">
-                            <div class="bite-details-container">
-                                <strong>BITE DETAILS</strong>
-                            </div>
-                        </i>
-                    </div>
-                </div>
-            </Transition>
-            <Transition name="slide-fade" mode="out-in">
-                <div class="burns rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_burn_r == 'Y'" style="border: 2px dashed #808080">
-                    <div v-if="patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ExternalCauseOfInjury.ref_burn_code === ''" class="flex justify-content-end" style="width: 10rem">
-                        <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                    </div>
-                    <div class="burn flex align-content-center mt-1">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_burn_r" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="mx-2 align-self-center font-bold"> Burns </label>
-                    </div>
-                    <div v-if="patientStore.details.ExternalCauseOfInjury.ext_burn_r == 'Y'" class="mt-1 ml-4">
-                        <Dropdown
-                            id="ExternalCauseOfInjury.ref_burn_code"
-                            required
-                            v-model="patientStore.details.ExternalCauseOfInjury.ref_burn_code"
-                            placeholder="Select Burn Type"
-                            :class="{ 'text-black': isDisabled, 'bg-green-100': !patientStore.details.ExternalCauseOfInjury.ref_burn_code }"
-                            :options="burnDetails"
-                            optionLabel="ref_burn_desc"
-                            optionValue="ref_burn_code"
-                            style="width: 100%"
-                        />
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.ref_burn_code == '06'">
-                            <div class="flex">
-                                <label style="color: #000080" for="ExternalCauseOfInjury.ext_burn_sp " class="text-xs"><i>Specify</i></label>
-                            </div>
-                            <div class="flex justify-content-center" v-if="patientStore.details.ExternalCauseOfInjury.ext_burn_sp === ''">
-                                <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                            </div>
-                            <Textarea
-                                v-model="patientStore.details.ExternalCauseOfInjury.ext_burn_sp"
-                                id="ExternalCauseOfInjury.ext_burn_sp"
-                                class="p-inputtext-filled font-bold max-w-full mt-1myCSS-inputtext-required text-xs"
-                                autoresize
-                                style="text-transform: uppercase; width: 100%"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-
-            <Transition name="slide-fade" mode="out-in">
-                <div class="burns rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_burn_r_doctor == 'Y'" style="border: 2px dashed #808080">
-                    <div v-if="patientStore.details.ExternalCauseOfInjury.ext_burn_r_doctor === 'Y' && patientStore.details.ExternalCauseOfInjury.ref_burn_code_doctor === ''" class="flex justify-content-end" style="width: 10rem">
-                        <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                    </div>
-                    <div class="burn flex align-content-center mt-1">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_burn_r_doctor" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="mx-2 align-self-center font-bold"> Burns </label>
-                    </div>
-                    <div v-if="patientStore.details.ExternalCauseOfInjury.ext_burn_r_doctor == 'Y'" class="mt-1 ml-4">
-                        <Dropdown
-                            id="ExternalCauseOfInjury.ref_burn_code_doctor"
-                            required
-                            v-model="patientStore.details.ExternalCauseOfInjury.ref_burn_code_doctor"
-                            placeholder="Select Burn Type"
-                            :class="{ 'text-black': isDisabled, 'bg-green-100': !patientStore.details.ExternalCauseOfInjury.ref_burn_code_doctor }"
-                            :options="burnDetailsDoctor"
-                            optionLabel="ref_burn_desc"
-                            optionValue="ref_burn_code"
-                            style="width: 100%"
-                        />
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.ref_burn_code_doctor == '92'">
-                            <div class="flex">
-                                <label style="color: #000080" for="ExternalCauseOfInjury.ext_burn_sp_doctor " class="text-xs"><i>Specify</i></label>
-                            </div>
-                            <div class="flex justify-content-center" v-if="patientStore.details.ExternalCauseOfInjury.ext_burn_sp_doctor === ''">
-                                <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                            </div>
-                            <Textarea
-                                v-model="patientStore.details.ExternalCauseOfInjury.ext_burn_sp_doctor"
-                                id="ExternalCauseOfInjury.ext_burn_sp_doctor"
-                                class="p-inputtext-filled font-bold max-w-full mt-1myCSS-inputtext-required text-xs"
-                                autoresize
-                                style="text-transform: uppercase; width: 100%"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-            <InputTextCheckBoxDoctor
-                :isExternal="true"
-                v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_chem"
-                v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_chem_sp"
-                label="Chemical Substance"
-                :binary="true"
-                :required="getRequiredValidation('ext_chem_sp')"
-            />
-            <Transition name="slide-fade" mode="out-in">
-                <div class="drowns rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_drown_r == 'Y'" style="border: 2px dashed #808080">
-                    <div v-if="patientStore.details.ExternalCauseOfInjury.ext_drown_r == 'Y' && patientStore.details.ExternalCauseOfInjury.ref_drowning_cope === ''" class="flex justify-content-end mb-1" style="width: 10rem">
-                        <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                    </div>
-                    <div class="flex jsutify-content-between">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_drown_r" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="mx-2 font-bold">Drowning</label>
-                    </div>
-
-                    <div v-if="patientStore.details.ExternalCauseOfInjury.ext_drown_r == 'Y'" class="mt-1 ml-4">
-                        <Dropdown
-                            id="ExternalCauseOfInjury.ext_expo_nature_r"
-                            required
-                            v-model="patientStore.details.ExternalCauseOfInjury.ref_drowning_cope"
-                            :class="{ 'text-black': isDisabled, 'bg-green-100': !patientStore.details.ExternalCauseOfInjury.ref_drowning_cope }"
-                            placeholder="Please select"
-                            :options="drowningDetails"
-                            optionLabel="ref_drowning_desc"
-                            optionValue="ref_drowning_cope"
-                            style="width: 100%"
-                        />
-                        <div class="flex mr-5" v-if="patientStore.details.ExternalCauseOfInjury.ext_drown_sp === '' && patientStore.details.ExternalCauseOfInjury.ext_drown_r == 'Y'">
-                            <i v-if="patientStore.details.ExternalCauseOfInjury.ref_drowning_cope == '06'" v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                        </div>
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.ref_drowning_cope == '06'">
-                            <Textarea
-                                v-model="patientStore.details.ExternalCauseOfInjury.ext_drown_sp"
-                                id="ExternalCauseOfInjury.ext_drown_sp"
-                                class="p-inputtext-filled font-bold max-w-full mt-1 flex myCSS-inputtext-required text-xs"
-                                autoresize
-                                placeholder="Specify"
-                                style="text-transform: uppercase; width: 100%"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-            <Transition name="slide-fade" mode="out-in">
-                <div class="exposure rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_expo_nature_r == 'Y'" style="border: 2px dashed #808080">
-                    <div v-if="patientStore.details.ExternalCauseOfInjury.ref_expnature_code === '' && patientStore.details.ExternalCauseOfInjury.ext_expo_nature_r === 'Y'" class="flex justify-content-end mb-2" style="width: 10rem">
-                        <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                    </div>
-                    <div class="flex jsutify-content-between">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_expo_nature_r" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="mx-2 font-bold">Exposure to Forces of Nature</label>
-                    </div>
-
-                    <div v-if="patientStore.details.ExternalCauseOfInjury.ext_expo_nature_r == 'Y'" class="mt-1 ml-4">
-                        <Dropdown
-                            id="ExternalCauseOfInjury.ext_expo_nature_r"
-                            required
-                            v-model="patientStore.details.ExternalCauseOfInjury.ref_expnature_code"
-                            :class="{ 'text-black': isDisabled, 'bg-green-100': !patientStore.details.ExternalCauseOfInjury.ref_expnature_code }"
-                            placeholder="Please select"
-                            :options="exposureDetails"
-                            style="width: 100%"
-                            optionLabel="ref_expnature_desc"
-                            optionValue="ref_expnature_code"
-                            class="p-inputtext-filled font-bold max-w-full myCSS-inputtext-required"
-                        />
-
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.ref_expnature_code == '07'">
-                            <div class="flex">
-                                <label style="color: #000080" for="ExternalCauseOfInjury.ext_expo_nature_sp " class="text-xs"><i>Specify</i></label>
-                            </div>
-                            <div class="flex justify-content-center" v-if="patientStore.details.ExternalCauseOfInjury.ext_expo_nature_sp === ''">
-                                <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                            </div>
-                            <Textarea
-                                v-model="patientStore.details.ExternalCauseOfInjury.ext_expo_nature_sp"
-                                id="ExternalCauseOfInjury.noi_burndtl"
-                                class="p-inputtext-filled font-bold max-w-full mt-1 myCSS-inputtext-required text-xs"
-                                autoresize
-                                style="text-transform: uppercase; width: 100%"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-            <InputTextCheckBoxDoctor
-                :isExternal="true"
-                v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_fall"
-                v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_falldtl"
-                label=" Fall"
-                :binary="true"
-                :required="getRequiredValidation('ext_falldtl')"
-            />
-            <Transition name="slide-fade" mode="out-in">
-                <div class="firecrackers rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_firecracker_r == 'Y'" style="border: 2px dashed #808080">
-                    <div v-if="patientStore.details.ExternalCauseOfInjury.ext_firecracker_r == 'Y' && patientStore.details.ExternalCauseOfInjury.firecracker_code === ''" class="flex justify-content-end mb-2" style="width: 10rem">
-                        <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                    </div>
-                    <div class="flex jsutify-content-between">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_firecracker_r" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="mx-2 font-bold">Firecracker</label>
-                    </div>
-                    <div v-if="patientStore.details.ExternalCauseOfInjury.ext_firecracker_r == 'Y'" class="mt-1 ml-4">
-                        <Dropdown
-                            id="ExternalCauseOfInjury.firecracker_code"
-                            required
-                            v-model="patientStore.details.ExternalCauseOfInjury.firecracker_code"
-                            :class="{ 'text-black': isDisabled, 'bg-green-100': !patientStore.details.ExternalCauseOfInjury.firecracker_code }"
-                            placeholder="Please select"
-                            :options="firecrackerDetails"
-                            optionLabel="firecracker_desc"
-                            style="width: 100%"
-                            optionValue="firecracker_code"
-                        />
-                        <div class="flex mr-5" v-if="patientStore.details.ExternalCauseOfInjury.ext_firecracker_sp === ''">
-                            <i v-if="patientStore.details.ExternalCauseOfInjury.firecracker_code == '88'" v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                        </div>
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.firecracker_code == '88'">
-                            <Textarea
-                                v-model="patientStore.details.ExternalCauseOfInjury.ext_firecracker_sp"
-                                id="ExternalCauseOfInjury.ext_firecracker_sp"
-                                class="p-inputtext-filled font-bold max-w-full mt-1 myCSS-inputtext-required text-xs"
-                                autoresize
-                                style="text-transform: uppercase; width: 100%"
-                            />
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-            <InputTextCheckBoxDoctor
-                :isExternal="true"
-                v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_foreign_body"
-                v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_foreign_body_sp"
-                label="Foreign Body Ingestion"
-                :binary="true"
-                :required="getRequiredValidation('ext_foreign_body_sp')"
-            />
-
-            <InputTextCheckBoxDoctor
-                :isExternal="true"
-                v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_caustic_ingestion"
-                v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_caustic_ingestion_sp"
-                label="Caustic Ingestion"
-                :binary="true"
-                :required="getRequiredValidation('ext_caustic_ingestion_sp')"
-            />
-            <InputTextCheckBoxDoctor
-                :isExternal="true"
-                v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_encavement"
-                v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_encavement_sp"
-                label="Encavement"
-                :binary="true"
-                :required="getRequiredValidation('ext_encavement_sp')"
-            />
-            <InputTextCheckBoxDoctor
-                :isExternal="true"
-                v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_crushing"
-                v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_crushing_sp"
-                label="Crushing"
-                :binary="true"
-                :required="getRequiredValidation('ext_crushing_sp')"
-            />
-            <InputTextCheckBoxDoctor
-                :isExternal="true"
-                v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_stab_wound"
-                v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_stab_wound_sp"
-                label="Stab Wound"
-                :binary="true"
-                :required="getRequiredValidation('ext_stab_wound_sp')"
-            />
-            <InputTextCheckBoxDoctor
-                :isExternal="true"
-                v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_sharp"
-                v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_sharp_sp"
-                label=" Contact with sharp objects"
-                :binary="true"
-                :required="getRequiredValidation('ext_sharp_sp')"
-            />
-            <InputTextCheckBoxDoctor
-                :isExternal="true"
-                v-model:modelValue="patientStore.details.ExternalCauseOfInjury.contact_blurt"
-                v-model:desc="patientStore.details.ExternalCauseOfInjury.contact_blurt_sp"
-                label="Contact with Blunt Object"
-                :binary="true"
-            />
-
-            <Transition name="slide-fade" mode="out-in">
-                <div class="htd flex align-content-center mt-1 rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_vape === 'Y'" style="border: 2px dashed #808080">
-                    <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_vape" trueValue="Y" falseValue="N" id="inputswitch" />
-                    <label for="inputswitch" class="mx-2 align-self-center font-bold"> Vapor/HTD Product </label>
-                </div>
-            </Transition>
-            <InputTextCheckBoxDoctor
-                :isExternal="true"
-                v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_gun"
-                v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_gun_sp"
-                label="Gunshot"
-                :binary="true"
-                :required="getRequiredValidation('ext_gun_sp')"
-            />
-            <Transition name="slide-fade" mode="out-in">
-                <div class="hang flex align-content-center mt-1 rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_hang === 'Y'" style="border: 2px dashed #808080">
-                    <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_hang" trueValue="Y" falseValue="N" id="inputswitch" />
-                    <label for="inputswitch" class="mx-2 align-self-center font-bold"> Hanging/Strangulation </label>
-                </div>
-            </Transition>
-            <!-- <Transition name="slide-fade" mode="out-in">
-                <div class="mauling flex align-content-center mt-1 rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_maul === 'Y'" style="border: 2px dashed #808080">
-                    <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_maul" trueValue="Y" falseValue="N" id="inputswitch" />
-                    <label for="inputswitch" class="mx-2 align-self-center font-bold"> Mauling </label>
-                </div>
-            </Transition> -->
-            <!-- <InputTextCheckBoxDoctor
-                :isExternal="true"
-                v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_battery"
-                v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_battery_sp"
-                label="Battery"
-                :binary="true"
-                :required="getRequiredValidation('ext_battery_sp')"
-            /> -->
-            <Transition name="slide-fade" mode="out-in">
-                <div class="mauling mt-1 rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_battery === 'Y'" style="border: 2px dashed #808080">
-                    <div class="flex justify-content-between" style="width: 100%">
-                        <div class="flex">
-                            <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_battery" trueValue="Y" falseValue="N" id="inputswitch" />
-                            <label for="inputswitch" class="font-bold ml-2 mt-1"> Battery</label>
-                        </div>
-                        <strong style="color: blue; font-style: italic">Battery involves intentional physical contact causing harm.</strong>
-                    </div>
-                    <div v-if="patientStore.details.generalData.perpetrator === 'Y'" style="width: 98%" class="mt-1 ml-4">
-                        <div class="flex column">
-                            <div class="flex justify-content-between" style="width: 100%">
-                                <label style="color: #000080" for="perpetratorRelationships" class="text-s mt-1"><i>Relationship</i></label>
-                            </div>
-                            <div v-if="patientStore.details.ExternalCauseOfInjury.ext_battery === 'Y' && patientStore.details.generalData.perpetrator_sp === ''" class="flex justify-content-end" style="width: 10rem">
-                                <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                            </div>
-                        </div>
-                        <Dropdown
-                            id="perpetratorRelationships"
-                            class="font-bold mr-5"
-                            v-model="patientStore.details.generalData.perpetrator_sp"
-                            :class="{ 'text-black': isDisabled, 'bg-green-100': !patientStore.details.generalData.perpetrator_sp }"
-                            placeholder="Relationship to Perpetrator"
-                            :options="libraryService.getPerpetratorRelationships()"
-                            optionLabel="label"
-                            optionValue="value"
-                            style="width: 100%"
-                        />
-                        <div v-if="patientStore.details.generalData.perpetrator_sp === '11'">
-                            <div>
-                                <div class="flex justify-content-start mt-2" style="width: 100%">
-                                    <div class="flex justify-content-start" v-if="patientStore.details.generalData.perpetrator_oth_sp === ''"><i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 8rem" /></div>
-                                </div>
-                                <label style="color: #000080" for="natureOfInjury.noi_burndtl" class="text-s mt-1"><i>Specify</i></label>
-                            </div>
-                            <Transition name="slide-fade" mode="out-in">
-                                <Textarea v-model="patientStore.details.generalData.perpetrator_oth_sp" style="width: 100%" class="font-bold" autoResize> </Textarea>
-                            </Transition>
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-            <!-- <InputTextCheckBoxDoctor
-                :isExternal="true"
-                v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_assault"
-                v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_assault_sp"
-                label="Assault"
-                :binary="true"
-                :required="getRequiredValidation('ext_assault_sp')"
-            /> -->
-            <Transition name="slide-fade" mode="out-in">
-                <div class="mauling mt-1 rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_assault === 'Y'" style="border: 2px dashed #808080">
-                    <div style="width: 100%" class="flex justify-content-between">
-                        <div class="flex">
-                            <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_assault" trueValue="Y" falseValue="N" id="inputswitch" />
-                            <label for="inputswitch" class="font-bold ml-2 mt-1"> Assault</label>
-                        </div>
-                        <strong style="color: blue; font-style: italic">
-                            Assault is an act that creates fear of imminent harm or injury.
-                            <span style="color: red">(Use Battery when it involves intentional harmful physical contact.)</span>
-                        </strong>
-                    </div>
-                    <div v-if="patientStore.details.generalData.perpetrator === 'Y'" style="width: 98%" class="mt-1 ml-4">
-                        <div class="flex column">
-                            <div class="flex justify-content-between" style="width: 100%">
-                                <label style="color: #000080" for="perpetratorRelationships" class="text-s mt-1"><i>Relationship</i></label>
-                            </div>
-                            <div v-if="patientStore.details.ExternalCauseOfInjury.ext_assault === 'Y' && patientStore.details.generalData.perpetrator_sp === ''" class="flex justify-content-end" style="width: 10rem">
-                                <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                            </div>
-                        </div>
-                        <Dropdown
-                            id="perpetratorRelationships"
-                            class="font-bold mr-5"
-                            v-model="patientStore.details.generalData.perpetrator_sp"
-                            :class="{ 'text-black': isDisabled, 'bg-green-100': !patientStore.details.generalData.perpetrator_sp }"
-                            placeholder="Relationship to Perpetrator"
-                            :options="libraryService.getPerpetratorRelationships()"
-                            optionLabel="label"
-                            optionValue="value"
-                            style="width: 100%"
-                        />
-                        <div v-if="patientStore.details.generalData.perpetrator_sp === '11'">
-                            <div>
-                                <div class="flex justify-content-start mt-2" style="width: 100%">
-                                    <div class="flex justify-content-start" v-if="patientStore.details.generalData.perpetrator_oth_sp === ''"><i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 8rem" /></div>
-                                </div>
-                                <label style="color: #000080" for="natureOfInjury.noi_burndtl" class="text-s mt-1"><i>Specify</i></label>
-                            </div>
-                            <Transition name="slide-fade" mode="out-in">
-                                <Textarea v-model="patientStore.details.generalData.perpetrator_oth_sp" style="width: 100%" class="font-bold" autoResize> </Textarea>
-                            </Transition>
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-            <Transition name="slide-fade" mode="out-in">
-                <div class="flex flex-column rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_transport === 'Y'" style="border: 2px dashed #808080">
-                    <div
-                        v-if="
-                            patientStore.details.forTransportVehicularAccident.vehicle_type_id === '' &&
-                            patientStore.details.forTransportVehicularAccident.ref_veh_acctype_code === '' &&
-                            patientStore.details.forTransportVehicularAccident.vehicle_code === ''
-                        "
-                        class="flex justify-content-end"
-                        style="width: 10rem"
-                    >
-                        <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                    </div>
-                    <div class="flex justify-content-between">
-                        <div class="bite flex align-content-center mt-1">
-                            <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_transport" trueValue="Y" falseValue="N" id="inputswitch" />
-                            <label for="inputswitch" class="mx-2 align-self-center font-bold"> Road Crash Incident </label>
-                        </div>
-                        <i class="badge-button">
-                            <div class="details-container" @click="openTransportVehicularDialog = true">
-                                <strong>REPORT</strong>
-                            </div>
-                        </i>
-                    </div>
-                </div>
-            </Transition>
-            <Transition name="slide-fade" mode="out-in">
-                <div class="mauling flex align-content-center mt-1 rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_neglect === 'Y'" style="border: 2px dashed #808080">
-                    <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_neglect" trueValue="Y" falseValue="N" id="inputswitch" />
-                    <label for="inputswitch" class="mx-2 align-self-center font-bold"> Neglect </label>
-                </div>
-            </Transition>
-            <!-- <Transition name="slide-fade" mode="out-in">
-                <div class="mauling flex justify-content-between mt-1 rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_sexual === 'Y'" style="border: 2px dashed #808080">
-                    <div class="flex">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_sexual" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="font-bold ml-2 mt-1"> Sexual Abuse </label>
-                    </div>
-                      <i @click="openVAWCDialog" class="flex badge-button" v-if="patientStore.details.ExternalCauseOfInjury.vawc === 'Y'">
-                        <div class="bite-details-container">
-                            <strong>WCPU</strong>
-                        </div>
-                    
-                    <div v-if="patientStore.details.generalData.perpetrator === 'Y'" style="width: 98%;" class="mt-1 ml-4">
-                        <div class="flex column">
-                            <div class="flex justify-content-between" style="width: 100%">
-                                <label style="color: #000080" for="perpetratorRelationships" class="text-s mt-1"><i>Relationship</i></label>
-                            </div>
-                        </div>
-                        <Dropdown
-                            id="perpetratorRelationships"
-                            class="font-bold"
-                            v-model="patientStore.details.generalData.perpetrator_sp"
-                            :class="{ 'text-black': isDisabled, 'bg-green-100': !patientStore.details.generalData.perpetrator_sp }"
-                            placeholder="Relationship to Perpetrator"
-                            :options="libraryService.getPerpetratorRelationships()"
-                            optionLabel="label"
-                            optionValue="value"
-                            style="width: 100%"
-                        />
-                        <div v-if="patientStore.details.generalData.perpetrator_sp === '11'">
-                            <div>
-                                <div class="flex justify-content-start mt-2" style="width: 100%">
-                                    <div class="flex justify-content-start" v-if="patientStore.details.generalData.perpetrator_oth_sp === ''"><i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 8rem" /></div>
-                                </div>
-                                <label style="color: #000080" for="natureOfInjury.noi_burndtl" class="text-s mt-1"><i>Specify</i></label>
-                            </div>
-                            <Transition name="slide-fade" mode="out-in">
-                                <Textarea v-model="patientStore.details.generalData.perpetrator_oth_sp" style="width: 100%" class="font-bold" autoResize> </Textarea>
-                            </Transition>
-                        </div>
-                    </div>
-                </div>
-            </Transition> -->
-            <Transition name="slide-fade" mode="out-in">
-                <div class="mauling mt-1 rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_sexual === 'Y'" style="border: 2px dashed #808080">
-                    <div style="width: 100%">
-                        <div class="flex">
-                            <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_sexual" trueValue="Y" falseValue="N" id="inputswitch" />
-                            <label for="inputswitch" class="font-bold ml-2 mt-1"> Sexual Abuse</label>
-                        </div>
-                    </div>
-                    <div v-if="patientStore.details.generalData.perpetrator === 'Y'" style="width: 98%" class="mt-1 ml-4">
-                        <div class="flex column">
-                            <div class="flex justify-content-between" style="width: 100%">
-                                <label style="color: #000080" for="perpetratorRelationships" class="text-s mt-1"><i>Relationship</i></label>
-                            </div>
-                            <div v-if="patientStore.details.ExternalCauseOfInjury.ext_sexual === 'Y' && patientStore.details.generalData.perpetrator_sp === ''" class="flex justify-content-end" style="width: 10rem">
-                                <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
-                            </div>
-                        </div>
-                        <Dropdown
-                            id="perpetratorRelationships"
-                            class="font-bold mr-5"
-                            v-model="patientStore.details.generalData.perpetrator_sp"
-                            :class="{ 'text-black': isDisabled, 'bg-green-100': !patientStore.details.generalData.perpetrator_sp }"
-                            placeholder="Relationship to Perpetrator"
-                            :options="libraryService.getPerpetratorRelationships()"
-                            optionLabel="label"
-                            optionValue="value"
-                            style="width: 100%"
-                        />
-                        <div v-if="patientStore.details.generalData.perpetrator_sp === '11'">
-                            <div>
-                                <div class="flex justify-content-start mt-2" style="width: 100%">
-                                    <div class="flex justify-content-start" v-if="patientStore.details.generalData.perpetrator_oth_sp === ''"><i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 8rem" /></div>
-                                </div>
-                                <label style="color: #000080" for="natureOfInjury.noi_burndtl" class="text-s mt-1"><i>Specify</i></label>
-                            </div>
-                            <Transition name="slide-fade" mode="out-in">
-                                <Textarea v-model="patientStore.details.generalData.perpetrator_oth_sp" style="width: 100%" class="font-bold" autoResize> </Textarea>
-                            </Transition>
-                        </div>
-                    </div>
-                </div>
-            </Transition>
-            <!-- <Transition name="slide-fade" mode="out-in">
-                <div class="mauling flex justify-content-between mt-1 rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_physical === 'Y'" style="border: 2px dashed #808080">
-                    <div class="flex">
-                        <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_physical" trueValue="Y" falseValue="N" id="inputswitch" />
-                        <label for="inputswitch" class="font-bold ml-2 mt-1"> Physical Abuse </label>
-                    </div>
-                     <i @click="openVAWCDialog" class="badge-button flex" v-if="patientStore.details.ExternalCauseOfInjury.vawc === 'Y'">
-                        <div class="bite-details-container">
-                            <strong>WCPU</strong>
-                        </div>
-                    </i>  
-                    <div v-if="patientStore.details.generalData.perpetrator === 'Y'" style="width: 98%;" class="mt-1 ml-4">
-                        <div class="flex column">
-                            <div class="flex justify-content-between" style="width: 100%">
-                                <label style="color: #000080" for="perpetratorRelationships" class="text-s mt-1"><i>Relationship</i></label>
-                            </div>
-                        </div>
-                        <Dropdown
-                            id="perpetratorRelationships"
-                            class="font-bold"
-                            v-model="patientStore.details.generalData.perpetrator_sp"
-                            :class="{ 'text-black': isDisabled, 'bg-green-100': !patientStore.details.generalData.perpetrator_sp }"
-                            placeholder="Relationship to Perpetrator"
-                            :options="libraryService.getPerpetratorRelationships()"
-                            optionLabel="label"
-                            optionValue="value"
-                            style="width: 100%"
-                        />
-                        <div v-if="patientStore.details.generalData.perpetrator_sp === '11'">
-                            <div>
-                                <div class="flex justify-content-start mt-2" style="width: 100%">
-                                    <div class="flex justify-content-start" v-if="patientStore.details.generalData.perpetrator_oth_sp === ''"><i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 8rem" /></div>
-                                </div>
-                                <label style="color: #000080" for="natureOfInjury.noi_burndtl" class="text-s mt-1"><i>Specify</i></label>
-                            </div>
-                            <Transition name="slide-fade" mode="out-in">
-                                <Textarea v-model="patientStore.details.generalData.perpetrator_oth_sp" style="width: 100%" class="font-bold" autoResize> </Textarea>
-                            </Transition>
-                        </div>
-                    </div>
-                </div>
-            </Transition> -->
-            <!-- <Transition name="slide-fade" mode="out-in">
-                <div class="mauling mt-1 rainbow-border" v-if="patientStore.details.ExternalCauseOfInjury.ext_physical === 'Y'" style="border: 2px dashed #808080">
-                    <div style="width: 100%">
-                        <div class="flex">
-                            <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_physical" trueValue="Y" falseValue="N" id="inputswitch" />
-                            <label for="inputswitch" class="font-bold ml-2 mt-1"> Sexual Abuse</label>
-                        </div>
-                    </div>
-                    <div v-if="patientStore.details.generalData.perpetrator === 'Y'" style="width: 98%" class="mt-1 ml-4">
-                        <div class="flex column">
-                            <div class="flex justify-content-between" style="width: 100%">
-                                <label style="color: #000080" for="perpetratorRelationships" class="text-s mt-1"><i>Relationship</i></label>
-                            </div>
-                        </div>
-                        <Dropdown
-                            id="perpetratorRelationships"
-                            class="font-bold mr-5"
-                            v-model="patientStore.details.generalData.perpetrator_sp"
-                            :class="{ 'text-black': isDisabled, 'bg-green-100': !patientStore.details.generalData.perpetrator_sp }"
-                            placeholder="Relationship to Perpetrator"
-                            :options="libraryService.getPerpetratorRelationships()"
-                            optionLabel="label"
-                            optionValue="value"
-                            style="width: 100%"
-                        />
-                        <div v-if="patientStore.details.generalData.perpetrator_sp === '11'">
-                            <div>
-                                <div class="flex justify-content-start mt-2" style="width: 100%">
-                                    <div class="flex justify-content-start" v-if="patientStore.details.generalData.perpetrator_oth_sp === ''"><i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 8rem" /></div>
-                                </div>
-                                <label style="color: #000080" for="natureOfInjury.noi_burndtl" class="text-s mt-1"><i>Specify</i></label>
-                            </div>
-                            <Transition name="slide-fade" mode="out-in">
-                                <Textarea v-model="patientStore.details.generalData.perpetrator_oth_sp" style="width: 100%" class="font-bold" autoResize> </Textarea>
-                            </Transition>
-                        </div>
-                    </div>
-                </div>
-            </Transition>-->
-            <InputTextCheckBoxDoctor
-                :isExternal="true"
-                v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_other"
-                v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_other_sp"
-                label="Others, (Specify)"
-                :binary="true"
-                :required="getRequiredValidation('ext_other')"
-            />
-        </div>
-    </div>
-    <Dialog v-model:visible="biteDialog" modal header="ANIMAL BITE FORM" :style="{ width: '98%', height: '90vh' }">
-        <BiteForm />
-    </Dialog>
-    <Dialog v-model:visible="vawcDialog" maximizable @hide="isInputNull()" header="Findings and Impressions" position="left" :style="{ width: '64%', height: '90%' }">
-        <VawcForm />
-    </Dialog>
-    <Dialog v-model:visible="openTransportVehicularDialog" @hide="openTransportVehicularDialog = false" style="width: 65%">
-        <template #header>
-            <div class="flex justify-content-center" style="width: 100%">
-                <h1 class="font-bold" style="color: #000080">Road Crash Incident Report</h1>
-            </div>
-        </template>
-        <VehicularAccidentForm />
-    </Dialog>
+    <TickedExternalSwitches :dataIsLoaded="dataIsLoaded" />
 </template>
 
 <style scoped>
@@ -2253,10 +1081,6 @@ watch(
     outline: none;
 }
 
-/* . {
-    background-color: #4caf50;
-} */
-
 .try {
     font-size: 10px;
     display: flex;
@@ -2281,40 +1105,6 @@ watch(
 
 .DataTable {
     margin-top: 1rem;
-}
-
-.slide-fade-enter-active {
-    transition: all 0.4s ease-out;
-}
-
-.slide-fade-leave-active {
-    transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-    transform: translateY(20px);
-    opacity: 0;
-}
-
-.bg::before {
-    content: '';
-    background: url('@/assets/images/BGHMC.png') no-repeat center center fixed;
-    opacity: 0.1;
-}
-
-.slide-fade-enter-active {
-    transition: all 0.3s ease-out;
-}
-
-.slide-fade-leave-active {
-    transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
-}
-
-.slide-fade-enter-from,
-.slide-fade-leave-to {
-    transform: translateX(20px);
-    opacity: 0;
 }
 
 .details-container {

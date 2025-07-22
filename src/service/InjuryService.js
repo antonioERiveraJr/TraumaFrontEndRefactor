@@ -284,7 +284,7 @@ export default class InjuryService {
         } catch (err) {
             // Handle the error if the request was aborted
             if (axios.isCancel(err)) {
-                console.log('Request canceled:', err.message);
+                // console.log('Request canceled:', err.message);
             } else {
                 return err.response;
             }
@@ -315,7 +315,7 @@ export default class InjuryService {
         } catch (err) {
             // Handle the error if the request was aborted
             if (axios.isCancel(err)) {
-                console.log('Request canceled:', err.message);
+                // console.log('Request canceled:', err.message);
             } else {
                 return err.response;
             }
@@ -347,7 +347,7 @@ export default class InjuryService {
         } catch (err) {
             // Handle the error if the request was aborted
             if (axios.isCancel(err)) {
-                console.log('Request canceled:', err.message);
+                // console.log('Request canceled:', err.message);
             } else {
                 return err.response;
             }
@@ -377,7 +377,7 @@ export default class InjuryService {
         } catch (err) {
             // Handle the error if the request was aborted
             if (axios.isCancel(err)) {
-                console.log('Request canceled:', err.message);
+                // console.log('Request canceled:', err.message);
             } else {
                 return err.response;
             }

@@ -120,11 +120,9 @@ async function loadLocations() {
             patientStore.storeCities = distinctCity;
             patientStore.locationLoaded = true;
         }
+ 
 
-        // Check if city does exist or not
-
-        if (patientStore?.details?.generalData?.plc_ctycode != null) {
-            // console.log('hit');
+        if (patientStore?.details?.generalData?.plc_ctycode != null) { 
             if (Array.isArray(allLoc)) {
                 distinctBarangays.value = Array.from(new Map(allLoc?.value?.data.filter((location) => location.ctycode === patientStore.details.generalData.plc_ctycode).map((location) => [location.bgycode, location])).values()).map((location) => ({
                     bgycode: location.bgycode,
@@ -136,8 +134,7 @@ async function loadLocations() {
                 console.error('Expected locations.data to be an array');
                 distinctBarangays.value = [];
             }
-        } else {
-            // console.log('hit2');
+        } else { 
             distinctBarangays.value = Array.from(new Map(locationsArray.map((location) => [location.bgycode, location])).values())
                 .map((location) => ({
                     ctycode: location.ctycode,
@@ -147,37 +144,10 @@ async function loadLocations() {
                 .sort((a, b) => a.bgyname.localeCompare(b.regname));
             patientStore.storeBrgy = distinctBarangays;
             patientStore.locationLoaded = true;
-        }
-
-        // console.log('regions: ', patientStore.storeRegions, '\n', 'provinces: ', patientStore.storeProvinces, '\n', 'cities: ', patientStore.storeCities, '\n', 'bgy: ', patientStore.storeBrgy, '\n');
+        } 
     } catch (error) {
         console.error('Error fetching locations:', error);
-    }
-    // await locationsStore.getRegions();
-    // if (patientStore.details.generalData.plc_regcode) {
-    //     disableProv.value = false;
-    //     loadingProvinces.value = true;
-    //     await locationsStore.getProvinces(patientStore.details.generalData.plc_regcode);
-    //     loadingProvinces.value = false;
-    // } else {
-    //     disableProv.value = true;
-    // }
-    // if (patientStore.details.generalData.plc_provcode) {
-    //     disableCity.value = false;
-    //     loadingCity.value = true;
-    //     await locationsStore.getCities(patientStore.details.generalData.plc_provcode);
-    //     loadingCity.value = false;
-    // } else {
-    //     disableCity.value = true;
-    // }
-    // if (patientStore.details.generalData.plc_ctycode) {
-    //     disableBrgy.value = false;
-    //     loadingBrgy.value = true;
-    //     await locationsStore.getBgys(patientStore.details.generalData.plc_ctycode);
-    //     loadingBrgy.value = false;
-    // } else {
-    //     disableBrgy.value = true;
-    // }
+    } 
 }
 
 const validate = async () => {
@@ -564,7 +534,7 @@ watch([newDate, newTime], ([newDateValue, newTimeValue]) => {
                     <div v-if="dateSituation === 'Complete'" class="flex justify-content-center flex-wrap p-fluid">
                         <div class="m-3 flex justify-content-between" style="width: 100%">
                             <div style="width: 98%">
-                                <label for="date" class="p-float-label font-sans text-black-500 text-xs" style="color: #3366ff; width: 98%"><i>Date(dd/mm/yyyy)</i></label>
+                                <label for="date" class="p-float-label font-sans text-black-500 text-xs" style="color: #3366ff; width: 98%"><i>Date</i></label>
                                 <input type="date" id="date" v-model="newDate" class="text-lg p-2 border rounded" style="width: 98%; height: 3rem" />
                             </div>
                             <div style="width: 98%">

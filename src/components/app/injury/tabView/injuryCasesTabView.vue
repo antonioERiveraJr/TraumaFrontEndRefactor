@@ -46,11 +46,6 @@ const filters = ref({
 const conditionStatus = (data) => {
     return data.header.status;
 };
-
-// const isConditionWarning = (data) => {
-//     return conditionStatus(data) === 'Warning';
-// };
-
 const isConditionWarning = (data) => {
     const incidentTime = new Date(data.header.injtme);
     const admissionTime = new Date(data.header.admdate);
@@ -75,8 +70,7 @@ const rowStyle = (data) => {
 };
 
 async function onRowSelect(e) {
-    try {
-        // console.log('Looking for enccode: ', e.data.enccode);
+    try { 
         transitions();
         showPatientModal.value = true;
         if (!e || !e.data) {
@@ -154,15 +148,12 @@ function transitions() {
 watch(
     () => props.filterValue,
     (newValue) => {
-        // console.log('filters: ', newValue);
         filters.value.global.value = newValue;
-        // filter.value = newValue;
     }
 );
 watch(
     () => patientStore.loadSignal,
-    (newValue) => {
-        // console.log('Patient store load signal changed:', newValue);
+    () => {
         showPatientModal.value = false;
     },
     { deep: true }
@@ -256,7 +247,7 @@ watch(
                     </div>
                 </div>
             </template>
-        </Dialog> 
+        </Dialog>
     </div>
 </template>
 <style>
@@ -268,18 +259,18 @@ watch(
     z-index: 10;
 }
 .card-container > div {
-    width: 24%; /* Default width */
+    width: 24%;
 }
 
 @media (max-width: 1199px) {
     .card-container > div {
-        width: 48%; /* Adjust for medium screens */
+        width: 48%;
     }
 }
 
 @media (max-width: 575px) {
     .card-container > div {
-        width: 90%; /* Adjust for mobile screens */
+        width: 90%;
     }
 }
 .warning-notice {
@@ -287,6 +278,5 @@ watch(
     border: 1px solid red;
     border-radius: 5px;
     background-color: #ffe6e6;
-    /* Light red background */
 }
 </style>

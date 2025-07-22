@@ -179,8 +179,7 @@ onMounted(async () => {
                 >
                     <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
                 </div>
-                <div class="flex justify-content-between">
-                    <!-- <InputSwitch v-model="patientStore.details.forTransportVehicularAccident.risk_none" trueValue="Y" falseValue="N" id="inputswitch" /> -->
+                <div class="flex justify-content-between"> 
                     <label style="color: #000080" for="inputswitch" class="mx-2 align-self-center font-bold"> Contributing Factor </label>
                     <i style="color: blue; font-style: italic">Reasons that may have led to the incident</i>
                 </div>
@@ -217,12 +216,9 @@ onMounted(async () => {
                     <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
                 </div>
 
-                <div class="flex justify-content-between">
-                    <!-- <div class="bite flex align-content-center mt-1"> -->
-                    <!-- <InputSwitch v-model="patientStore.details.forTransportVehicularAccident.safe_none" trueValue="Y" falseValue="N" id="inputswitch" /> -->
+                <div class="flex justify-content-between"> 
                     <label style="color: #000080" for="inputswitch" class="mx-2 align-self-center font-bold"> Safety Gear and Measures </label
-                    ><i style="color: red; font-style: italic"> Safety equipment of the patient that was used during the incident, depending on the vehicle type </i>
-                    <!-- </div> -->
+                    ><i style="color: red; font-style: italic"> Safety equipment of the patient that was used during the incident, depending on the vehicle type </i> 
                 </div>
                 <div class="flex justify-content-center card">
                     <div class="grid grid-cols-4 gap-4">

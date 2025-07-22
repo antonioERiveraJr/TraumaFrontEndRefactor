@@ -255,26 +255,24 @@ export const useLocationsStore = defineStore('locationsStore', () => {
                 // loading.value = false;
                 console.log('401 Unauthorized');
                 localStorage.removeItem('authToken');
-
                 await Swal.fire({
                     icon: 'warning',
                     title: 'Session Expired',
                     text: 'Please Login Again',
                     confirmButtonText: 'OK'
-                });
-
+                }); 
                 // router.push('/auth/login').then(() => {
                 const enccode = ref();
                 const fullUrl = window.location.href;
                 const match = fullUrl.match(/[?&]enccode=([^&#]*)/);
                 const match3 = fullUrl.match(/[?&]access_token=([^&#]*)/);
-                const match2 = fullUrl.match(/[?&]empID=([^&#]*)/);
+                const match2 = fullUrl.match(/[?&]empID=([^&#]*)/); 
                 enccode.value = match ? match[1] : null;
                 const empID = match2 ? match2[1] : null;
                 const getToken = match3 ? match3[1] : null;
                 // console.log('getToken:', getToken, 'empID:', empID, 'enccode:', enccode.value);
                 // console.log('empID', empID);
-                // console.log('enccode', enccode);
+                // console.log('enccode', enccode); 
                 if (empID && enccode) {
                     // window.location.href = `http://192.168.6.58:8000/api/fromEMR?empID=${empID}&enccode=${enccode.value}`;
                     window.location.href = `http://192.168.7.66:9000/api/fromEMR?empID=${empID}&enccode=${enccode.value}`;

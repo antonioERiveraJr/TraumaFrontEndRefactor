@@ -1,7 +1,7 @@
 <script setup>
 import { useToast } from 'primevue/usetoast';
-import { useConfirm } from 'primevue/useconfirm';
 import { inject } from 'vue';
+import { useConfirm } from 'primevue/useconfirm';
 import { usePatientStore } from '@/store/injury/PatientStore';
 import useToastWaitingForFetch from '@/composables/useToastWaitingForFetch';
 import createValidationRules from '../../validation/injuryValidations';
@@ -9,9 +9,9 @@ import InjuryService from '../../service/InjuryService';
 
 const injuryService = new InjuryService();
 const toast = useToast();
-const confirm = useConfirm();
 const v = inject('v$');
 const patientStore = usePatientStore();
+const confirm = useConfirm();
 
 const savePatientData = async () => {
     let injIntentCode = '';
@@ -31,7 +31,7 @@ const savePatientData = async () => {
         default:
             injIntentCode = '';
     }
-    injIntentCode;
+
     let placeOccCode = '';
     switch (patientStore.details.preAdmissionData.place_occ_code) {
         case '10':
@@ -58,24 +58,15 @@ const savePatientData = async () => {
         default:
             placeOccCode = '';
     }
-    placeOccCode;
-    const savingMed = await injuryService.updateMedilogs(patientStore.enccode, patientStore.details.generalData.doctor_injtme, patientStore.header.injrem, placeOccCode, injIntentCode);
-    console.log('savingMed: ', savingMed);
+
+    await injuryService.updateMedilogs(patientStore.enccode, patientStore.details.generalData.doctor_injtme, patientStore.header.injrem, placeOccCode, injIntentCode);
+
     patientStore.details.hospitalFacilityData.disposition_code = patientStore.header.dispcode;
     patientStore.details.hospitalFacilityData.condition_code = patientStore.header.condcode;
-
     patientStore.status = '1';
 
-
-    const response = await patientStore.saveFormattedData();
-
-    console.log('rsavePatientData esponse', response);
-    return response;
-};
-
-const removePatientFromList = async () => {
-    return await patientStore.removeFromList(patientStore.enccode);
-};
+    return await patientStore.saveFormattedData();
+}; 
 
 const toastWaitingForFetchSave = useToastWaitingForFetch(
     {
@@ -86,42 +77,21 @@ const toastWaitingForFetchSave = useToastWaitingForFetch(
     {
         successSeverity: 'success',
         successSummary: 'Save successful',
-        successMessage: 'You may now go back to the  list...'
+        successMessage: 'You may now go back to the list...'
     },
     { severity: 'error', summary: 'Error', detail: 'Data not saved' },
     { asyncFunction: savePatientData, asyncFunctionParams: [] }
 );
 
-const toastWaitingForFetchDelete = useToastWaitingForFetch(
-    {
-        waitingSeverity: 'info',
-        waitingSummary: 'Deleting...',
-        waitingMessage: 'Please wait...'
-    },
-    {
-        successSeverity: 'success',
-        successSummary: 'Delete successful!',
-        successMessage: 'Going back to list...'
-    },
-    { severity: 'error', summary: 'Error', detail: 'Data not saved' },
-    { asyncFunction: removePatientFromList, asyncFunctionParams: [] }
-);
-
 const submitForm = async () => {
     const result = await v.value.$validate();
-    console.log('validate result: ', result);
-
-    console.log('v.value.$errors', v.value.$errors);
     if (result) {
-
         const response = await toastWaitingForFetchSave.fetchData();
         if (response.status == 200) {
-
             localStorage.setItem('enccode', JSON.stringify(patientStore.enccode));
             localStorage.setItem('status', JSON.stringify(patientStore.status));
             localStorage.setItem('header', JSON.stringify(patientStore.header));
             localStorage.setItem('details', JSON.stringify(patientStore.details));
-
             patientStore.loadSignal = true;
             patientStore.savingDone = true;
         }
@@ -136,7 +106,6 @@ const submitForm = async () => {
 
     return result;
 };
-
 
 const removeUnusedString = () => {
     const externalCause = patientStore.details.ExternalCauseOfInjury;
@@ -228,13 +197,12 @@ const removeUnusedString = () => {
     });
 };
 
-const confirmSaves = async (event, onSaveSuccess) => {
-    console.log('hit1');
+const confirmSaves = async () => {
     if (patientStore.details.ExternalCauseOfInjury.ref_expnature_code !== '07') {
         patientStore.details.ExternalCauseOfInjury.ext_expo_nature_sp = '';
     }
+
     const isFormValid = () => {
-        console.log('hit2');
         const validationRules = createValidationRules();
         removeUnusedString();
         const missingFields = [];
@@ -244,24 +212,16 @@ const confirmSaves = async (event, onSaveSuccess) => {
                 if (rules.required && !patientStore.details[section][field]) {
                     missingFields.push(field);
                 }
-
-                if (rules.requiredIf) {
-                    const condition = rules.requiredIf;
-                    if (condition && !patientStore.details[section][field]) {
-                        missingFields.push(field);
-                    }
+                if (rules.requiredIf && !patientStore.details[section][field]) {
+                    missingFields.push(field);
                 }
             }
         }
 
-        if (missingFields.length > 0) {
-            return false;
-        }
-        return true;
+        return missingFields.length === 0;
     };
 
     if (!isFormValid()) {
-        console.log('invalid FormData');
         toast.add({
             severity: 'error',
             summary: 'Error',
@@ -271,37 +231,42 @@ const confirmSaves = async (event, onSaveSuccess) => {
         return;
     }
 
-    return new Promise((resolve, reject) => {
-        console.log('hit3');
-        confirm.require({
-            target: event.target,
-            message: 'Save changes?',
-            icon: 'pi pi-exclamation-triangle',
-            accept: async () => {
-                try {
-                    patientStore.details.ExternalCauseOfInjury.ext_others_external = patientStore.details.ExternalCauseOfInjury.ext_others_external_preview;
-                    await submitForm();
-                    patientStore.loadSignal = true;
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
-            },
-            reject: () => {
-                reject(new Error('User  canceled the save operation.'));
+    confirm.require({
+        target: event.currentTarget,
+        group: 'headless',
+        message: 'Save changes?',
+        accept: async () => {
+            try {
+                patientStore.details.ExternalCauseOfInjury.ext_others_external = patientStore.details.ExternalCauseOfInjury.ext_others_external_preview;
+                await submitForm();
+                patientStore.loadSignal = true;
+            } catch (error) {
+                console.error('Error saving data:', error);
             }
-        });
+        },
+        reject: () => {
+            toast.add({ severity: 'info', summary: 'Cancelled', detail: 'Save operation cancelled', life: 3000 });
+        }
     });
 };
-
 </script>
 <template>
-    <div>
-        <span class="p-buttonset flex justify-content-end">
-            <Button label="Save" icon="pi pi-save" size="small" class="w-auto" v-tooltip.top="'Save changes'"
-                @click="confirmSaves($event)" />
-        </span>
+    <Toast />
+    <ConfirmPopup group="headless" class="flex justify-content-center">
+        <template #container="{ message, acceptCallback, rejectCallback }">
+            <div>
+                <span>{{ message.message }}</span>
+                <div class="flex align-items-center justify-content-center mt-2">
+                    <Button label="Save" @click="acceptCallback" size="small"></Button>
+                    <Button label="Cancel" outlined @click="rejectCallback" severity="secondary" size="small" text></Button>
+                </div>
+            </div>
+        </template>
+    </ConfirmPopup>
+    <div class="flex justify-content-center">
+        <Button @click="confirmSaves" label="Save" style="width: 100%; height: 100%;"></Button>
     </div>
 </template>
 
-<style scoped></style>
+<style scoped> 
+</style>

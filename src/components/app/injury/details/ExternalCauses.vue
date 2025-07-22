@@ -68,8 +68,7 @@ const generateText = () => {
     if (patientStore.details.natureOfInjury.noi_burn_r === 'Y') {
         text += `Burns;`;
 
-        // Retrieve burn degree details
-        const burnDegreeDetails = libraryService.getBurnDegreeDetails(); // Assuming this method exists
+        const burnDegreeDetails = libraryService.getBurnDegreeDetails();
         const burnDegreeOption = burnDegreeDetails.find((option) => option.degree_burn === selectedBurnDegree.value);
         const burnDegreeDescription = burnDegreeOption ? burnDegreeOption.degree_burn_desc : 'Not specified';
 
@@ -397,18 +396,15 @@ watch(
         } else {
             unrecognizedFieldsPreview.value = (patientStore.details.ExternalCauseOfInjury.ext_other_sp || '') + ', ' + (patientStore.details.ExternalCauseOfInjury.ext_others_external || '');
         }
-        // unrecognizedFieldsPreview.value = (patientStore.details.ExternalCauseOfInjury.ext_other_sp || '') + ', ' + (patientStore.details.ExternalCauseOfInjury.ext_others_external || '');
     }
 );
 watch(
     () => unrecognizedFieldsPreview.value,
-    (newValue) => {
-        // alert('hit');
+    (newValue) => { 
         patientStore.details.ExternalCauseOfInjury.ext_others_external_preview = newValue;
     }
 );
 onMounted(async () => {
-
     if (patientStore.details.ExternalCauseOfInjury.ext_battery === 'Y') {
         patientStore.details.ExternalCauseOfInjury.ext_maul = 'Y';
     }
@@ -458,8 +454,7 @@ onMounted(async () => {
             :class="{
                 'bg-green-100': patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ExternalCauseOfInjury.ext_bite_sp === ''
             }"
-        />
-        <!-- {{ patientStore.details.ExternalCauseOfInjury.ext_burn_r_doctor }} -->
+        /> 
         <div class="burns">
             <div class="flex align-content-center align-items-center mt-1">
                 <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_burn_r" trueValue="Y" falseValue="N" id="inputswitch" />
@@ -816,7 +811,7 @@ onMounted(async () => {
                     />
                 </div>
             </div>
-                <!-- {{ patientStore.details.ExternalCauseOfInjury.ext_transport }}
+            <!-- {{ patientStore.details.ExternalCauseOfInjury.ext_transport }}
                 {{ patientStore.details.forTransportVehicularAccident }} -->
             <div class="mauling flex align-content-center mt-1">
                 <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_sexual" trueValue="Y" falseValue="N" id="inputswitch" />

@@ -264,7 +264,7 @@ const loadList = async (hardRefresh) => {
             });
             return;
         }
-        forExportList.value = response.data;
+        forExportList.value = response?.data;
     }
     if (activePanel.value == 4) {
         selectedPatient.value = '';

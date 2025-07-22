@@ -254,18 +254,18 @@ watch(
     z-index: 10;
 }
 .card-container > div {
-    width: 24%; /* Default width */
+    width: 24%;
 }
 
 @media (max-width: 1199px) {
     .card-container > div {
-        width: 48%; /* Adjust for medium screens */
+        width: 48%;
     }
 }
 
 @media (max-width: 575px) {
     .card-container > div {
-        width: 90%; /* Adjust for mobile screens */
+        width: 90%;
     }
 }
 .warning-notice {
@@ -273,6 +273,5 @@ watch(
     border: 1px solid red;
     border-radius: 5px;
     background-color: #ffe6e6;
-    /* Light red background */
 }
 </style>

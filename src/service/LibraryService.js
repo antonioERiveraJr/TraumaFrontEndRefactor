@@ -4,7 +4,6 @@
 
 import axios from 'axios';
 export default class LibraryService {
-
     getStatuses() {
         const statuses = [
             { id: '0', name: 'new' },
@@ -254,7 +253,7 @@ export default class LibraryService {
             {
                 ref_burn_code: '92',
                 ref_burn_desc: 'Others, Specigy'
-            },
+            }
         ];
         return burnDetailsDoctor;
     }
@@ -482,120 +481,118 @@ export default class LibraryService {
             {
                 findings: "Injuries are non-specific (no obvious pattern or mechanism of injury) but may be consistent with a child's disclosure",
                 impression: "Findings noted may be consistent with the child's disclosure",
-                inputValue: '0',
+                inputValue: '0'
             },
             {
-                findings: "No injuries found",
-                impression: "No evident injury at the time of examination",
-                inputValue: '0',
+                findings: 'No injuries found',
+                impression: 'No evident injury at the time of examination',
+                inputValue: '0'
             },
             {
-                findings: "Bite marks, fingertips, petechiae, tram line pattern",
-                impression: "Findings noted are consistent with (suction marks, fingertip bruises, bite marks etc.)",
-                inputValue: '2',
+                findings: 'Bite marks, fingertips, petechiae, tram line pattern',
+                impression: 'Findings noted are consistent with (suction marks, fingertip bruises, bite marks etc.)',
+                inputValue: '2'
             },
             {
-                findings: "Injuries seen on non-accidental areas",
-                impression: "Medical evaluation is consistent with physical injuries that are inflicted by non-accidental means",
-                inputValue: '0',
+                findings: 'Injuries seen on non-accidental areas',
+                impression: 'Medical evaluation is consistent with physical injuries that are inflicted by non-accidental means',
+                inputValue: '0'
             },
             {
-                findings: "With pattern or imprint",
-                impression: "Injuries sustained are consistent with the imprint of an implement",
-                inputValue: '0',
+                findings: 'With pattern or imprint',
+                impression: 'Injuries sustained are consistent with the imprint of an implement',
+                inputValue: '0'
             },
             {
-                findings: "Injuries over non-accidental areas, with child disclosure",
+                findings: 'Injuries over non-accidental areas, with child disclosure',
                 impression: "Findings restricted on (site of the body) may be consistent with the child's disclosure",
-                inputValue: '1',
+                inputValue: '1'
             },
             {
                 findings: "Finding sperm/seminal fluid on the child's body; pregnancy",
-                impression: "Medical evaluation is diagnostic of sexual contact or sexual abuse",
-                inputValue: '0',
+                impression: 'Medical evaluation is diagnostic of sexual contact or sexual abuse',
+                inputValue: '0'
             },
             {
-                findings: "Acute lacerations/extensive bruising of labia, perihymenal tissues, penis or scrotum",
-                impression: "Anogenital findings are indicative of acute trauma to the (specific site) and is highly suggestive of sexual contact or sexual abuse",
-                inputValue: '4',
+                findings: 'Acute lacerations/extensive bruising of labia, perihymenal tissues, penis or scrotum',
+                impression: 'Anogenital findings are indicative of acute trauma to the (specific site) and is highly suggestive of sexual contact or sexual abuse',
+                inputValue: '4'
             },
             {
-                findings: "Acute lacerations or extensive bruising of the perineum/external genitalia with or without disclosure",
-                impression: "Anogenital findings are indicative of acute trauma to the perineum and is highly suggestive of sexual contact or sexual abuse",
-                inputValue: '0',
+                findings: 'Acute lacerations or extensive bruising of the perineum/external genitalia with or without disclosure',
+                impression: 'Anogenital findings are indicative of acute trauma to the perineum and is highly suggestive of sexual contact or sexual abuse',
+                inputValue: '0'
             },
             {
-                findings: "Acute. Cleft/notch, contusion, hymenal transection, missing segment of the hymenal tissue",
-                impression: "Anogenital findings are indicative of blunt force or penetrating trauma",
-                inputValue: '0',
+                findings: 'Acute. Cleft/notch, contusion, hymenal transection, missing segment of the hymenal tissue',
+                impression: 'Anogenital findings are indicative of blunt force or penetrating trauma',
+                inputValue: '0'
             },
             {
                 findings: "Non-acute, cleft/notch between 3 o'clock and 9 o'clock positions",
-                impression: "Anogenital findings suggest previous trauma to the hymen",
-                inputValue: '0',
+                impression: 'Anogenital findings suggest previous trauma to the hymen',
+                inputValue: '0'
             },
             {
-                findings: "Fondling with clothes on, oral sex, intracrural intercourse",
-                impression: "No evident injury at the time of examination but medical evaluation cannot exclude sexual abuse",
-                inputValue: '0',
+                findings: 'Fondling with clothes on, oral sex, intracrural intercourse',
+                impression: 'No evident injury at the time of examination but medical evaluation cannot exclude sexual abuse',
+                inputValue: '0'
             },
             {
-                findings: "With disclosure but without injuries",
-                impression: "No evident injury at the time of examination but medical evaluation cannot exclude sexual abuse",
-                inputValue: '0',
+                findings: 'With disclosure but without injuries',
+                impression: 'No evident injury at the time of examination but medical evaluation cannot exclude sexual abuse',
+                inputValue: '0'
             },
             {
-                findings: "No injuries/Normal variant",
-                impression: "No evident injury at the time of examination",
-                inputValue: '0',
+                findings: 'No injuries/Normal variant',
+                impression: 'No evident injury at the time of examination',
+                inputValue: '0'
             },
             {
-                findings: "No injuries but with clear disclosure of sexual abuse",
-                impression: "Medical evaluation is diagnostic of sexual contact or sexual abuse",
-                inputValue: '0',
+                findings: 'No injuries but with clear disclosure of sexual abuse',
+                impression: 'Medical evaluation is diagnostic of sexual contact or sexual abuse',
+                inputValue: '0'
             },
             {
-                findings: "Perianal lacerations",
-                impression: "Anogenital findings are indicative of acute trauma to the anus",
-                inputValue: '0',
+                findings: 'Perianal lacerations',
+                impression: 'Anogenital findings are indicative of acute trauma to the anus',
+                inputValue: '0'
             },
             {
-                findings: "Complete anal dilation with relaxation of both internal and external sphincters in the absence of predisposing factors such as constipation, anesthesia or neuromuscular conditions",
-                impression: "Anogenital findings may suggest previous anal penetration",
-                inputValue: '0',
+                findings: 'Complete anal dilation with relaxation of both internal and external sphincters in the absence of predisposing factors such as constipation, anesthesia or neuromuscular conditions',
+                impression: 'Anogenital findings may suggest previous anal penetration',
+                inputValue: '0'
             },
             {
-                findings: "Finding sperm or seminal fluid pregnancy",
-                impression: "The presence of (cite the infection) confirms mucosal contact with infected and infective bodily secretions, due to sexual contact or sexual abuse",
-                inputValue: '3',
+                findings: 'Finding sperm or seminal fluid pregnancy',
+                impression: 'The presence of (cite the infection) confirms mucosal contact with infected and infective bodily secretions, due to sexual contact or sexual abuse',
+                inputValue: '3'
             },
             {
-                findings: "Positive confirmed culture for gonorrhea, syphilis, Trichomonas vaginalis (if the child is older than 1 year old), chlamydia (if child is older than 3 years old), HIV",
-                impression: "Medical evaluation is diagnostic of sexual contact or sexual abuse",
-                inputValue: '0',
+                findings: 'Positive confirmed culture for gonorrhea, syphilis, Trichomonas vaginalis (if the child is older than 1 year old), chlamydia (if child is older than 3 years old), HIV',
+                impression: 'Medical evaluation is diagnostic of sexual contact or sexual abuse',
+                inputValue: '0'
             },
             {
-                findings: "Acute trauma to the external genital tissues.",
-                impression: "Anogenital findings are indicative of acute trauma to the (specific site) and is highly suggestive of sexual contact or sexual abuse",
-                inputValue: '4',
+                findings: 'Acute trauma to the external genital tissues.',
+                impression: 'Anogenital findings are indicative of acute trauma to the (specific site) and is highly suggestive of sexual contact or sexual abuse',
+                inputValue: '4'
             },
             {
-                findings: "Bruising of the labia, perihymenal tissues, penis or scrotum, fresh laceration to the posterior fourchette not involving the hymen.",
-                impression: "Anogenital findings are indicative of acute trauma to the external genital tissues.",
-                inputValue: '0',
+                findings: 'Bruising of the labia, perihymenal tissues, penis or scrotum, fresh laceration to the posterior fourchette not involving the hymen.',
+                impression: 'Anogenital findings are indicative of acute trauma to the external genital tissues.',
+                inputValue: '0'
             },
             {
-                findings: "Injuries to the labia majora, labia minora, mons pubis, posterior fourchette, clitoris and vestibule",
-                impression: "Medical evaluation is diagnostic of sexual contact or sexual abuse",
-                inputValue: '0',
-            },
+                findings: 'Injuries to the labia majora, labia minora, mons pubis, posterior fourchette, clitoris and vestibule',
+                impression: 'Medical evaluation is diagnostic of sexual contact or sexual abuse',
+                inputValue: '0'
+            }
         ];
         return vawcCases;
-
     }
 
     getBrainInjury() {
-
         const brainInjury = [
             {
                 level_code: '1',
@@ -608,14 +605,11 @@ export default class LibraryService {
             {
                 level_code: '3',
                 level_desc: 'Severe'
-            },
-
+            }
         ];
         // console.log('brains: ', brainInjury);
 
         return brainInjury;
-
-
     }
 
     getGCS() {
@@ -624,94 +618,94 @@ export default class LibraryService {
                 behavior: '1',
                 behavior_desc: 'Eye Opening Response',
                 response: 'Spontaneously',
-                score: '4',
+                score: '4'
             },
             {
                 behavior: '1',
                 behavior_desc: 'Eye Opening Response',
                 response: 'To Speech',
-                score: '3',
+                score: '3'
             },
             {
                 behavior: '1',
                 behavior_desc: 'Eye Opening Response',
                 response: 'To Pain',
-                score: '2',
+                score: '2'
             },
             {
                 behavior: '1',
                 behavior_desc: 'Eye Opening Response',
                 response: 'No Response',
-                score: '1',
+                score: '1'
             },
             {
                 behavior: '2',
                 behavior_desc: 'Best Verbal Response',
                 response: 'Oriented to Time, Place, and Person',
-                score: '5',
+                score: '5'
             },
             {
                 behavior: '2',
                 behavior_desc: 'Best Verbal Response',
                 response: 'Confused',
-                score: '4',
+                score: '4'
             },
             {
                 behavior: '2',
                 behavior_desc: 'Best Verbal Response',
                 response: 'Inappropriate Words',
-                score: '3',
+                score: '3'
             },
             {
                 behavior: '2',
                 behavior_desc: 'Best Verbal Response',
                 response: 'Incomprehensible Sounds',
-                score: '2',
+                score: '2'
             },
             {
                 behavior: '2',
                 behavior_desc: 'Best Verbal Response',
                 response: 'No Response',
-                score: '1',
+                score: '1'
             },
             {
                 behavior: '3',
                 behavior_desc: 'Best Motor Response',
                 response: 'Obeys commands',
-                score: '6',
+                score: '6'
             },
             {
                 behavior: '3',
                 behavior_desc: 'Best Motor Response',
                 response: 'Moves to Localized Pain',
-                score: '5',
+                score: '5'
             },
             {
                 behavior: '3',
                 behavior_desc: 'Best Motor Response',
                 response: 'Flexion Withdrawal from Pain',
-                score: '4',
+                score: '4'
             },
             {
                 behavior: '3',
                 behavior_desc: 'Best Motor Response',
                 response: 'Abnormal Flexion (Decorticate)',
-                score: '3',
+                score: '3'
             },
             {
                 behavior: '3',
                 behavior_desc: 'Best Motor Response',
                 response: 'Abnormal Extension (Decerebrate)',
-                score: '2',
+                score: '2'
             },
             {
                 behavior: '3',
                 behavior_desc: 'Best Motor Response',
                 response: 'No Response',
-                score: '1',
-            },
+                score: '1'
+            }
         ];
-        return gcs.map(option => ({
+        return gcs.map((option) => ({
             ...option,
             formattedLabel: `${option.score}: ${option.response}`
         }));
@@ -720,26 +714,26 @@ export default class LibraryService {
     getPerpetratorRelationships() {
         return [
             { value: '1', label: 'Husband' },
+            { value: '18', label: 'Ex-Husband' },
             { value: '2', label: 'Wife' },
-            { value: '3', label: 'Brother' },
-            { value: '4', label: 'Sister' },
+            { value: '19', label: 'Ex-Wife' },
             { value: '5', label: 'Common Law Husband' },
             { value: '6', label: 'Common Law Wife' },
-            { value: '7', label: 'Uncle' },
-            { value: '8', label: 'Auntie' },
-            { value: '9', label: 'Grandfather' },
-            { value: '10', label: 'Grandmother' },
+            { value: '3', label: 'Brother' },
+            { value: '4', label: 'Sister' },
             { value: '12', label: 'Boyfriend' },
             { value: '13', label: 'Girlfriend' },
             { value: '14', label: 'Ex-Boyfriend' },
             { value: '15', label: 'Ex-Girlfriend' },
+            { value: '7', label: 'Uncle' },
+            { value: '8', label: 'Auntie' },
+            { value: '9', label: 'Grandfather' },
+            { value: '10', label: 'Grandmother' },
             { value: '16', label: 'Stranger' },
             { value: '17', label: 'Friend' },
-            { value: '18', label: 'Ex-Husband' },
-            { value: '19', label: 'Ex-Live in Partner' },
-            { value: '11', label: 'Others' }, 
-        ]; 
-    } 
+            { value: '11', label: 'Others' }
+        ];
+    }
     getAirVehicles() {
         const airVehicles = [
             {
@@ -1051,4 +1045,3 @@ export default class LibraryService {
     }
     get;
 }
-

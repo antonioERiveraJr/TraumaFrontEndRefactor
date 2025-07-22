@@ -12,15 +12,11 @@ const props = defineProps({
     isMultiple: { type: Boolean, default: false }
 });
 
-const emit = defineEmits(['update:modelValue', 'update:desc', 'update:isMultiple']);
-
-// Access isMultiple from props
+const emit = defineEmits(['update:modelValue', 'update:desc', 'update:isMultiple']); 
 const badgeText = computed(() => (props.isMultiple ? 'multiple.injuries' : 'single.injury'));
 
-const toggleBadge = () => {
-    // Emit the new state of isMultiple
-    emit('update:isMultiple', !props.isMultiple);
-    // console.log('multi: ', !props.isMultiple);
+const toggleBadge = () => { 
+    emit('update:isMultiple', !props.isMultiple); 
 };
 
 const desc = computed({
@@ -64,7 +60,7 @@ const isDisabled = computed(() => props.disabled);
     padding: 0;
 }
 .badge-button:focus {
-    outline: none; /* Remove focus outline */
+    outline: none;  
 }
 </style>
 `
