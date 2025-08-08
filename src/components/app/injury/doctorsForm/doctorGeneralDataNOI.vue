@@ -41,6 +41,7 @@ const disableProv = ref(true);
 const disableCity = ref(true);
 const disableBrgy = ref(true);
 const requiredCount = ref(0);
+const newLoc = [];
 const allLoc = [];
 const distinctRegions = ref();
 const distinctProvince = ref();
@@ -52,9 +53,10 @@ async function loadLocations() {
 
     try {
         allLoc.value = await locationsStore.getLocations();
+        newLoc.value = await locationsStore.getNewLocations();
         // console.log('alloc: ', allLoc?.value?.data);
         // Access the data array
-        const locationsArray = allLoc?.value?.data;
+        const locationsArray = newLoc?.value?.data;
 
         // Check if locationsArray is an array
         if (!Array.isArray(locationsArray)) {
@@ -71,8 +73,8 @@ async function loadLocations() {
         // Check if region does exist or not
         if (patientStore?.details?.generalData?.plc_regcode != null) {
             disableProv.value = false;
-            if (Array.isArray(allLoc)) {
-                distinctProvince.value = Array.from(new Map(allLoc?.value?.data.filter((location) => location.regcode === patientStore.details.generalData.plc_regcode).map((location) => [location.provcode, location])).values()).map((location) => ({
+            if (Array.isArray(newLoc)) {
+                distinctProvince.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.regcode === patientStore.details.generalData.plc_regcode).map((location) => [location.provcode, location])).values()).map((location) => ({
                     provcode: location.provcode,
                     provname: location.provname
                 }));
@@ -97,8 +99,8 @@ async function loadLocations() {
             disableCity.value = false;
 
             patientStore.details.generalData.ctycode = '';
-            if (Array.isArray(allLoc)) {
-                distinctCity.value = Array.from(new Map(allLoc?.value?.data.filter((location) => location.provcode === patientStore.details.generalData.plc_provcode).map((location) => [location.ctycode, location])).values()).map((location) => ({
+            if (Array.isArray(newLoc)) {
+                distinctCity.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.provcode === patientStore.details.generalData.plc_provcode).map((location) => [location.ctycode, location])).values()).map((location) => ({
                     ctycode: location.ctycode,
                     ctyname: location.ctyname
                 }));
@@ -120,13 +122,14 @@ async function loadLocations() {
             patientStore.storeCities = distinctCity;
             patientStore.locationLoaded = true;
         }
- 
 
-        if (patientStore?.details?.generalData?.plc_ctycode != null) { 
-            if (Array.isArray(allLoc)) {
-                distinctBarangays.value = Array.from(new Map(allLoc?.value?.data.filter((location) => location.ctycode === patientStore.details.generalData.plc_ctycode).map((location) => [location.bgycode, location])).values()).map((location) => ({
+        if (patientStore?.details?.generalData?.plc_ctycode != null) {
+            if (Array.isArray(newLoc)) {
+                distinctBarangays.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.ctycode === patientStore.details.generalData.plc_ctycode).map((location) => [location.bgycode, location])).values()).map((location) => ({
                     bgycode: location.bgycode,
-                    bgyname: location.bgyname
+                    bgyname: location.bgyname,
+                    regname: location.regname,
+                    provname: location.provname
                 }));
                 patientStore.locationLoaded = true;
                 patientStore.storeBrgy = distinctBarangays;
@@ -134,20 +137,22 @@ async function loadLocations() {
                 console.error('Expected locations.data to be an array');
                 distinctBarangays.value = [];
             }
-        } else { 
+        } else {
             distinctBarangays.value = Array.from(new Map(locationsArray.map((location) => [location.bgycode, location])).values())
                 .map((location) => ({
                     ctycode: location.ctycode,
                     bgycode: location.bgycode,
-                    bgyname: location.bgyname
+                    bgyname: location.bgyname,
+                    regname: location.regname,
+                    provname: location.provname
                 }))
                 .sort((a, b) => a.bgyname.localeCompare(b.regname));
             patientStore.storeBrgy = distinctBarangays;
             patientStore.locationLoaded = true;
-        } 
+        }
     } catch (error) {
         console.error('Error fetching locations:', error);
-    } 
+    }
 }
 
 const validate = async () => {
@@ -245,8 +250,8 @@ watch(
             disableProv.value = false;
 
             patientStore.details.generalData.provcode = '';
-            if (Array.isArray(allLoc)) {
-                distinctProvince.value = Array.from(new Map(allLoc?.value?.data.filter((location) => location.regcode === newRegionCode).map((location) => [location.provcode, location])).values()).map((location) => ({
+            if (Array.isArray(newLoc)) {
+                distinctProvince.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.regcode === newRegionCode).map((location) => [location.provcode, location])).values()).map((location) => ({
                     provcode: location.provcode,
                     provname: location.provname
                 }));
@@ -268,8 +273,8 @@ watch(
             disableCity.value = false;
 
             patientStore.details.generalData.ctycode = '';
-            if (Array.isArray(allLoc)) {
-                distinctCity.value = Array.from(new Map(allLoc?.value?.data.filter((location) => location.provcode === newProvinceCode).map((location) => [location.ctycode, location])).values()).map((location) => ({
+            if (Array.isArray(newLoc)) {
+                distinctCity.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.provcode === newProvinceCode).map((location) => [location.ctycode, location])).values()).map((location) => ({
                     ctycode: location.ctycode,
                     ctyname: location.ctyname
                 }));
@@ -289,10 +294,12 @@ watch(
     async (newCityCode) => {
         disableBrgy.value = false;
         if (newCityCode) {
-            if (Array.isArray(allLoc)) {
-                distinctBarangays.value = Array.from(new Map(allLoc?.value?.data.filter((location) => location.ctycode === newCityCode).map((location) => [location.bgycode, location])).values()).map((location) => ({
+            if (Array.isArray(newLoc)) {
+                distinctBarangays.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.ctycode === newCityCode).map((location) => [location.bgycode, location])).values()).map((location) => ({
                     bgycode: location.bgycode,
-                    bgyname: location.bgyname
+                    bgyname: location.bgyname,
+                    regname: location.regname,
+                    provname: location.provname
                 }));
             } else {
                 console.error('Expected locations.data to be an array');
@@ -627,7 +634,58 @@ watch([newDate, newTime], ([newDateValue, newTimeValue]) => {
                                 <small :class="{ 'required-error': true, zoom: patientStore.details.generalData.plc_bgycode === '' || patientStore.details.generalData.plc_bgycode == null }" class="text-red-800 text-s font-bold"></small>
                             </div>
                         </div>
+                        <!-- <Dropdown
+                            :pt="{ item: { style: { backgroundColor: '#f0f0f0', padding: '1rem' } } }"
+                            id="generalData.plc_bgycode"
+                            v-model="patientStore.details.generalData.plc_bgycode"
+                            :options="distinctBarangays"
+                            optionLabel="bgyname" 
+                            :disabled="disableBrgy"
+                            showClear
+                            filter
+                            :class="{
+                                'p-inputtext-filled font-bold mb-2 myCSS-inputtext-required': true,
+                                'bg-green-100': !patientStore.details.generalData.plc_bgycode
+                            }"
+                            :emptyMessage="'Please select a City first.'"
+                        /> -->
                         <Dropdown
+                            style="width: 100%"
+                            v-model="patientStore.details.generalData.plc_bgycode"
+                            :options="distinctBarangays"
+                            optionLabel="bgyname"
+                            showClear
+                            :pt="{
+                                item: { style: { padding: '0.2rem' } },
+                                itemLabel: { style: { height: '100%', width: '100%' } }
+                            }"
+                            filter
+                            placeholder="Select a Barangay"
+                            :class="{
+                                'p-inputtext-filled font-bold mb-2 myCSS-inputtext-required': true,
+                                'bg-green-100': !patientStore.details.generalData.plc_bgycode
+                            }"
+                        >
+                            <template #value="slotProps">
+                                <div class="flex align-items-center" style="height: 1.5rem">
+                                    <div style="color: black">{{ slotProps.value.bgyname }}</div>
+                                </div>
+                            </template>
+                            <template #option="slotProps">
+                                <div>
+                                    <div style="font-size: medium; color: black; font-weight: bold">
+                                        {{ slotProps.option.bgyname }}
+                                    </div>
+                                    <div class="flex" style="font-size: xx-small; color: white">
+                                        <div style="color: red">{{ slotProps.option.regname }}</div>
+                                        <span style="color: black"> - </span>
+                                        <div style="color: blue; font-weight: bold">{{ slotProps.option.provname }}</div>
+                                    </div>
+                                </div>
+                            </template>
+                        </Dropdown>
+
+                        <!-- <Dropdown
                             id="generalData.plc_bgycode"
                             v-model="patientStore.details.generalData.plc_bgycode"
                             :options="distinctBarangays"
@@ -641,11 +699,13 @@ watch([newDate, newTime], ([newDateValue, newTimeValue]) => {
                                 'bg-green-100': patientStore.details.generalData.plc_bgycode === '' || patientStore.details.generalData.plc_bgycode == null
                             }"
                             :emptyMessage="'Please select a City first.'"
-                        />
+                        /> -->
                     </div>
                 </div>
                 <div :style="{ width: width < 800 ? '100%' : '48%' }">
                     <div class="flex justify-content-center">
+                        <!-- {{ patientStore.details.generalData.plc_regcode}} -->
+                        <!-- {{ patientStore.details.generalData.plc_bgycode }} -->
                         <h4 style="color: #000080" class="font-bold">HOSPITAL DATA</h4>
                     </div>
                     <div class="hospitalData">

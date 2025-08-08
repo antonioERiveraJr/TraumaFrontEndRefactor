@@ -4,38 +4,24 @@ import createValidationRules from '../../../../validation/injuryValidations';
 import useVuelidate from '@vuelidate/core';
 import { ref, computed, watch, defineEmits, onUnmounted } from 'vue';
 import LibraryService from '@/service/LibraryService';
-import InputSwitch from 'primevue/inputswitch';
-import TextAreaPreAdmissionDoctor from '../../../custom/textAreaPreAdmissionDoctor.vue';
-import InputTextCheckBoxDoctor from '../../../custom/inputTextCheckBoxDoctor.vue';
-import InputTextCheckBoxDoctor2 from '../../../custom/inputTextCheckBoxDoctor2.vue';
 import Swal from 'sweetalert2';
-import CheckBoxMultiple from '../../../custom/checkBoxMultiple.vue';
 import TickedPreAdmissionSwitch from './formInterfaces/tickedSwitches/tickedPreAdmissionSwitch.vue';
 import UntickedPreAdmissionSwitch from './formInterfaces/untickedSwitches/untickedPreAdmissionSwitch.vue';
 const patientStore = usePatientStore();
 const loading = ref(true);
-const vawcDialog = ref(false);
 const libraryService = new LibraryService();
-const isImpressionInputNeeded = ref(false);
 const isCrashIncident = ref(false);
 const gcsCodeScore = ref();
 const dataIsLoaded = ref(false);
-const focusElement = (refName) => {
-    const element = ref[refName];
-    if (element) {
-        element.focus();
-    }
-};
 const v$ = useVuelidate(createValidationRules(), patientStore.details);
 const diagnosisLocation = ref('dx');
 const validate = async () => {
     const natureOfInjury = await v$.value.natureOfInjury.$validate();
     return { natureOfInjury };
 };
-const getRequiredValidation = (field) => {
-    return v$.value.$errors.some((error) => error.$property === field);
-};
 const emit = defineEmits(['update:requiredCountPreAdmission']);
+
+// Counts the number of required fields that need to be displayed
 const requiredFieldsCount = () => {
     let count = 0;
     const fields = [
@@ -239,11 +225,6 @@ const activities = libraryService.getActivities();
 const firstAidGivens = libraryService.getFirstAidGivens();
 const openContributingFactorDialog = ref(false);
 const openSafetyDialog = ref(false);
-const autoOpenFactor = () => {
-    if (patientStore.details.forTransportVehicularAccident.risk_none !== 'Y') {
-        openContributingFactorDialog.value = true;
-    }
-};
 const burnDegrees = [
     {
         degree_burn: '1',
@@ -650,10 +631,10 @@ onUnmounted(() => {
                     </div>
                 </div>
             </div>
-            <UntickedPreAdmissionSwitch :width="width" :height="height" />
+            <UntickedPreAdmissionSwitch v-if="dataIsLoaded === true" :width="width" :height="height" :noPhysical="noPhysical" />
         </div>
         <div style="height: 100%">
-            <TickedPreAdmissionSwitch :dataIsLoaded="dataIsLoaded" />
+            <TickedPreAdmissionSwitch v-if="dataIsLoaded === true" :dataIsLoaded="dataIsLoaded" />
         </div>
     </div>
 </template>

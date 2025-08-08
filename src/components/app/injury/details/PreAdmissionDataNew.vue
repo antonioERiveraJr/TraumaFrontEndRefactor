@@ -8,9 +8,11 @@ import Divider from 'primevue/divider';
 import InputSwitch from 'primevue/inputswitch';
 import TextAreaPreAdmission from '../../../custom/textAreaPreAdmission.vue';
 import CheckBoxMultiple from '../../../custom/checkBoxMultiple.vue';
+import InjuryService from '../../../../service/InjuryService';
 
 // Initialize patient store and loading state
 const patientStore = usePatientStore();
+const injuryService = new InjuryService();
 const loading = ref(true);
 const libraryService = new LibraryService();
 const places = libraryService.getPlaces();
@@ -19,7 +21,28 @@ const unrecognizedFieldPreview = ref(patientStore?.details?.natureOfInjury?.noi_
 const firstAidGivens = libraryService.getFirstAidGivens();
 const firstAIdPreview = ref('');
 const v$ = useVuelidate(createValidationRules(), patientStore.details);
+const compiledSelectedDiagnosis = ref(patientStore.details.hospitalFacilityData.customizedDiagnosis);
+const diagnosisDialog = ref(false);
+const listOfDiagnosis = ref();
+const selectedDiagnoses = ref([]);
 
+const addDiagnosis = (diagnosis) => {
+    if (!selectedDiagnoses.value.includes(diagnosis)) {
+        selectedDiagnoses.value.push(diagnosis);
+        compiledSelectedDiagnosis.value = selectedDiagnoses.value.map((d) => d.diagtext).join('\n\n ');
+        patientStore.details.hospitalFacilityData.customizedDiagnosis = compiledSelectedDiagnosis;
+    }
+};
+
+const removeDiagnosis = (diagnosis) => {
+    selectedDiagnoses.value = selectedDiagnoses.value.filter((d) => d.tstamp !== diagnosis.tstamp);
+
+    // Compile selected diagnoses into a string after removal
+    const compiledSelectedDiagnosis = selectedDiagnoses.value.map((d) => d.diagtext).join('\n\n '); // Join with a comma
+
+    // Update the patient store
+    patientStore.details.hospitalFacilityData.customizedDiagnosis = compiledSelectedDiagnosis;
+};
 // Function to validate nature of injury
 const validate = async () => {
     const natureOfInjury = await v$.value.natureOfInjury.$validate();
@@ -141,7 +164,13 @@ onUpdated(() => {
     burnDegreeValue.value = getBurnDegree();
 });
 onMounted(async () => {
+    const fetchListOfDiagnosis = await injuryService.getListOfDiagnosis(patientStore.enccode);
+    // console.log('list of diagnosis: ', fetchListOfDiagnosis, patientStore.enccode);
+    listOfDiagnosis.value = fetchListOfDiagnosis;
+    // console.log('compiled: ', patientStore.details.hospitalFacilityData.customizedDiagnosis);
+
     patientStore.details.hospitalFacilityData.diagnosis = patientStore.header.dx;
+    // console.log('diagnosis: ', patientStore.details.hospitalFacilityData.diagnosis, '\n finalDiag: ', patientStore.header.complete_diagnosis);
     loading.value = false;
     if (patientStore.details.ExternalCauseOfInjury.washingDone === 'YES' && patientStore.details.preAdmissionData.first_aid_code === 'Y') {
         firstAIdPreview.value = 'WASHING OF WOUND DONE ' + patientStore.details.preAdmissionData.firstaid_others;
@@ -200,15 +229,28 @@ watch(
         unrecognizedFieldPreview.value = (patientStore.details.natureOfInjury.noi_othersPhysical || '') + ', ' + (patientStore.details.natureOfInjury.noi_otherinj || '');
     }
 );
+watch(
+    () => patientStore.details.hospitalFacilityData.customizedDiagnosis,
+    (newValue) => {
+        console.log('customizedDiagnosis: ', newValue);
+    }
+);
 </script>
 <template>
     <div class="card shadow-4 max-h-full h-full opacity-90">
         <div class="flex align-items-center">
             <h4 class="font-bold" style="color: #000080">PREADMISSION DATA</h4>
         </div>
+
         <div class="preadmissionData">
             <div class="sticky">
-                <label for="hospitalFacilityData.diagnosis" class="p-float-label font-sans text-black-500 text-xs" style="color: #3366ff"><i>Initial Impression/Diagnosis</i></label>
+                <!-- <label for="hospitalFacilityData.diagnosis" class="p-float-label font-sans text-black-500 text-xs" style="color: #3366ff"><i>Initial Impression/Diagnosis</i></label> -->
+                <div class="container" style="display: flex; justify-content: space-between; align-items: center; padding: 10px">
+                    <label for="hospitalFacilityData.diagnosis" class="p-float-label font-sans text-black-500 text-xs" style="color: #3366ff">
+                        <i>Initial Impression/Diagnosis</i>
+                    </label>
+                    <button class="button" @click="diagnosisDialog = true" style="padding: 5px 10px; font-size: 8px; background-color: lightgray; color: white; border: none; border-radius: 2px; cursor: pointer">+</button>
+                </div>
 
                 <div class="flex justify-content-end" v-if="patientStore.details.hospitalFacilityData.diagnosis == ''">
                     <small :class="'required-error'" class="text-red-800 text-xs font-bold">Value is required</small>
@@ -226,6 +268,13 @@ watch(
                         'bg-green-100': patientStore.details.hospitalFacilityData.diagnosis === ''
                     }"
                 />
+                <!-- {{ patientStore.details.hospitalFacilityData.customizedDiagnosis }} -->
+                <div class="field mt-5" v-if="patientStore.details.hospitalFacilityData.customizedDiagnosis !== (undefined && null && '')">
+                    <span class="p-float-label" v-if="patientStore.details.hospitalFacilityData.customizedDiagnosis !== '' ">
+                        <Textarea disabled inputId="Customized Diagnosis Preview" class="font-bold" style="width: 100%" autoResize disable v-model="patientStore.details.hospitalFacilityData.customizedDiagnosis"></Textarea>
+                        <label style="width: 100%" for="Unrecognized Fields">Customized Diagnosis Preview</label>
+                    </span>
+                </div>
             </div>
             <div class="flex flex-column">
                 <div class="flex justify-content-between w-26rem">
@@ -611,11 +660,44 @@ watch(
                     </div>
                 </div>
             </div>
+            <Dialog v-model:visible="diagnosisDialog" modal header="CUSTOMIZE DIAGNOSIS" :style="{ width: '50%', height: '60%' }">
+                <div style="display: flex; justify-content: space-between; padding: 20px">
+                    <div style="flex: 1; margin-right: 10px">
+                        <strong>List of Diagnosis</strong>
+                        <ul>
+                            <li v-for="diagnosis in listOfDiagnosis" :key="diagnosis.tstamp">
+                                <button @click="addDiagnosis(diagnosis)">{{ diagnosis.diagtext }}</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div style="flex: 1; margin-left: 10px">
+                        <strong>Selected Diagnosis</strong>
+                        <ul>
+                            <li v-for="selected in selectedDiagnoses" :key="selected.tstamp">
+                                <button @click="removeDiagnosis(selected)">{{ selected.diagtext }}</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </Dialog>
         </div>
     </div>
 </template>
 
 <style scoped>
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px 0;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
 .bg-green-100 {
     background-color: #c6efce;
 }

@@ -150,7 +150,6 @@ async function getInjuryListArchived(hardRefresh, hardRefreshStatus) {
     return response;
 }
 
-
 const checkCondition = async (hardRefresh, hardRefreshStatus) => {
     isLoading.value = true;
     const injuryList = await getInjuryList(hardRefresh, hardRefreshStatus, formattedStartDate.value, formattedEndDate.value, props.value);
@@ -297,7 +296,6 @@ const loadList = async (hardRefresh) => {
         } else {
             console.log('No archived data available.');
         }
-        
     }
     if (activePanel.value == 5) {
         patientStore.resets();
@@ -758,17 +756,8 @@ if (patientStore.details.loader != null) {
             <div class="spinner"></div>
             <p class="loading-message">PLEASE WAIT...</p>
         </div>
-        <div class="col-12 xl:col-12" v-if="showT">
-            <div class="shadow-4 mx-5 opacity-90" style="height: 100%">
-                <div class="flex align-items-center mb-2 justify-content-between">
-                    <div class="flex align-items-center">
-                        <!-- <span class="p-input-icon-left">
-                            <i class="pi pi-search" />
-                            <InputText v-model="filterValue" placeholder="( Name / Hospital# / DOI / NOI)" class="w-18rem shadow-2" style="width: 40%" />
-                        </span>
-                        <Calendar v-model="selectedDate" :showIcon="true" class="calendar-icon-only" /> -->
-                    </div>
-                </div>
+        <div class="col-12 xl:col-12" v-if="showT" style="width: 100%">
+            <div class="shadow-4 opacity-90" style="height: 100%; width: 100%">
                 <TabView :lazy="false" @tab-change="updateActivePanel">
                     <TabPanel header="Injury Cases">
                         <template #header>

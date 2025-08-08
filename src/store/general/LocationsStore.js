@@ -36,8 +36,279 @@ export const useLocationsStore = defineStore('locationsStore', () => {
         if (response.status == 200) {
             locations.value = response.data;
         }
+        if (response && response.status === 401) {
+            // loading.value = false;
+            console.log('401 Unauthorized');
+            localStorage.removeItem('authToken');
+
+            await Swal.fire({
+                icon: 'info',
+                title: 'Session Expired',
+                text: 'Informing Session Expired. Logging In...',
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+            // router.push('/auth/login').then(() => {
+            const enccode = ref();
+            const fullUrl = window.location.href;
+            const match = fullUrl.match(/[?&]enccode=([^&#]*)/);
+            // const match3 = fullUrl.match(/[?&]access_token=([^&#]*)/);
+            const match2 = fullUrl.match(/[?&]empID=([^&#]*)/);
+            enccode.value = match ? match[1] : null;
+            const empID = match2 ? match2[1] : null;
+            // const getToken = match3 ? match3[1] : null;
+            // console.log('getToken:', getToken, 'empID:', empID, 'enccode:', enccode.value);
+            // console.log('empID', empID);
+            // console.log('enccode', enccode);
+            if (empID && enccode) {
+                // window.location.href = `http://192.168.6.58:8000/api/fromEMR?empID=${empID}&enccode=${enccode.value}`;
+                window.location.href = `http://192.168.7.66:9000/api/fromEMR?empID=${empID}&enccode=${enccode.value}`;
+            } else {
+                console.error('empID or enccode is missing in localStorage');
+            }
+            // });
+            return;
+        }
         return response;
     }
+
+    async function getNewLocations() {
+        try {
+            const response = await axios.get('newlocations', {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                }
+            });
+
+            if (response.status === 200) {
+                locations.value = response.data;
+            }
+
+            if (response.status === 401) {
+                console.log('401 Unauthorized');
+                localStorage.removeItem('authToken');
+
+                await Swal.fire({
+                    icon: 'info',
+                    title: 'Session Expired',
+                    text: 'Informing Session Expired. Logging In...',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                const enccode = ref();
+                const fullUrl = window.location.href;
+                const match = fullUrl.match(/[?&]enccode=([^&#]*)/);
+                const match2 = fullUrl.match(/[?&]empID=([^&#]*)/);
+                enccode.value = match ? match[1] : null;
+                const empID = match2 ? match2[1] : null;
+
+                if (empID && enccode.value) {
+                    window.location.href = `http://192.168.6.58:8010/api/fromEMR?empID=${empID}&enccode=${enccode.value}`;
+                } else {
+                    console.error('empID or enccode is missing in localStorage');
+                }
+
+                return;
+            }
+
+            return response;
+        } catch (err) {
+            console.error(err);
+            return err.response;
+        }
+    }
+
+    
+    async function getNewRegion() {
+        try {
+            const response = await axios.get('newRegion', {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                }
+            });
+
+            if (response.status === 200) {
+                locations.value = response.data;
+            }
+
+            if (response.status === 401) {
+                console.log('401 Unauthorized');
+                localStorage.removeItem('authToken');
+
+                await Swal.fire({
+                    icon: 'info',
+                    title: 'Session Expired',
+                    text: 'Informing Session Expired. Logging In...',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                const enccode = ref();
+                const fullUrl = window.location.href;
+                const match = fullUrl.match(/[?&]enccode=([^&#]*)/);
+                const match2 = fullUrl.match(/[?&]empID=([^&#]*)/);
+                enccode.value = match ? match[1] : null;
+                const empID = match2 ? match2[1] : null;
+
+                if (empID && enccode.value) {
+                    window.location.href = `http://192.168.7.66:9000/api/fromEMR?empID=${empID}&enccode=${enccode.value}`;
+                } else {
+                    console.error('empID or enccode is missing in localStorage');
+                }
+
+                return;
+            }
+
+            return response;
+        } catch (err) {
+            console.error(err);
+            return err.response;
+        }
+    }
+
+    async function getNewProvince() {
+        try {
+            const response = await axios.get('newProvince', {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                }
+            });
+
+            if (response.status === 200) {
+                locations.value = response.data;
+            }
+
+            if (response.status === 401) {
+                console.log('401 Unauthorized');
+                localStorage.removeItem('authToken');
+
+                await Swal.fire({
+                    icon: 'info',
+                    title: 'Session Expired',
+                    text: 'Informing Session Expired. Logging In...',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                const enccode = ref();
+                const fullUrl = window.location.href;
+                const match = fullUrl.match(/[?&]enccode=([^&#]*)/);
+                const match2 = fullUrl.match(/[?&]empID=([^&#]*)/);
+                enccode.value = match ? match[1] : null;
+                const empID = match2 ? match2[1] : null;
+
+                if (empID && enccode.value) {
+                    window.location.href = `http://192.168.7.66:9000/api/fromEMR?empID=${empID}&enccode=${enccode.value}`;
+                } else {
+                    console.error('empID or enccode is missing in localStorage');
+                }
+
+                return;
+            }
+
+            return response;
+        } catch (err) {
+            console.error(err);
+            return err.response;
+        }
+    }
+
+    async function getNewCity() {
+        try {
+            const response = await axios.get('newCity', {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                }
+            });
+
+            if (response.status === 200) {
+                locations.value = response.data;
+            }
+
+            if (response.status === 401) {
+                console.log('401 Unauthorized');
+                localStorage.removeItem('authToken');
+
+                await Swal.fire({
+                    icon: 'info',
+                    title: 'Session Expired',
+                    text: 'Informing Session Expired. Logging In...',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                const enccode = ref();
+                const fullUrl = window.location.href;
+                const match = fullUrl.match(/[?&]enccode=([^&#]*)/);
+                const match2 = fullUrl.match(/[?&]empID=([^&#]*)/);
+                enccode.value = match ? match[1] : null;
+                const empID = match2 ? match2[1] : null;
+
+                if (empID && enccode.value) {
+                    window.location.href = `http://192.168.7.66:9000/api/fromEMR?empID=${empID}&enccode=${enccode.value}`;
+                } else {
+                    console.error('empID or enccode is missing in localStorage');
+                }
+
+                return;
+            }
+
+            return response;
+        } catch (err) {
+            console.error(err);
+            return err.response;
+        }
+    }
+
+    async function getNewBarangay() {
+        try {
+            const response = await axios.get('newBarangay', {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                }
+            });
+
+            if (response.status === 200) {
+                locations.value = response.data;
+            }
+
+            if (response.status === 401) {
+                console.log('401 Unauthorized');
+                localStorage.removeItem('authToken');
+
+                await Swal.fire({
+                    icon: 'info',
+                    title: 'Session Expired',
+                    text: 'Informing Session Expired. Logging In...',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                const enccode = ref();
+                const fullUrl = window.location.href;
+                const match = fullUrl.match(/[?&]enccode=([^&#]*)/);
+                const match2 = fullUrl.match(/[?&]empID=([^&#]*)/);
+                enccode.value = match ? match[1] : null;
+                const empID = match2 ? match2[1] : null;
+
+                if (empID && enccode.value) {
+                    window.location.href = `http://192.168.7.66:9000/api/fromEMR?empID=${empID}&enccode=${enccode.value}`;
+                } else {
+                    console.error('empID or enccode is missing in localStorage');
+                }
+
+                return;
+            }
+
+            return response;
+        } catch (err) {
+            console.error(err);
+            return err.response;
+        }
+    }
+
 
     // console.log('token', localStorage.getItem('authToken'));
 
@@ -260,19 +531,19 @@ export const useLocationsStore = defineStore('locationsStore', () => {
                     title: 'Session Expired',
                     text: 'Please Login Again',
                     confirmButtonText: 'OK'
-                }); 
+                });
                 // router.push('/auth/login').then(() => {
                 const enccode = ref();
                 const fullUrl = window.location.href;
                 const match = fullUrl.match(/[?&]enccode=([^&#]*)/);
                 const match3 = fullUrl.match(/[?&]access_token=([^&#]*)/);
-                const match2 = fullUrl.match(/[?&]empID=([^&#]*)/); 
+                const match2 = fullUrl.match(/[?&]empID=([^&#]*)/);
                 enccode.value = match ? match[1] : null;
                 const empID = match2 ? match2[1] : null;
                 const getToken = match3 ? match3[1] : null;
                 // console.log('getToken:', getToken, 'empID:', empID, 'enccode:', enccode.value);
                 // console.log('empID', empID);
-                // console.log('enccode', enccode); 
+                // console.log('enccode', enccode);
                 if (empID && enccode) {
                     // window.location.href = `http://192.168.6.58:8000/api/fromEMR?empID=${empID}&enccode=${enccode.value}`;
                     window.location.href = `http://192.168.7.66:9000/api/fromEMR?empID=${empID}&enccode=${enccode.value}`;
@@ -566,6 +837,11 @@ export const useLocationsStore = defineStore('locationsStore', () => {
         getCities,
         getBgys,
         getAllCities,
+        getNewLocations,
+        getNewRegion,
+        getNewProvince,
+        getNewCity,
+        getNewBarangay,
 
         updateRegions,
         loadingCities,
@@ -725,4 +1001,3 @@ export const useLocationsStore = defineStore('locationsStore', () => {
 //         loadingProvinces
 //     };
 // });
-

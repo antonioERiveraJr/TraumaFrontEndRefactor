@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
 import PatientFromEMR from '../views/pages/injury/PatientFromEMR.vue';
 const List = () => import('@/views/pages/injury/List.vue');
-const Home = () => import('@/views/pages/injury/Home.vue');
+// const Home = () => import('@/views/pages/injury/Home.vue');
 const Logs = () => import('@/views/pages/injury/Logs.vue');
 const Repair = () => import('@/views/pages/injury/Repair.vue');
 const Stats = () => import('@/views/pages/injury/Stats.vue'); 
@@ -11,22 +11,22 @@ const NewList = () => import('@/views/pages/injury/newList.vue');
 const router = createRouter({
     history: createWebHashHistory(),
     routes: [
-        {
-            path: '/home',
-            // redirect: '/',
-            component: AppLayout,
-            name: 'AppLayout',
-            children: [
-                /* BGHMC ROUTES */
+        // {
+        //     path: '/home',
+        //     // redirect: '/',
+        //     component: AppLayout,
+        //     name: 'AppLayout',
+        //     children: [
+        //         /* BGHMC ROUTES */
 
-                {
-                    path: '/home',
-                    name: 'home',
-                    // component: () => import('@/views/pages/injury/List.vue')
-                    component: Home
-                }
-            ]
-        },
+        //         {
+        //             path: '/home',
+        //             name: 'home',
+        //             // component: () => import('@/views/pages/injury/List.vue')
+        //             component: Home
+        //         }
+        //     ]
+        // },
         {
             path: '/stats',
             name: 'stats',

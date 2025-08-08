@@ -1,31 +1,42 @@
 <script setup>
-import { usePatientStore } from '../../../../../../store/injury/patientStore';
+import { usePatientStore } from '../../../../../../store/injury/PatientStore';
 import InputTextCheckBoxDoctor from '../../../../../custom/inputTextCheckBoxDoctor.vue';
 import LibraryService from '@/service/LibraryService';
 import { ref, watch } from 'vue';
 import BiteForm from '../../subForm/biteForm.vue';
 import Swal from 'sweetalert2';
 import VehicularAccidentForm from '../../subForm/vehicularAccidentForm.vue';
-const patientStore = usePatientStore;
+
+// Initialize the patient store and library service
+const patientStore = usePatientStore();
 const libraryService = new LibraryService();
+
+// Fetch various injury details from the library service
 const burnDetails = libraryService.getBurnDetails();
 const burnDetailsDoctor = libraryService.getBurnDetailsDoctor();
 const drowningDetails = libraryService.getDrowningDetails();
 const exposureDetails = libraryService.getExposureDetails();
 const firecrackerDetails = libraryService.getFireCrackerDetails();
+
+// Reactive references for dialog visibility
 const openTransportVehicularDialog = ref(false);
 const biteDialog = ref(false);
+
+// Define component props
 const props = defineProps({
-    isDataLoaded: {
+    dataIsLoaded: {
         required: true,
         default: false,
         type: Boolean
     }
 });
+
+// Function to open the bite dialog
 const openBiteDialog = () => {
     biteDialog.value = true;
 };
 
+// Watch for changes in the patient's bite injury status
 watch(
     () => patientStore?.details?.ExternalCauseOfInjury?.ext_bite,
     (newValue) => {
@@ -35,9 +46,11 @@ watch(
     }
 );
 
+// Watch for changes in the vehicular accident dialog state
 watch(
     () => openTransportVehicularDialog.value,
     async (newValue) => {
+        // Validate vehicle details when closing the dialog
         if (!newValue && patientStore.details.forTransportVehicularAccident.pat_veh_sp === '' && patientStore.details.forTransportVehicularAccident.vehicle_code == '88') {
             await Swal.fire({
                 icon: 'warning',
@@ -70,7 +83,7 @@ watch(
 </script>
 
 <template>
-    <div style="width: 100%" v-if="props.isdataLoaded">
+    <div style="width: 100%" v-if="props.dataIsLoaded === true">
         <Transition name="slide-fade" mode="out-in">
             <div class="flex flex-column rainbow-border" v-if="patientStore?.details?.ExternalCauseOfInjury?.ext_bite === 'Y'" style="border: 2px dashed #808080">
                 <div
@@ -111,7 +124,7 @@ watch(
                         <label for="inputswitch" class="mx-2 align-self-center font-bold"> Bite/Sting </label>
                     </div>
                     <i @click="openBiteDialog" class="badge-button">
-                        <div class="bite-details-container">
+                        <div class="details-container">
                             <strong>BITE DETAILS</strong>
                         </div>
                     </i>
@@ -518,7 +531,7 @@ watch(
                 </div>
             </div>
         </Transition>
-        <InputTextCheckBoxDoctor :isExternal="true" v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_other" v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_other_sp" label="Others, (Specify)" :binary="true" /> -->
+        <InputTextCheckBoxDoctor :isExternal="true" v-model:modelValue="patientStore.details.ExternalCauseOfInjury.ext_other" v-model:desc="patientStore.details.ExternalCauseOfInjury.ext_other_sp" label="Others, (Specify)" :binary="true" />
     </div>
     <Dialog v-model:visible="biteDialog" modal header="ANIMAL BITE FORM" :style="{ width: '98%', height: '90vh' }">
         <BiteForm />
@@ -573,5 +586,12 @@ watch(
     border-radius: 3px;
     padding: 3px;
     background-color: #f9f9f9;
+}
+.details-container {
+    border: 4px solid #38afd3;
+    background-color: #38afd3;
+    padding: 0px;
+    border-radius: 3px;
+    display: inline-block;
 }
 </style>

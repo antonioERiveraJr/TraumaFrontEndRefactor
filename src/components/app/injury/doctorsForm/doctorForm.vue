@@ -1,8 +1,7 @@
 <script setup>
 import { usePatientStore } from '@/store/injury/patientStore';
 import { watch, ref, defineAsyncComponent, onUnmounted, onMounted } from 'vue';
-import NewGeneralData from './doctorGeneralDataNOI.vue';
-import { useLocationsStore } from '../../../../store/general/LocationsStore';
+import NewGeneralData from './doctorGeneralDataNOI.vue'; 
 import NewPreAdmission from './doctorPreAdmission.vue';
 import NewExternalCauses from './doctorExternalCauses.vue';
 import SaveBackRemovePanelButtonDoctor from '../../../custom/SaveBackRemovePanelButtonDoctor.vue';
@@ -14,8 +13,7 @@ const props = defineProps({
         required: true
     }
 });
-const loader = ref(true);
-const locationsStore = new useLocationsStore();
+const loader = ref(true); 
 const injuryService = new InjuryService();
 const patientStore = usePatientStore();
 const requiredCountPreAdmission = ref(0);
@@ -71,12 +69,10 @@ const updateRequiredCountGeneralData = (value) => {
 };
 const loadLocations = async () => {
     region.value = patientStore?.storeRegions?.find((reg) => reg.regcode === patientStore.details.generalData.plc_regcode)?.regname || 'Unknown Region';
-    // console.log(locationsStore.regions.find((reg) => reg.regcode === patientStore.details.generalData.plc_regcode)?.regname);
     province.value = patientStore?.storeProvinces?.find((prov) => prov.provcode === patientStore.details.generalData.plc_provcode)?.provname || 'Unknown Province';
     city.value = patientStore?.storeCities?.find((city) => city.ctycode === patientStore.details.generalData.plc_ctycode)?.ctyname || 'Unknown City';
     barangay.value = patientStore?.storeBrgy?.find((bgy) => bgy.bgycode === patientStore.details.generalData.plc_bgycode)?.bgyname || 'Unknown Barangay';
     patientStore.header.doctor_poi = region.value + ', ' + province.value + ', ' + city.value + ', ' + barangay.value;
-    // console.log('province: ', patientStore.storeProvinces);
 };
 const generateSafetyAndFactorText = () => {
     const safetyText = [];
@@ -192,9 +188,7 @@ watch(
 watch(
     () => patientStore.locationLoaded,
     (newValue) => {
-        if (newValue === true) {
-            // console.log('hit locations');
-
+        if (newValue === true) {  
             loadLocations;
         }
     }
@@ -375,6 +369,7 @@ onUnmounted(() => {
                             <template #legend>
                                 <span style="color: #000080" class="font-bold white-space-nowrap">SUBJECTIVE</span>
                             </template>
+                            
                             <div class="grid grid-cols-2 gap-2 justify-content-center">
                                 <div style="width: 46%">
                                     <label for="noi" class="p-float-label text-black text-s" style="color: #000080"><i>Nature of Injury </i></label>

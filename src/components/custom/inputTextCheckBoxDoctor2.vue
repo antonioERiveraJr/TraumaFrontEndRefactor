@@ -46,7 +46,7 @@ const isDisabled = computed(() => props.disabled);
 <template>
     <Transition name="slide-fade" mode="out-in">
         <div
-            v-if="model === 'N'"
+            v-if="model !== 'Y'"
             :class="{
                 'bg-green-100 rounded-sm': model === 'Y'
             }"

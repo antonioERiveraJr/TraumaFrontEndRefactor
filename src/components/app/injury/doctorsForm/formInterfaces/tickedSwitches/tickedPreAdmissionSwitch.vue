@@ -10,7 +10,7 @@ const props = defineProps({
         type: Boolean
     }
 });
-const patientStore = usePatientStore;
+const patientStore = usePatientStore();
 const libraryService = new LibraryService();
 watch(
     () => props.dataIsLoaded,

@@ -1,12 +1,13 @@
 <script setup>
-import InjuryService from '@/service/InjuryService';  
-import { onMounted, ref, computed } from 'vue'; 
- 
-const injuryService = new InjuryService(); 
+import InjuryService from '@/service/InjuryService';
+import { onMounted, ref, computed } from 'vue';
+
+const injuryService = new InjuryService();
+const toiFinalValue = ref();
 const props = defineProps({
     text: {
         type: String,
-        required: true  
+        required: true
     }
 });
 
@@ -18,6 +19,9 @@ var extractNOIPOITOIDOI = ref({
     TOI: null
 });
 
+// Assuming extractNOIPOITOIDOI.value.toi is "04:00DETAIL(S):"
+// const timeValue = toiFinalValue.value.substring(0, 5); // or toiFinalValue.value.slice(0, 5);
+
 // Computed property to determine if all fields are empty
 const show = computed(() => {
     return extractNOIPOITOIDOI.value.noi === null && extractNOIPOITOIDOI.value.poi === null && extractNOIPOITOIDOI.value.fdoi === null && extractNOIPOITOIDOI.value.ftoi === null;
@@ -26,6 +30,8 @@ const show = computed(() => {
 // Fetch data on component mount
 onMounted(async () => {
     extractNOIPOITOIDOI.value = await injuryService.extractNOIPOITOIDOI(props.text);
+    toiFinalValue.value = extractNOIPOITOIDOI?.value?.toi?.substring(0,5);
+    // console.log('ss: ', toiFinalValue.value)
 });
 </script>
 
@@ -54,7 +60,7 @@ onMounted(async () => {
             </div>
             <div class="flex align-items-center">
                 <label for="TOI" class="p-float-label w-3rem font-sans text-black-300 text-xs" style="color: #3366ff"><i>TOI:</i></label>
-                <InputText id="TOI" v-model="extractNOIPOITOIDOI.ftoi" readonly class="w-24rem mb-1 font-bold text-xs" style="text-transform: uppercase" />
+                <InputText id="TOI" v-model="toiFinalValue" readonly class="w-24rem mb-1 font-bold text-xs" style="text-transform: uppercase" pattern="[0-9]*" />
             </div>
             <label for="details" class="p-float-label w-4rem font-sans text-black-300 text-xs" style="color: #3366ff"><i>Details:</i></label>
             <Textarea id="details" v-model="extractNOIPOITOIDOI.details" readonly autoResize class="w-27rem mb-1 font-bold text-xs" style="text-transform: uppercase" />
@@ -63,4 +69,3 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped></style>
-

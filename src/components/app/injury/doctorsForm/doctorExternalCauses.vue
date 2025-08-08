@@ -1,4 +1,5 @@
 <script setup>
+// Import necessary functions and components
 import { usePatientStore } from '../../../../store/injury/patientStore';
 import { ref, watch, defineEmits, onUnmounted } from 'vue';
 import Swal from 'sweetalert2';
@@ -7,6 +8,7 @@ import Textarea from 'primevue/textarea';
 import UntickedExternalSwiches from './formInterfaces/untickedSwitches/untickedExternalSwiches.vue';
 import TickedExternalSwitches from './formInterfaces/tickedSwitches/tickedExternalSwitches.vue';
 
+// Initialize the patient store and loading state
 const patientStore = usePatientStore();
 const loading = ref(true);
 const libraryService = new LibraryService();
@@ -23,27 +25,29 @@ const dataIsLoaded = ref(false);
 const vehicleCodes = ref([]);
 const generatedText = ref('');
 
+// Function to load vehicle types based on vehicle type ID
 const loadVehicles = (vehicle_type_id) => {
     switch (vehicle_type_id) {
         case '01':
-            vehicleCodes.value = landVehicles;
+            vehicleCodes.value = landVehicles; // Load land vehicles
             break;
         case '02':
-            vehicleCodes.value = waterVehicles;
+            vehicleCodes.value = waterVehicles; // Load water vehicles
             break;
         case '03':
-            vehicleCodes.value = airVehicles;
+            vehicleCodes.value = airVehicles; // Load air vehicles
             break;
         default:
-            vehicleCodes.value = [];
+            vehicleCodes.value = []; // No vehicles
             break;
     }
 };
 
+// Define emits for component events
 const emit = defineEmits(['update:requiredCountExternalCauses']);
-
 const requiredCountExternalCauses = ref(0);
 
+// Function to update the count of required fields
 const updateRequiredFieldCount = () => {
     requiredCountExternalCauses.value = 0;
     if (
@@ -137,6 +141,8 @@ const updateRequiredFieldCount = () => {
     }
     if (patientStore.details.ExternalCauseOfInjury.ext_other === 'Y' && !patientStore.details.ExternalCauseOfInjury.ext_other_sp) requiredCountExternalCauses.value++;
 };
+
+// Function to generate diagnosis text based on patient details/ticked fields
 const generateText = () => {
     try {
         const selectedBurnDegree = ref(0);
@@ -594,9 +600,9 @@ const generateText = () => {
             }
         }
         if (patientStore.details.ExternalCauseOfInjury.ext_sharp === 'Y') {
-            externalCauses.push(' Contact with Sharp Objects');
+            externalCauses.push(' Contact with Sharp Object');
             if (patientStore.details.ExternalCauseOfInjury.ext_sharp_sp) {
-                specifyExternalDetails.push(`Contact with Sharp Objects: ${patientStore.details.ExternalCauseOfInjury.ext_sharp_sp}\n`);
+                specifyExternalDetails.push(`Contact with Sharp Object: ${patientStore.details.ExternalCauseOfInjury.ext_sharp_sp}\n`);
             }
         }
         if (patientStore.details.ExternalCauseOfInjury.contact_blurt === 'Y') {
@@ -698,6 +704,8 @@ const generateText = () => {
                 specifyExternalDetails.push(`VAWCs: ${patientStore.details.ExternalCauseOfInjury.vawc_impression}\n`);
             }
         }
+
+        // Compile diagnosis based on collected data
         let compiledDiagnosis = '';
         const injuryText = physicalInjuries.join(',');
         const causeText = externalCauses.join(',');
@@ -714,6 +722,7 @@ const generateText = () => {
             } else if (Object.values(patientStore.details.multipleFields).some((value) => value === true) && isMultiple.value > 0) {
                 compiledDiagnosis = `Multiple ${injuryText}  secondary to ${causeText} \n${diagSubj} `;
             } else {
+                // Build the final diagnosis string
                 if (injuryText || causeText) {
                     compiledDiagnosis = `${injuryText} secondary to ${causeText}  \n${diagSubj}`;
                 }
@@ -882,34 +891,6 @@ watch(
         }
     }
 );
-
-// watch(
-//     () => biteDialog.value,
-//     async (newValue) => {
-//         if (
-//             (!newValue && patientStore.details.preAdmissionData.first_aid_code === 'Y' && patientStore.details.preAdmissionData.firstaid_others === '') ||
-//             (!newValue && patientStore.details.preAdmissionData.first_aid_code === 'Y' && patientStore.details.preAdmissionData.firstaid_others2 === '')
-//         ) {
-//             if (patientStore.details.preAdmissionData.firstaid_others2 === '') {
-//                 await Swal.fire({
-//                     icon: 'warning',
-//                     title: 'INVALID INPUT',
-//                     text: 'Please fill in the By Whom Field',
-//                     confirmButtonText: 'OK'
-//                 });
-//                 biteDialog.value = true;
-//             } else {
-//                 await Swal.fire({
-//                     icon: 'warning',
-//                     title: 'INVALID INPUT',
-//                     text: 'Please fill in the Firs Aid Field',
-//                     confirmButtonText: 'OK'
-//                 });
-//                 biteDialog.value = true;
-//             }
-//         }
-//     }
-// );
 watch(requiredCountExternalCauses, (newCount) => {
     emit('update:requiredCountExternalCauses', newCount);
 });
@@ -991,7 +972,7 @@ watch(
 <template>
     <div :class="noExternal ? 'card custom-shadow mt-3 relative' : 'card mt-3'" style="width: 100%">
         <div :class="noExternal ? 'grid grid-cols-4 gap-2 flex justify-content-center mb-2' : 'grid grid-cols-4 gap-2 flex justify-content-center'">
-            <UntickedExternalSwiches :dataIsLoaded="dataIsLoaded" :width="width" :height="height" />
+            <UntickedExternalSwiches v-if="dataIsLoaded === true" :dataIsLoaded="dataIsLoaded" :width="width" :height="height" />
         </div>
         <div class="mt-4">
             <strong for="patientHistory" class="font-bold flex justify-content-center text-lg">History of the Patient</strong>
@@ -1021,7 +1002,7 @@ watch(
         </div>
         <div v-if="noExternal" class="bg-red-200 p-2 absolute bottom-0 left-0 text-center text-gray-700 font-semibold italic" style="border-radius: 0 0 1rem 1rem; width: 100%; font-size: 1rem; margin: 0 !important">Value is Required</div>
     </div>
-    <TickedExternalSwitches :dataIsLoaded="dataIsLoaded" />
+    <TickedExternalSwitches v-if="dataIsLoaded === true" :dataIsLoaded="dataIsLoaded" />
 </template>
 
 <style scoped>

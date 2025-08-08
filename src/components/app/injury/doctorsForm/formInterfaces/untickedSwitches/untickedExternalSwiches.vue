@@ -28,7 +28,7 @@ const heights = ref();
 
 onMounted(() => {
     widths.value = props.width;
-    heights.value = props.height; 
+    heights.value = props.height;
 });
 watch(
     () => props.width,
@@ -426,5 +426,12 @@ watch(
 .slide-fade-leave-to {
     transform: translateX(20px);
     opacity: 0;
+}
+.bite-details-container {
+    border: 4px solid #38afd3;
+    background-color: #38afd3;
+    padding: 0px;
+    border-radius: 3px;
+    display: inline-block;
 }
 </style>

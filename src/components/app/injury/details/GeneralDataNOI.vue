@@ -25,13 +25,14 @@ const loading = ref(true);
 const injuryDate = ref(patientStore.details.generalData.doctor_injtme);
 const disableProv = ref(true);
 const disableCity = ref(true);
-const disableBrgy = ref(true);
+const disableBrgy = ref(false);
 const newDate = ref();
 const newTime = ref();
 const transRefValue = ref('0');
 
 // Arrays to hold location data
 const allLoc = [];
+const newLoc = [];
 const distinctRegions = ref();
 const distinctProvince = ref();
 const distinctCity = ref();
@@ -74,14 +75,31 @@ const validate = async () => {
 async function loadLocations() {
     try {
         allLoc.value = await locationsStore.getLocations();
-        const locationsArray = allLoc?.value?.data;
+        // console.log('locations: ', allLoc);
+        newLoc.value = await locationsStore.getNewLocations();
+        console.log('new location: ', newLoc);
+        // const newRegion = await locationsStore.getNewRegion();
+        // const newProvince = await locationsStore.getNewProvince();
+        // const newCity = await locationsStore.getNewCity();
+        // const newBarangay = await locationsStore.getNewBarangay();
+
+        // console.log('newRegion: ', newRegion);
+        // console.log('newProvince: ', newProvince);
+        // console.log('newCity: ', newCity);
+        // console.log('newBarangay: ', newBarangay);
+
+        const locationsArray = newLoc?.value?.data;
+        // const regionsArray = newRegion?.data;
+        // const provinceArrray = newProvince?.data;
+        // const cityArray = newCity?.data;
+        // const barangayArray = newBarangay?.data;
 
         // Ensure locationsArray is an array
         if (!Array.isArray(locationsArray)) {
             throw new Error('Expected locations.data to be an array');
         }
 
-        // Extract distinct regions from locations
+        // Extract distinct regions from locations 
         distinctRegions.value = Array.from(new Map(locationsArray.map((location) => [location.regcode, location])).values())
             .map((location) => ({
                 regcode: location.regcode,
@@ -90,11 +108,11 @@ async function loadLocations() {
             .sort((a, b) => a.regname.localeCompare(b.regname));
         patientStore.storeRegions = distinctRegions;
 
-        // Logic for populating provinces based on selected region
+        // Check if region does exist or not
         if (patientStore?.details?.generalData?.plc_regcode != null) {
             disableProv.value = false;
-            if (Array.isArray(allLoc)) {
-                distinctProvince.value = Array.from(new Map(allLoc?.value?.data.filter((location) => location.regcode === patientStore.details.generalData.plc_regcode).map((location) => [location.provcode, location])).values()).map((location) => ({
+            if (Array.isArray(newLoc)) {
+                distinctProvince.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.regcode === patientStore.details.generalData.plc_regcode).map((location) => [location.provcode, location])).values()).map((location) => ({
                     provcode: location.provcode,
                     provname: location.provname
                 }));
@@ -104,7 +122,6 @@ async function loadLocations() {
                 distinctProvince.value = [];
             }
         } else {
-            // Populate all provinces if no region is selected
             distinctProvince.value = Array.from(new Map(locationsArray.map((location) => [location.provcode, location])).values())
                 .map((location) => ({
                     regcode: location.regcode,
@@ -115,13 +132,14 @@ async function loadLocations() {
             patientStore.storeProvinces = distinctProvince;
         }
 
+        console.log('province : ', distinctProvince);
         // Logic for populating cities based on selected province
         if (patientStore?.details?.generalData?.plc_provcode != null) {
             disableCity.value = false;
 
             patientStore.details.generalData.ctycode = '';
-            if (Array.isArray(allLoc)) {
-                distinctCity.value = Array.from(new Map(allLoc?.value?.data.filter((location) => location.provcode === patientStore.details.generalData.plc_provcode).map((location) => [location.ctycode, location])).values()).map((location) => ({
+            if (Array.isArray(newLoc)) {
+                distinctCity.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.provcode === patientStore.details.generalData.plc_provcode).map((location) => [location.ctycode, location])).values()).map((location) => ({
                     ctycode: location.ctycode,
                     ctyname: location.ctyname
                 }));
@@ -146,8 +164,8 @@ async function loadLocations() {
 
         // Logic for populating barangays based on selected city
         if (patientStore?.details?.generalData?.plc_ctycode != null) {
-            if (Array.isArray(allLoc)) {
-                distinctBarangays.value = Array.from(new Map(allLoc?.value?.data.filter((location) => location.ctycode === patientStore.details.generalData.plc_ctycode).map((location) => [location.bgycode, location])).values()).map((location) => ({
+            if (Array.isArray(newLoc)) {
+                distinctBarangays.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.ctycode === patientStore.details.generalData.plc_ctycode).map((location) => [location.bgycode, location])).values()).map((location) => ({
                     bgycode: location.bgycode,
                     bgyname: location.bgyname
                 }));
@@ -182,8 +200,8 @@ watch(
             disableProv.value = false;
 
             patientStore.details.generalData.provcode = '';
-            if (Array.isArray(allLoc)) {
-                distinctProvince.value = Array.from(new Map(allLoc?.value?.data.filter((location) => location.regcode === newRegionCode).map((location) => [location.provcode, location])).values()).map((location) => ({
+            if (Array.isArray(newLoc)) {
+                distinctProvince.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.regcode === newRegionCode).map((location) => [location.provcode, location])).values()).map((location) => ({
                     provcode: location.provcode,
                     provname: location.provname
                 }));
@@ -205,8 +223,8 @@ watch(
             disableCity.value = false;
 
             patientStore.details.generalData.ctycode = '';
-            if (Array.isArray(allLoc)) {
-                distinctCity.value = Array.from(new Map(allLoc?.value?.data.filter((location) => location.provcode === newProvinceCode).map((location) => [location.ctycode, location])).values()).map((location) => ({
+            if (Array.isArray(newLoc)) {
+                distinctCity.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.provcode === newProvinceCode).map((location) => [location.ctycode, location])).values()).map((location) => ({
                     ctycode: location.ctycode,
                     ctyname: location.ctyname
                 }));
@@ -224,10 +242,10 @@ watch(
 watch(
     () => patientStore.details.generalData.plc_ctycode,
     async (newCityCode) => {
-        disableBrgy.value = false;
+        // disableBrgy.value = false;
         if (newCityCode) {
-            if (Array.isArray(allLoc)) {
-                distinctBarangays.value = Array.from(new Map(allLoc?.value?.data.filter((location) => location.ctycode === newCityCode).map((location) => [location.bgycode, location])).values()).map((location) => ({
+            if (Array.isArray(newLoc)) {
+                distinctBarangays.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.ctycode === newCityCode).map((location) => [location.bgycode, location])).values()).map((location) => ({
                     bgycode: location.bgycode,
                     bgyname: location.bgyname
                 }));
@@ -236,7 +254,7 @@ watch(
                 distinctBarangays.value = [];
             }
         } else {
-            disableBrgy.value = false;
+            // disableBrgy.value = false;
             distinctBarangays.value = [];
         }
     }
@@ -476,6 +494,7 @@ onMounted(async () => {
                     optionLabel="provname"
                     optionValue="provcode"
                     :disabled="disableProv"
+                    filter
                     placeholder="Province"
                     :class="{
                         'p-inputtext-filled font-bold mb-2 w-27rem myCSS-inputtext-required': true,
@@ -500,6 +519,7 @@ onMounted(async () => {
                     optionLabel="ctyname"
                     optionValue="ctycode"
                     :disabled="disableCity"
+                    filter
                     placeholder="Municipality"
                     :class="{
                         'p-inputtext-filled font-bold mb-2 w-27rem myCSS-inputtext-required': true,
@@ -525,6 +545,7 @@ onMounted(async () => {
                     placeholder="Barangay"
                     optionValue="bgycode"
                     class="font-bold"
+                    filter
                     showClear
                     :disabled="disableBrgy"
                     :emptyMessage="'Please select a City first.'"

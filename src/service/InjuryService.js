@@ -770,6 +770,66 @@ export default class InjuryService {
         return response;
     }
 
+    async getListOfDiagnosis(enccode) {
+        try {
+            const response = await axios.get('/getListOfDiagnosis', {
+                params: { enccode },
+
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.log('error generating report: ', error);
+        }
+    }
+
+    async generateStats(dateFrom, dateTo, isOneiss) {
+        try {
+            const response = await axios.get('/generateStats', {
+                params: { dateFrom, dateTo, isOneiss },
+
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.log('error generating report: ', error);
+        }
+    }
+
+    async generateStatsToExcel(array) {
+        try {
+            // console.log('array: ', array);
+            const response = await axios.post(
+                '/generateStatsToExcel',
+                { array: array },
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                    },
+                    responseType: 'blob'
+                }
+            );
+            console.log('response: ', response);
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            // const filename = 'Injury' + dateFrom.toString()+'to'+ dateTo.toString()+  '.zip';
+            const filename = 'InjuryReport.zip';
+            link.setAttribute('download', filename);
+            document.body.appendChild(link);
+            link.click();
+            return response.data;
+        } catch (err) {
+            if (err.response && err.response.status === 401) {
+                this.router.push('/auth/login');
+            }
+        }
+    }
+
     async sendArrayToServer(array, dateNow) {
         // const dateNow = useNow();
         // console.log('array:', array);
@@ -786,7 +846,7 @@ export default class InjuryService {
                 }
             );
 
-            // console.log('responsearray:', response);
+            console.log('responsearray:', response);
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;

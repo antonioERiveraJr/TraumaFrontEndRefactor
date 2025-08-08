@@ -12,8 +12,7 @@ import { useUserStore } from '../../store/general/UserStore';
 // import { generateNOI } from '../app/injury/doctorsForm/GeneralDataDoctor.vue';
 // import moment from 'moment';
 
-const user = useUserStore();
-const locationsStore = useLocationsStore();
+const user = useUserStore(); 
 const toast = useToast();
 // const confirm = useConfirm();
 const emit = defineEmits(['update:saving', 'update:customizedObjectives', 'update:customizedDiagnosis', 'update:customizedDetails']);
@@ -725,7 +724,7 @@ const patientDataIsLoaded = async () => {
     await user.getUserInfo();
 
     isLocked.value = await injuryService.checkLockedEnccode(patientStore.enccode);
-    console.log('isLocked:', isLocked);
+    // console.log('isLocked:', isLocked);
     allowUpdateFormn();
 };
 // onMounted(async () => {

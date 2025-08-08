@@ -8,7 +8,7 @@ import axios from 'axios';
 //dev
 // test related issue
 
-axios.defaults.baseURL = 'http://192.168.6.58:8000/api/';
+axios.defaults.baseURL = 'http://192.168.6.58:8010/api/';
 
 // axios.defaults.baseURL = 'http://192.168.6.92:7000/api/';
 

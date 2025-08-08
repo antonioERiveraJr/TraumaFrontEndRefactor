@@ -19,6 +19,7 @@ const subjective = computed(() => patientStore.header.subjective || '');
 // Lifecycle hook to set loading to false once component is mounted
 onMounted(async () => {
     loading.value = false;
+    // console.log('subjective: ', subjective.value );
 });
 </script>
 

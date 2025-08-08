@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, defineAsyncComponent, computed, watch, onUpdated } from 'vue';
+import { ref, onMounted, defineAsyncComponent, computed, watch } from 'vue';
 import Dialog from 'primevue/dialog';
 import { usePatientStore } from '../../../../store/injury/PatientStore';
 import PreAdmissionDataArchived from '../details/PreAdmissionDataNew.vue';
@@ -48,8 +48,7 @@ const filters = ref({
     status: { value: null, matchMode: FilterMatchMode.IN },
     date: { value: null, matchMode: FilterMatchMode.EQUALS }
 });
-onMounted(() => {
-    // console.log(props.list);
+onMounted(() => { 
     transitions();
 });
 
@@ -59,8 +58,7 @@ const exportArchivedData = async () => {
     emit('update:exporting', exporting.value);
 
     const dateNow = useNow().value;
-    try {
-        // console.log('forArchived: ', forArchived.value);
+    try { 
         const archivedData = forArchived.value.map((item) => ({
             enccode: item.enccode,
             patname: item.header.patlast + ', ' + item.header.patfirst + ' ' + item.header.patmiddle,
@@ -162,9 +160,7 @@ function onRowSelectArchived(e) {
         if (!e || !e.data) {
             console.error('Row data is undefined');
             return;
-        }
-        // console.log('here2:', e.data);
-
+        } 
         archivedDialogVisible.value = true;
         originalForArchived.value = forArchived.value;
         const selectedArchdate = e.data.archdate;
@@ -228,19 +224,13 @@ function transitions() {
     }, externalcausesarchived);
 }
 
-function openPatientDetailsArchived(slotProps) {
-    // console.log(slotProps.data.enccode);
-
+function openPatientDetailsArchived(slotProps) { 
     if (patientStore.header.status !== 2) {
         if (!patientStore.enccode) {
-            if (patientStore.registry === 'old') {
-                // console.log('old');
-
+            if (patientStore.registry === 'old') { 
                 patientStore.loadPatientDataDev(slotProps.data.enccode);
             }
-            if (patientStore.registry === 'new') {
-                // console.log('new');
-
+            if (patientStore.registry === 'new') { 
                 patientStore.loadPatientData(slotProps.data.enccode);
             }
         }
@@ -249,20 +239,15 @@ function openPatientDetailsArchived(slotProps) {
         showPatientDialogArchived.value = true;
         transitions();
         exporting.value = false;
-    }
-    // console.log(patientStore.details.ExternalCauseOfInjury.ext_burn_r_doctor);
+    } 
 }
 
 watch(
     () => patientStore.enccode,
     () => {
         if (patientStore.details.ExternalCauseOfInjury.ext_burn_r_doctor === 'Y') {
-            patientStore.details.ExternalCauseOfInjury.ext_burn_r = 'Y';
-            // alert('hit');
-            // Get burn details from doctor
-            // const burnDetailsDoctor = libraryService.getBurnDetailsDoctor();
-
-            // console.log(patientStore.details.ExternalCauseOfInjury.ext_burn_r);
+            patientStore.details.ExternalCauseOfInjury.ext_burn_r = 'Y'; 
+            // Get burn details from doctor 
             // Determine the corresponding burn code based on the doctor's burn code
             const doctorBurnCode = patientStore.details.ExternalCauseOfInjury.ref_burn_code_doctor;
 
@@ -297,10 +282,8 @@ watch(
 );
 watch(
     () => props.filterValue,
-    (newValue) => {
-        // console.log('filters: ', newValue);
-        filters.value.global.value = newValue;
-        // filter.value = newValue;
+    (newValue) => { 
+        filters.value.global.value = newValue; 
     }
 );
 </script>
@@ -385,31 +368,7 @@ watch(
                     </template>
                 </Column>
             </DataTable>
-        </Dialog>
-        <!-- <Dialog header="Patient Injury Form" v-model:visible="showPatientDialogArchived" maximizable modal @hide="patientStore.$reset()" :style="{ width: '120rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-            <div class="grid col gap-4 flex justify-content-center flex-wrap card-container">
-                <div class="generaldata">
-                    <Transition name="slide-fade" mode="out-in">
-                        <GeneralData v-if="showGeneralData" />
-                    </Transition>
-                </div>
-                <div class="generaldatanoiarchived">
-                    <Transition name="slide-fade" mode="out-in">
-                        <GeneralDataNOIArchived v-if="showGeneralDataNOIArchived" />
-                    </Transition>
-                </div>
-                <div class="preadmissiondataarchived">
-                    <Transition name="slide-fade" mode="out-in">
-                        <PreAdmissionDataArchived v-if="showPreAdmissionDataArchived" />
-                    </Transition>
-                </div>
-                <div class="externalcausesarchived">
-                    <Transition name="slide-fade" mode="out-in">
-                        <ExternalCausesArchived v-if="showExternalCausesArchived" />
-                    </Transition>
-                </div>
-            </div>
-        </Dialog> -->
+        </Dialog> 
         <Dialog v-model:visible="showPatientDialogArchived" maximizable modal header="Patient Injury Form" :style="{ width: '99%' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" @hide="patientStore.$reset()">
             <div class="grid grid-cols-4 gap-4 justify-content-center mt-1">
                 <div class="generaldata w-1/4">

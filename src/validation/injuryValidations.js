@@ -1,28 +1,17 @@
 import { required } from '@vee-validate/rules'; // For the rules
 import { defineRule } from 'vee-validate';
 import { usePatientStore } from '../store/injury/patientStore';
-import { computed, ref } from 'vue';
-import { requiredIf } from '@vuelidate/validators';
-// import { requiredIf } from '@vuelidate/validators';
-
-// Define rules
+import { computed } from 'vue'; 
 defineRule('required', required);
 
 // Custom requiredIf rule
 defineRule('requiredIf', (value, [condition]) => {
     return condition === 'true' ? !!value : true;
-});
-// defineRule('resetIfN', (value, [condition]) => {
-//     return condition === 'N' ? '' : value;
-// });
-// Custom requiredIfAllN rule
+}); 
 
 export default function createValidationRules() {
     const patientStore = usePatientStore();
-
-    // console.log('asdas');
-    // const noPhysical = ref('');
-
+ 
     const valid_firstaid_others = computed(() => {
         return patientStore.details.preAdmissionData.first_aid_code === 'Y';
     });

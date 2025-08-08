@@ -1,6 +1,6 @@
 <script setup>
 import { usePatientStore } from '../../../../../store/injury/patientStore';
-import { ref, watch, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import moment from 'moment';
 import InputText from 'primevue/inputtext';
 import CheckBoxMultiple from '../../../../custom/checkBoxMultiple.vue';

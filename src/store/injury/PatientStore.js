@@ -395,6 +395,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             mode_transport_code: '',
             stat_reachdtl: '',
             diagnosis: '',
+            customizedDiagnosis: '',
             icd_10_nature_er: '',
             icd_10_external_er: '',
             treatmentGiven: '',
@@ -472,27 +473,9 @@ export const usePatientStore = defineStore('PatientStore', () => {
             perpetrator: 'N',
             perpetrator_sp: '',
             perpetrator_oth_sp: '',
-            // test_injtme: '',
-            // test_toi: '',
-            // test_doi: ''
             doctor_injtme: '',
             doctor_toi: '',
             doctor_doi: ''
-
-            // hpercode: '',
-            // reg_no: '',
-            // pat_phil_health_no: '',
-            // plc_regcode: '',
-            // plc_provcode: '',
-            // plc_ctycode: '',
-            // date_of_birth: '',
-            // inj_date: '',
-            // encounter_date: '',
-            // date_report: '',
-            // inj_time: '',
-            // encounter_time: '',
-            // time_report: '',
-            // status: ''
         },
         preAdmissionData: {
             first_aid_code: 'N',
@@ -688,6 +671,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             ref_physician: '',
             status_code: '',
             mode_transport_code: '',
+            customizedDiagnosis: '',
             stat_reachdtl: '',
             diagnosis: '',
             icd_10_nature_er: '',
@@ -705,23 +689,6 @@ export const usePatientStore = defineStore('PatientStore', () => {
             gcs_eye: '4',
             gcs_verbal: '5',
             gcs_motor: '6'
-            // risk_alcliq: '',
-            // risk_smoke: '',
-            // risk_drugs: '',
-            // risk_mobpho: '',
-            // risk_sleep: '',
-            // risk_other: '',
-            // risk_etc_spec: '',
-            // risk_none: 'Y',
-            // safe_none: 'Y',
-            // safe_airbag: '',
-            // safe_helmet: '',
-            // safe_cseat: '',
-            // safe_sbelt: '',
-            // safe_unkn: '',
-            // safe_vest: '',
-            // safe_other: '',
-            // safe_other_sp: '',
         },
         inPatient: {
             complete_diagnosis: '',
@@ -1177,6 +1144,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         //add more  fields as needed
         // NATURE of INJURY (GeneralDataNOI.vue)
         // alert('hit');
+        details.value.details.hospitalFacilityData.customizedDiagnosis = '';
         details.value.generalData.doctor_injtme = '';
         details.value.forTransportVehicularAccident.risk_alcliq = 'N';
         details.value.forTransportVehicularAccident.risk_smoke = 'N';

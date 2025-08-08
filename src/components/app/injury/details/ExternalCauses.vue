@@ -400,7 +400,7 @@ watch(
 );
 watch(
     () => unrecognizedFieldsPreview.value,
-    (newValue) => { 
+    (newValue) => {
         patientStore.details.ExternalCauseOfInjury.ext_others_external_preview = newValue;
     }
 );
@@ -454,7 +454,7 @@ onMounted(async () => {
             :class="{
                 'bg-green-100': patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ExternalCauseOfInjury.ext_bite_sp === ''
             }"
-        /> 
+        />
         <div class="burns">
             <div class="flex align-content-center align-items-center mt-1">
                 <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.ext_burn_r" trueValue="Y" falseValue="N" id="inputswitch" />
@@ -853,9 +853,8 @@ onMounted(async () => {
 
             <div class="flex justify-content-end" v-if="patientStore.details.hospitalFacilityData.diagnosis == ''">
                 <small :class="'required-error'" class="text-red-800 text-xs font-bold">Value is required</small>
-            </div>
-
-            <div class="line"></div>
+            </div> 
+            <div class="line"></div> 
             <div v-if="patientStore.header.complete_diagnosis">
                 <p class="text-2xs text-black-500 flex justify-content-start"><b>FINAL DIAGNOSIS</b></p>
                 <Textarea
@@ -871,7 +870,6 @@ onMounted(async () => {
                         'bg-green-100': patientStore.header.complete_diagnosis === ''
                     }"
                 />
-
                 <div class="flex justify-content-evenly">
                     <b v-if="patientStore.header.disp_inpat">FINALDISP</b>
                     <b v-if="patientStore.header.outcome_inpat">FINALCOND</b>

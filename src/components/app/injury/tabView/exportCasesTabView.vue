@@ -72,16 +72,9 @@ const onRowUnselect = (event) => {
 
 async function onRowSelect(e) {
     try {
-        if (!e || !e.data) return console.error('Row data is undefined or null');
-        // console.log('list: ', props.list);
-
-        // Ensure selectedPatients only contains patients that exist in props.list
-        const enccodesInList = new Set(props.list.map((patient) => patient.enccode));
-
-        // console.log('Row selected:', e.data);
+        if (!e || !e.data) return console.error('Row data is undefined or null'); 
+        const enccodesInList = new Set(props.list.map((patient) => patient.enccode)); 
         selectedPatients.value = selectedPatients.value.filter((patient) => enccodesInList.has(patient.enccode));
-
-        // console.log('Selected Patients:', selectedPatients.value);
         const patientMap = new Map();
         const enccodes = new Set();
         props.list.forEach((patient) => {
@@ -111,9 +104,8 @@ async function onRowSelect(e) {
 
 const openPatientDetails = async (slotProps) => {
     loadingPatientData.value = true;
-    // console.log('slotprops: ', slotProps.data);
-    selectedPatient.value = slotProps.data;
-    // console.log('slotprops: ', slotProps.data);
+    console.log('slotprops: ', slotProps.data.enccode);
+    selectedPatient.value = slotProps.data; 
 
     transitions();
 
@@ -233,18 +225,7 @@ watch(
     {
         deep: true
     }
-);
-// watch(
-//     () => patientStore.savingDone,
-//     (newValue) => {
-//         if (newValue) {
-//             showPatientDialogExport.value = false;
-//         }
-//     },
-//     {
-//         deep: true
-//     }
-// );
+); 
 
 watch(
     () => selectedPatients.value,
@@ -258,15 +239,7 @@ watch(
         }
     }
 );
-
-// watch(
-//     () => props.exportDone,
-//     (newValue) => {
-//         if (newValue) {
-//             patientStore.loadSignal = true;
-//         }
-//     }
-// );
+ 
 </script>
 
 <template>

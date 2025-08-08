@@ -14,6 +14,10 @@ const props = defineProps({
     height: {
         type: Number,
         required: true
+    },
+    noPhysical:{
+        type: Boolean,
+        default: true
     }
 });
 const widths = ref();
@@ -40,7 +44,7 @@ watch(
 </script>
 <template>
     <div :style="{ width: widths < 1500 ? '100%' : '66%' }" class="mt-1">
-        <div :class="['grid grid-cols-3 card flex justify-content-center relative', { 'custom-shadow': noPhysical }]">
+        <div :class="['grid grid-cols-3 card flex justify-content-center relative', { 'custom-shadow': props.noPhysical }]">
             <div :style="{ width: widths < 950 ? '100%' : widths < 1100 ? '49%' : '32%' }">
                 <div>
                     <InputTextCheckBoxDoctor2
@@ -235,7 +239,7 @@ watch(
             </div>
 
             <div class="line"></div>
-            <div :class="noPhysical ? 'grid grid-cols-3 gap-2 mb-3 flex justify-content-evenly' : 'grid grid-cols-3 gap-2 flex justify-content-evenly'" style="width: 100%">
+            <div :class="props.noPhysical ? 'grid grid-cols-3 gap-2 mb-3 flex justify-content-evenly' : 'grid grid-cols-3 gap-2 flex justify-content-evenly'" style="width: 100%">
                 <Transition name="slide-fade" mode="out-in">
                     <div v-if="patientStore.details.ExternalCauseOfInjury.vawc !== 'Y'" class="flex">
                         <InputSwitch v-model="patientStore.details.ExternalCauseOfInjury.vawc" trueValue="Y" falseValue="N" @click="focusElement('VAWCDropdown')" id="inputswitch" />
@@ -325,7 +329,7 @@ watch(
                 <InputSwitch v-model="patientStore.details.natureOfInjury.noi_no_physical" trueValue="Y" falseValue="N" id="inputswitch" />
                 <label for="inputswitch" class="font-bold ml-2 mt-1"> NO EXTERNAL SIGN OF PHYSICAL INJURY </label>
             </div>
-            <div v-if="noPhysical" class="bg-red-200 p-2 absolute bottom-0 text-center text-gray-700 font-semibold italic" style="border-radius: 0 0 1rem 1rem; width: 100%; font-size: 1rem; margin: 0 !important">Value is Required</div>
+            <div v-if="props.noPhysical" class="bg-red-200 p-2 absolute bottom-0 text-center text-gray-700 font-semibold italic" style="border-radius: 0 0 1rem 1rem; width: 100%; font-size: 1rem; margin: 0 !important">Value is Required</div>
         </div>
     </div>
 </template>

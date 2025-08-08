@@ -320,13 +320,13 @@ export default {
             <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="8" fill="var(--surface-ground)" animationDuration=".5s" aria-label="Custom ProgressSpinner" />
         </div>
 
-        <div class="flex justify-content-center">
-            <div class="flex align-items-center border-xl mr-5" style="border: 2px solid #ccc; border-radius: 5px;">
-                <i class="pi pi-search ml-4 mr-4" />
-                <InputText v-model="searchValue" placeholder="( Name / Hospital# / DOI / NOI)" class="w-18rem shadow-2" style="width: 40%" />
+        <div class="flex justify-content-between align-itenms-center">
+            <div class="flex align-items-center" style="width: 25%">
+                <i class="pi pi-search ml-4 mr-4" style="font-size: xx-large" />
+                <InputText v-model="searchValue" placeholder="( Name / Hospital# / DOI / NOI)" class="shadow-2" style="width: 100%; height: 100%" />
             </div>
-            <SelectButton v-model="value" :options="options" />
-            <div class="flex" style="max-width: 100%; position: relative; margin-left: 1%">
+            <SelectButton v-model="value" :options="options" style="width: 25%" class="flex justify-content-center" />
+            <div class="flex" style="max-width: 100%; position: relative; margin-left: 1%; width: 25%">
                 <div class="calendar-container ml-4">
                     <strong class="label-from ml-4 mb-1">FROM</strong>
                     <Calendar v-model="startDate" dateFormat="mm/dd/yy" style="max-width: 100%; height: 100%" :showIcon="true" class="w-auto my-auto shadow-4" :showButtonBar="true" :todayButton="true" :style="{ height: '100%' }" />
@@ -335,24 +335,23 @@ export default {
                     <strong class="label-to ml-4">TO</strong>
                     <Calendar v-model="endDate" dateFormat="mm/dd/yy" style="max-width: 100%; height: 100%" :showIcon="true" class="w-auto my-auto shadow-4" :showButtonBar="true" :todayButton="true" :style="{ height: '100%' }" />
                 </div>
+                <span class="tooltip" style="cursor: pointer; margin-left: 0.5%; margin-right: 1%">
+                    <i class="pi pi-question-circle" style="font-size: 1.5em"></i>
+                    <span class="tooltiptext"
+                        >Please note that you can only select dates within 30 days prior to today. <br /><br />
+                        If you need to access dates beyond this range, kindly reach out to the MIS department for assistance.</span
+                    >
+                </span>
             </div>
 
-            <span class="tooltip" style="cursor: pointer; margin-left: 0.5%; margin-right: 1%">
-                <i class="pi pi-question-circle" style="font-size: 1.5em"></i>
-                <span class="tooltiptext"
-                    >Please note that you can only select dates within 30 days prior to today. <br /><br />
-                    If you need to access dates beyond this range, kindly reach out to the MIS department for assistance.</span
-                >
-            </span>
-
-            <div>
-                <Button icon="pi pi-refresh" size="large" class="w-auto mr-8 ml-2 shadow-4" v-tooltip.top="'Refresh List'" @click="patientStore.loadSignal = true" />
+            <div style="width: 25%" class="flex justify-content-center">
+                <Button icon="pi pi-refresh" size="large" class="w-full mr-8 ml-2 shadow-4" v-tooltip.top="'Refresh List'" @click="patientStore.loadSignal = true" />
             </div>
         </div>
     </div>
 
     <div>
-        <InjuryList class="" style="width: 100%" :savedStartDate="startDate.toString()" :savedEndDate="endDate.toString()" :value="value" :searchValue="searchValue" />
+        <InjuryList style="width: 100%" :savedStartDate="startDate.toString()" :savedEndDate="endDate.toString()" :value="value" :searchValue="searchValue" />
     </div>
 
     <Toast ref="toast" />
@@ -465,3 +464,4 @@ export default {
     padding: 1rem;
 }
 </style>
+
