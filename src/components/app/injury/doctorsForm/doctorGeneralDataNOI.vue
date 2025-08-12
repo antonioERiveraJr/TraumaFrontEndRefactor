@@ -10,6 +10,7 @@ import useVuelidate from '@vuelidate/core';
 import LibraryService from '@/service/LibraryService';
 import InjuryService from '@/service/InjuryService';
 import Swal from 'sweetalert2';
+import PanelMenu from 'primevue/panelmenu';
 
 const patientStore = usePatientStore();
 const locationsStore = useLocationsStore();
@@ -42,21 +43,45 @@ const disableCity = ref(true);
 const disableBrgy = ref(true);
 const requiredCount = ref(0);
 const newLoc = [];
-const allLoc = [];
+// const allLoc = [];
 const distinctRegions = ref();
 const distinctProvince = ref();
 const distinctCity = ref();
 const distinctBarangays = ref();
 const options = ref(['COORDINATED', 'UNCOORDINATED']);
+const listOfCities = ref();
+const allCityValue = ref('');
 async function loadLocations() {
-    // console.log('hit');
+    // console.log('hit hit');
 
     try {
-        allLoc.value = await locationsStore.getLocations();
+        // allLoc.value = await locationsStore.getLocations();
         newLoc.value = await locationsStore.getNewLocations();
         // console.log('alloc: ', allLoc?.value?.data);
         // Access the data array
         const locationsArray = newLoc?.value?.data;
+
+        //load all Cities
+        // Create the list of cities
+        listOfCities.value = Array.from(new Map(locationsArray.filter((location) => location.geographic_level === 'City' || location.geographic_level === 'Mun').map((location) => [location.ctycode, location])).values())
+            .map((location) => ({
+                ctycode: location.ctycode,
+                ctyname: location.ctyname,
+                regcode: location.regcode,
+                provcode: location.provcode,
+                regname: location.regname,
+                provname: location.provname
+            }))
+            .sort((a, b) => a.ctyname.localeCompare(b.ctyname));
+        // Check if allCityValue is not null or empty
+        if (allCityValue.value !== '') {
+            // console.log('allcityvalue: ', allCityValue.value);
+
+            patientStore.details.generalData.plc_regcode = allCityValue.value.regcode;
+            patientStore.details.generalData.plc_provcode = allCityValue.value.provcode;
+            patientStore.details.generalData.plc_ctycode = allCityValue.value.ctycode;
+        }
+        // console.log('city: ', listOfCities.value);
 
         // Check if locationsArray is an array
         if (!Array.isArray(locationsArray)) {
@@ -102,7 +127,9 @@ async function loadLocations() {
             if (Array.isArray(newLoc)) {
                 distinctCity.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.provcode === patientStore.details.generalData.plc_provcode).map((location) => [location.ctycode, location])).values()).map((location) => ({
                     ctycode: location.ctycode,
-                    ctyname: location.ctyname
+                    ctyname: location.ctyname,
+                    regname: location.regname,
+                    provname: location.provname
                 }));
                 // console.log('distinctCity: ', distinctCity.value);
                 patientStore.locationLoaded = true;
@@ -116,7 +143,9 @@ async function loadLocations() {
                 .map((location) => ({
                     provcode: location.provcode,
                     ctycode: location.ctycode,
-                    ctyname: location.ctyname
+                    ctyname: location.ctyname,
+                    regname: location.regname,
+                    provname: location.provname
                 }))
                 .sort((a, b) => a.ctyname.localeCompare(b.ctyname));
             patientStore.storeCities = distinctCity;
@@ -127,9 +156,7 @@ async function loadLocations() {
             if (Array.isArray(newLoc)) {
                 distinctBarangays.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.ctycode === patientStore.details.generalData.plc_ctycode).map((location) => [location.bgycode, location])).values()).map((location) => ({
                     bgycode: location.bgycode,
-                    bgyname: location.bgyname,
-                    regname: location.regname,
-                    provname: location.provname
+                    bgyname: location.bgyname
                 }));
                 patientStore.locationLoaded = true;
                 patientStore.storeBrgy = distinctBarangays;
@@ -243,6 +270,18 @@ const onResize = () => {
     width.value = window.innerWidth;
     height.value = window.innerHeight;
 };
+
+watch(
+    () => allCityValue.value,
+    (newvalue) => {
+        // console.log('hit');
+        if (newvalue !== (null || '')) {
+            // console.log('hits');
+            loadLocations();
+        }
+    }
+);
+
 watch(
     () => patientStore.details.generalData.plc_regcode,
     async (newRegionCode) => {
@@ -276,7 +315,9 @@ watch(
             if (Array.isArray(newLoc)) {
                 distinctCity.value = Array.from(new Map(newLoc?.value?.data.filter((location) => location.provcode === newProvinceCode).map((location) => [location.ctycode, location])).values()).map((location) => ({
                     ctycode: location.ctycode,
-                    ctyname: location.ctyname
+                    ctyname: location.ctyname,
+                    regname: location.regname,
+                    provname: location.provname
                 }));
             } else {
                 console.error('Expected locations.data to be an array');
@@ -603,103 +644,102 @@ watch([newDate, newTime], ([newDateValue, newTimeValue]) => {
                             :emptyMessage="'Please select a Region first.'"
                         />
                     </div>
-                    <div class="flex flex-column">
-                        <div class="flex justify-content-between">
-                            <label style="color: #000080" class="text-s" for="generalData.plc_ctycode"><i>POI City/Municipality</i></label>
-                            <div class="flex justify-content-end" v-if="patientStore.details.generalData.plc_ctycode === '' || patientStore.details.generalData.plc_ctycode == null">
-                                <small :class="{ 'required-error': true, zoom: patientStore.details.generalData.plc_ctycode === '' || patientStore.details.generalData.plc_ctycode == null }" class="text-red-800 text-s font-bold"
-                                    >Value is required</small
-                                >
+                    <div style="width: 100%" class="flex flex-wrap gap-2">
+                        <div class="flex flex-column" style="width: 49%">
+                            <div class="flex justify-content-between">
+                                <label style="color: #000080" class="text-s" for="generalData.plc_ctycode"><i>POI City/Municipality</i></label>
+                                <div class="flex justify-content-end" v-if="patientStore.details.generalData.plc_ctycode === '' || patientStore.details.generalData.plc_ctycode == null">
+                                    <small :class="{ 'required-error': true, zoom: patientStore.details.generalData.plc_ctycode === '' || patientStore.details.generalData.plc_ctycode == null }" class="text-red-800 text-s font-bold"
+                                        >Value is required</small
+                                    >
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap gap-2 justify-content-between">
+                                <Dropdown
+                                    style="width: 100%"
+                                    id="generalData.plc_ctycode"
+                                    v-model="patientStore.details.generalData.plc_ctycode"
+                                    :options="distinctCity"
+                                    optionLabel="ctyname"
+                                    filter
+                                    optionValue="ctycode"
+                                    :disabled="disableCity"
+                                    :class="{
+                                        'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
+                                        'bg-green-100': patientStore.details.generalData.plc_ctycode === '' || patientStore.details.generalData.plc_ctycode == null
+                                    }"
+                                    :emptyMessage="'Please select a Province first.'"
+                                />
                             </div>
                         </div>
-                        <Dropdown
-                            id="generalData.plc_ctycode"
-                            v-model="patientStore.details.generalData.plc_ctycode"
-                            :options="distinctCity"
-                            optionLabel="ctyname"
-                            filter
-                            optionValue="ctycode"
-                            :disabled="disableCity"
-                            :class="{
-                                'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
-                                'bg-green-100': patientStore.details.generalData.plc_ctycode === '' || patientStore.details.generalData.plc_ctycode == null
-                            }"
-                            :emptyMessage="'Please select a Province first.'"
-                        />
+                        <div style="width: 49%">
+                            <span style="font-size: x-small; color: brown; font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif">ALL CITY</span>
+                            <Dropdown
+                                style="width: 100%; height: 3rem"
+                                v-model="allCityValue"
+                                :options="listOfCities"
+                                optionLabel="ctyname"
+                                showClear
+                                class="font-bold"
+                                :virtualScrollerOptions="{ itemSize: 38 }"
+                                :pt="{ 
+                                    header: { style: { backgroundColor: 'gray' } },
+                                    item: { style: { padding: '0.2rem' } },
+                                    itemLabel: { style: { height: '100%', width: '100%' } }
+                                }"
+                                filter
+                                placeholder="Select a City"
+                            >
+                                <template #value="slotProps">
+                                    <div>
+                                        <div style="color: darkslategray">{{ slotProps?.value?.ctyname }}</div>
+                                        <div class="flex" style="font-size: xx-small; color: white">
+                                            <div style="color: red">{{ slotProps.value.regname }}</div>
+                                            <span style="color: black"> - </span>
+                                            <div style="color: blue; font-weight: bold">{{ slotProps.value.provname }}</div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <template #option="slotProps">
+                                    <div>
+                                        <div style="font-size: medium; font-weight: bold">
+                                            {{ slotProps.option.ctyname }}
+                                        </div>
+                                        <div class="flex" style="font-size: xx-small; color: white">
+                                            <div style="color: red">{{ slotProps.option.regname }}</div>
+                                            <span style="color: black"> - </span>
+                                            <div style="color: blue; font-weight: bold">{{ slotProps.option.provname }}</div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </Dropdown>
+                        </div>
                     </div>
-                    <div class="flex flex-column">
-                        <div class="flex justify-content-between">
-                            <label style="color: #000080" class="text-s" for="generalData.plc_bgycode"><i>POI Baranggay</i></label>
-                            <div class="flex justify-content-end" v-if="patientStore.details.generalData.plc_bgycode === '' || patientStore.details.generalData.plc_bgycode == null">
-                                <small :class="{ 'required-error': true, zoom: patientStore.details.generalData.plc_bgycode === '' || patientStore.details.generalData.plc_bgycode == null }" class="text-red-800 text-s font-bold"></small>
-                            </div>
-                        </div>
-                        <!-- <Dropdown
-                            :pt="{ item: { style: { backgroundColor: '#f0f0f0', padding: '1rem' } } }"
-                            id="generalData.plc_bgycode"
-                            v-model="patientStore.details.generalData.plc_bgycode"
-                            :options="distinctBarangays"
-                            optionLabel="bgyname" 
-                            :disabled="disableBrgy"
-                            showClear
-                            filter
-                            :class="{
-                                'p-inputtext-filled font-bold mb-2 myCSS-inputtext-required': true,
-                                'bg-green-100': !patientStore.details.generalData.plc_bgycode
-                            }"
-                            :emptyMessage="'Please select a City first.'"
-                        /> -->
-                        <Dropdown
-                            style="width: 100%"
-                            v-model="patientStore.details.generalData.plc_bgycode"
-                            :options="distinctBarangays"
-                            optionLabel="bgyname"
-                            showClear
-                            :pt="{
-                                item: { style: { padding: '0.2rem' } },
-                                itemLabel: { style: { height: '100%', width: '100%' } }
-                            }"
-                            filter
-                            placeholder="Select a Barangay"
-                            :class="{
-                                'p-inputtext-filled font-bold mb-2 myCSS-inputtext-required': true,
-                                'bg-green-100': !patientStore.details.generalData.plc_bgycode
-                            }"
-                        >
-                            <template #value="slotProps">
-                                <div class="flex align-items-center" style="height: 1.5rem">
-                                    <div style="color: black">{{ slotProps.value.bgyname }}</div>
-                                </div>
-                            </template>
-                            <template #option="slotProps">
-                                <div>
-                                    <div style="font-size: medium; color: black; font-weight: bold">
-                                        {{ slotProps.option.bgyname }}
-                                    </div>
-                                    <div class="flex" style="font-size: xx-small; color: white">
-                                        <div style="color: red">{{ slotProps.option.regname }}</div>
-                                        <span style="color: black"> - </span>
-                                        <div style="color: blue; font-weight: bold">{{ slotProps.option.provname }}</div>
-                                    </div>
-                                </div>
-                            </template>
-                        </Dropdown>
 
-                        <!-- <Dropdown
-                            id="generalData.plc_bgycode"
-                            v-model="patientStore.details.generalData.plc_bgycode"
-                            :options="distinctBarangays"
-                            optionLabel="bgyname"
-                            optionValue="bgycode"
-                            :disabled="disableBrgy"
-                            showClear
-                            filter
-                            :class="{
-                                'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
-                                'bg-green-100': patientStore.details.generalData.plc_bgycode === '' || patientStore.details.generalData.plc_bgycode == null
-                            }"
-                            :emptyMessage="'Please select a City first.'"
-                        /> -->
+                    <div class="flex flex-column">
+                        <div class="flex flex-column">
+                            <div class="flex justify-content-between">
+                                <label style="color: #000080" class="text-s" for="generalData.plc_bgycode"><i>POI Baranggay</i></label>
+                                <div class="flex justify-content-end" v-if="patientStore.details.generalData.plc_bgycode === '' || patientStore.details.generalData.plc_bgycode == null">
+                                    <small :class="{ 'required-error': true, zoom: patientStore.details.generalData.plc_bgycode === '' || patientStore.details.generalData.plc_bgycode == null }" class="text-red-800 text-s font-bold"></small>
+                                </div>
+                            </div>
+                            <Dropdown
+                                id="generalData.plc_bgycode"
+                                v-model="patientStore.details.generalData.plc_bgycode"
+                                :options="distinctBarangays"
+                                optionLabel="bgyname"
+                                optionValue="bgycode"
+                                :disabled="disableBrgy"
+                                showClear
+                                filter
+                                :class="{
+                                    'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
+                                    'bg-green-100': patientStore.details.generalData.plc_bgycode === '' || patientStore.details.generalData.plc_bgycode == null
+                                }"
+                                :emptyMessage="'Please select a City first.'"
+                            />
+                        </div>
                     </div>
                 </div>
                 <div :style="{ width: width < 800 ? '100%' : '48%' }">

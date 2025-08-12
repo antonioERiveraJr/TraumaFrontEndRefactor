@@ -25,8 +25,7 @@ const biteDialog = ref(false);
 // Define component props
 const props = defineProps({
     dataIsLoaded: {
-        required: true,
-        default: false,
+        required: true, 
         type: Boolean
     }
 });

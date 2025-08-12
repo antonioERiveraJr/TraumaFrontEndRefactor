@@ -3,6 +3,8 @@ import { watch } from 'vue';
 import { usePatientStore } from '../../../../../../store/injury/patientStore';
 import InputTextCheckBoxDoctor from '../../../../../custom/inputTextCheckBoxDoctor.vue';
 import LibraryService from '@/service/LibraryService';
+import CheckBoxMultiple from '../../../../../custom/checkBoxMultiple.vue';
+import TextAreaPreAdmissionDoctor from '../../../../../custom/textAreaPreAdmissionDoctor.vue';
 const props = defineProps({
     dataIsLoaded: {
         required: true,

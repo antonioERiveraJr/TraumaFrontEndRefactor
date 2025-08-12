@@ -972,7 +972,7 @@ watch(
 <template>
     <div :class="noExternal ? 'card custom-shadow mt-3 relative' : 'card mt-3'" style="width: 100%">
         <div :class="noExternal ? 'grid grid-cols-4 gap-2 flex justify-content-center mb-2' : 'grid grid-cols-4 gap-2 flex justify-content-center'">
-            <UntickedExternalSwiches v-if="dataIsLoaded === true" :dataIsLoaded="dataIsLoaded" :width="width" :height="height" />
+            <UntickedExternalSwiches v-if="dataIsLoaded === true" :width="width" :height="height" />
         </div>
         <div class="mt-4">
             <strong for="patientHistory" class="font-bold flex justify-content-center text-lg">History of the Patient</strong>

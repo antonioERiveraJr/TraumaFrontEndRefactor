@@ -3,6 +3,7 @@ import { usePatientStore } from '../../../../../../store/injury/patientStore';
 import InputTextCheckBoxDoctor2 from '../../../../../custom/inputTextCheckBoxDoctor2.vue';
 import LibraryService from '@/service/LibraryService';
 import { defineProps, watch, ref, onMounted } from 'vue';
+import TextAreaPreAdmissionDoctor from '../../../../../custom/textAreaPreAdmissionDoctor.vue';
 const patientStore = usePatientStore();
 const libraryService = new LibraryService();
 
@@ -15,7 +16,7 @@ const props = defineProps({
         type: Number,
         required: true
     },
-    noPhysical:{
+    noPhysical: {
         type: Boolean,
         default: true
     }
@@ -329,7 +330,7 @@ watch(
                 <InputSwitch v-model="patientStore.details.natureOfInjury.noi_no_physical" trueValue="Y" falseValue="N" id="inputswitch" />
                 <label for="inputswitch" class="font-bold ml-2 mt-1"> NO EXTERNAL SIGN OF PHYSICAL INJURY </label>
             </div>
-            <div v-if="props.noPhysical" class="bg-red-200 p-2 absolute bottom-0 text-center text-gray-700 font-semibold italic" style="border-radius: 0 0 1rem 1rem; width: 100%; font-size: 1rem; margin: 0 !important">Value is Required</div>
+            <div v-if="props?.noPhysical" class="bg-red-200 p-2 absolute bottom-0 text-center text-gray-700 font-semibold italic" style="border-radius: 0 0 1rem 1rem; width: 100%; font-size: 1rem; margin: 0 !important">Value is Required</div>
         </div>
     </div>
 </template>

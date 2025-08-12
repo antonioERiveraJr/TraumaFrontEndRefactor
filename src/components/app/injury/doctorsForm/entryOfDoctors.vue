@@ -15,6 +15,10 @@ const props = defineProps({
     enccode: {
         type: String,
         required: true
+    },
+    latestEntry: {
+        type: Object,
+        required: false
     }
 });
 const patientDataIsLoaded = async () => {
@@ -44,7 +48,7 @@ watch(
             patientDataIsLoaded();
         }
     }
-); 
+);
 
 function rowClass(data) {
     return [{ 'bg-primary': data.primediag === 'Y' }];
