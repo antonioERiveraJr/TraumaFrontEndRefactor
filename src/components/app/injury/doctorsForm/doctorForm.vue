@@ -1,11 +1,12 @@
 <script setup>
 import { usePatientStore } from '@/store/injury/patientStore';
 import { watch, ref, defineAsyncComponent, onUnmounted, onMounted } from 'vue';
-import NewGeneralData from './doctorGeneralDataNOI.vue'; 
+import NewGeneralData from './doctorGeneralDataNOI.vue';
 import NewPreAdmission from './doctorPreAdmission.vue';
 import NewExternalCauses from './doctorExternalCauses.vue';
 import SaveBackRemovePanelButtonDoctor from '../../../custom/SaveBackRemovePanelButtonDoctor.vue';
 import InjuryService from '../../../../service/InjuryService';
+import saveTSSOnlyButton from '../../../custom/saveTSSOnlyButton.vue';
 
 const props = defineProps({
     enccode: {
@@ -13,7 +14,7 @@ const props = defineProps({
         required: true
     }
 });
-const loader = ref(true); 
+const loader = ref(true);
 const injuryService = new InjuryService();
 const patientStore = usePatientStore();
 const requiredCountPreAdmission = ref(0);
@@ -78,12 +79,12 @@ const generateSafetyAndFactorText = () => {
     const safetyText = [];
     const factorText = [];
     if (patientStore.details.forTransportVehicularAccident.safe_none === 'Y') {
-        if (patientStore.details.forTransportVehicularAccident.safe_unkn === 'Y') safetyText.push('NO UNKNOWN');
-        if (patientStore.details.forTransportVehicularAccident.safe_airbag === 'Y') safetyText.push('NO AIRBAG');
-        if (patientStore.details.forTransportVehicularAccident.safe_helmet === 'Y') safetyText.push('NO HELMET');
-        if (patientStore.details.forTransportVehicularAccident.safe_cseat === 'Y') safetyText.push('NO CHILD SEAT');
-        if (patientStore.details.forTransportVehicularAccident.safe_sbelt === 'Y') safetyText.push('NO SEAT BELT');
-        if (patientStore.details.forTransportVehicularAccident.safe_vest === 'Y') safetyText.push('NO LIFE VEST');
+        if (patientStore.details.forTransportVehicularAccident.safe_unkn === 'Y') safetyText.push('UNKNOWN');
+        if (patientStore.details.forTransportVehicularAccident.safe_airbag === 'Y') safetyText.push('AIRBAG');
+        if (patientStore.details.forTransportVehicularAccident.safe_helmet === 'Y') safetyText.push('HELMET');
+        if (patientStore.details.forTransportVehicularAccident.safe_cseat === 'Y') safetyText.push('CHILD SEAT');
+        if (patientStore.details.forTransportVehicularAccident.safe_sbelt === 'Y') safetyText.push('SEAT BELT');
+        if (patientStore.details.forTransportVehicularAccident.safe_vest === 'Y') safetyText.push('LIFE VEST');
         if (patientStore.details.forTransportVehicularAccident.safe_other === 'Y') safetyText.push(`${patientStore.details.forTransportVehicularAccident.safe_other_sp}`);
     }
     if (patientStore.details.forTransportVehicularAccident.risk_none === 'Y') {
@@ -142,15 +143,15 @@ const patientDataIsLoaded = async () => {
     updateDetailsValue();
     if (patientStore.details?.header?.final_doctor_details) {
         patientStore.header.final_doctor_details = patientStore.details.header.final_doctor_details;
-        customizedDetails.value = patientStore.details.header.final_doctor_details;
+        // customizedDetails.value = patientStore.details.header.final_doctor_details;
     }
     if (patientStore.details?.header?.final_doctor_diagnosis) {
         patientStore.header.final_doctor_diagnosis = patientStore.details?.header?.final_doctor_diagnosis;
-        customizedDiagnosis.value = patientStore.details.header.final_doctor_diagnosis;
+        // customizedDiagnosis.value = patientStore.details.header.final_doctor_diagnosis;
     }
     if (patientStore.details?.header?.final_doctor_objective) {
-        patientStore.header.final_doctor_objective = patientStore.details?.header?.final_doctor_objective;
-        customizedObjective.value = patientStore.details.header.final_doctor_objective;
+    patientStore.header.final_doctor_objective = patientStore.details?.header?.final_doctor_objective;
+        // customizedObjective.value = patientStore.details.header.final_doctor_objective;
     }
 
     patientStore.enccode = props.enccode;
@@ -188,7 +189,7 @@ watch(
 watch(
     () => patientStore.locationLoaded,
     (newValue) => {
-        if (newValue === true) {  
+        if (newValue === true) {
             loadLocations;
         }
     }
@@ -337,13 +338,42 @@ onUnmounted(() => {
                                 </AccordionTab>
                             </Accordion>
                         </div>
-                        <div class="ml-5">
+                        <!-- <div class="ml-5">
                             <EntryOfDoctors :enccode="props.enccode" :latestEntry="latestEntry" />
-                        </div>
+                        </div> -->
 
-                        <div class="flex justify-content-bottom floating-tag" style="position: fixed; left: 50%; transform: translateX(-50%)">
+                        <!-- <div class="flex justify-content-bottom floating-tag" style="position: fixed; left: 50%; transform: translateX(-50%)">
                             <div>
                                 <SaveBackRemovePanelButtonDoctor
+                                    @update:customizedObjectives="updateCustomizedObjective"
+                                    @update:customizedDiagnosis="updateCustomizedDiagnosis"
+                                    @update:customizedDetails="updateCustomizedDetails"
+                                    :objective="customizedObjective"
+                                    :details="customizedDetails"
+                                    :diagnosis="customizedDiagnosis"
+                                    :latestEntry="latestEntryDoc"
+                                    @update:saving="updateSaving"
+                                />
+                            </div>
+                        </div> -->
+
+                        <div class="floating-tag" style="position: fixed; width: 40%; left: 50%; transform: translateX(-50%)">
+                            <div style="width: 100%">
+                                <SaveBackRemovePanelButtonDoctor
+                                    @update:customizedObjectives="updateCustomizedObjective"
+                                    @update:customizedDiagnosis="updateCustomizedDiagnosis"
+                                    @update:customizedDetails="updateCustomizedDetails"
+                                    :objective="customizedObjective"
+                                    :details="customizedDetails"
+                                    :diagnosis="customizedDiagnosis"
+                                    :latestEntry="latestEntryDoc"
+                                    @update:saving="updateSaving"
+                                />
+                            </div>
+                        </div>
+                        <div class="floating-tag" style="position: fixed; width: 40%">
+                            <div style="width: 100%">
+                                <saveTSSOnlyButton
                                     @update:customizedObjectives="updateCustomizedObjective"
                                     @update:customizedDiagnosis="updateCustomizedDiagnosis"
                                     @update:customizedDetails="updateCustomizedDetails"
@@ -369,7 +399,7 @@ onUnmounted(() => {
                             <template #legend>
                                 <span style="color: #000080" class="font-bold white-space-nowrap">SUBJECTIVE</span>
                             </template>
-                            
+
                             <div class="grid grid-cols-2 gap-2 justify-content-center">
                                 <div style="width: 46%">
                                     <label for="noi" class="p-float-label text-black text-s" style="color: #000080"><i>Nature of Injury </i></label>
@@ -428,11 +458,11 @@ onUnmounted(() => {
                                     disabled
                                     autoResize
                                 />
-                                <i v-badge="'customize'" size="xlarge" class="flex justify-content-end mr-5 badge-button" style="font-size: 2rem" @click="customizedDetails = detailsValue" />
+                                <!-- <i v-badge="'customize'" size="xlarge" class="flex justify-content-end mr-5 badge-button" style="font-size: 2rem" @click="customizedDetails = detailsValue" /> -->
                             </div>
 
-                            <div><Textarea v-if="customizedDetails" style="width: 100%" v-model="customizedDetails" class="mt-1 justify-content-center font-bold" autoResize /></div>
-                            <div style="width: 100%" class="flex justify-content-center"><i v-if="customizedDetails" v-badge.secondary="'final.Detail'" style="font-size: 2rem" /></div>
+                            <!-- <div><Textarea v-if="customizedDetails" style="width: 100%" v-model="customizedDetails" class="mt-1 justify-content-center font-bold" autoResize /></div>
+                            <div style="width: 100%" class="flex justify-content-center"><i v-if="customizedDetails" v-badge.secondary="'final.Detail'" style="font-size: 2rem" /></div> -->
                         </Fieldset>
                         <Fieldset style="width: 100%" :toggleable="true" :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '1rem' } } }" :collapsed="collapsSubjective">
                             <template #legend>
@@ -463,13 +493,13 @@ onUnmounted(() => {
                                     disabled
                                     autoResize
                                 />
-                                <i v-badge="'customize'" size="xlarge" class="flex justify-content-end mr-5 badge-button" style="font-size: 4rem" @click="customizedObjective = patientStore.header.doctor_objective" />
+                                <!-- <i v-badge="'customize'" size="xlarge" class="flex justify-content-end mr-5 badge-button" style="font-size: 4rem" @click="customizedObjective = patientStore.header.doctor_objective" /> -->
                             </div>
 
-                            <div><Textarea v-if="customizedObjective" style="width: 100%" v-model="customizedObjective" autoResize class="font-bold" /></div>
+                            <!-- <div><Textarea v-if="customizedObjective" style="width: 100%" v-model="customizedObjective" autoResize class="font-bold" /></div>
                             <div style="width: 100%" class="flex justify-content-center">
                                 <i v-if="customizedObjective" v-badge.secondary="'final.Objective'" style="font-size: 2rem" />
-                            </div>
+                            </div> -->
                         </Fieldset>
                         <Fieldset style="width: 100%" :toggleable="true" :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '1rem' } } }" :collapsed="collapsDiagnosis">
                             <template #legend>
@@ -500,11 +530,11 @@ onUnmounted(() => {
                                     disabled
                                     autoResize
                                 />
-                                <i v-badge="'customize'" size="xlarge" class="flex justify-content-end mr-5 badge-button" style="font-size: 4rem" @click="customizedDiagnosis = patientStore.header.doctor_diagnosis" />
+                                <!-- <i v-badge="'customize'" size="xlarge" class="flex justify-content-end mr-5 badge-button" style="font-size: 4rem" @click="customizedDiagnosis = patientStore.header.doctor_diagnosis" /> -->
                             </div>
 
-                            <div><Textarea v-if="customizedDiagnosis" style="width: 100%" v-model="customizedDiagnosis" autoResize class="font-bold" /></div>
-                            <div style="width: 100%" class="flex justify-content-center"><i v-if="customizedDiagnosis" v-badge.secondary="'final.Diagnosis'" style="font-size: 2rem" /></div>
+                            <!-- <div><Textarea v-if="customizedDiagnosis" style="width: 100%" v-model="customizedDiagnosis" autoResize class="font-bold" /></div>
+                            <div style="width: 100%" class="flex justify-content-center"><i v-if="customizedDiagnosis" v-badge.secondary="'final.Diagnosis'" style="font-size: 2rem" /></div> -->
                         </Fieldset>
                     </div>
                 </div>

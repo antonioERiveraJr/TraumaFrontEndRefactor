@@ -70,7 +70,7 @@ const rowStyle = (data) => {
 };
 
 async function onRowSelect(e) {
-    try { 
+    try {
         transitions();
         showPatientModal.value = true;
         if (!e || !e.data) {
@@ -218,6 +218,7 @@ watch(
                 </template>
             </Column>
             <Column field="header.injtme" header="Date/Time of Incident" :sortable="true"></Column>
+            <Column field="header.department" header="Department" :sortable="true"></Column>
         </DataTable>
         <Dialog v-model:visible="showPatientModal" maximizable modal header="Patient Injury Form" :style="{ width: '99%' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" @hide="patientStore.resetDialog()">
             <template v-if="selectedPatient">

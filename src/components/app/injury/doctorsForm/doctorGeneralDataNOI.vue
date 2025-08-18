@@ -678,12 +678,11 @@ watch([newDate, newTime], ([newDateValue, newTimeValue]) => {
                                 style="width: 100%; height: 3rem"
                                 v-model="allCityValue"
                                 :options="listOfCities"
-                                optionLabel="ctyname"
-                                showClear
+                                optionLabel="ctyname" 
                                 class="font-bold"
                                 :virtualScrollerOptions="{ itemSize: 38 }"
                                 :pt="{ 
-                                    header: { style: { backgroundColor: 'gray' } },
+                                    header: { style: { backgroundColor: 'lightgray' } },
                                     item: { style: { padding: '0.2rem' } },
                                     itemLabel: { style: { height: '100%', width: '100%' } }
                                 }"
