@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
 import PatientFromEMR from '../views/pages/injury/PatientFromEMR.vue';
+import UnfinishedTSSForm from '../components/app/injury/doctorsForm/unfinishedTSSForm.vue';
 const List = () => import('@/views/pages/injury/List.vue');
 // const Home = () => import('@/views/pages/injury/Home.vue');
 const Logs = () => import('@/views/pages/injury/Logs.vue');
@@ -81,6 +82,11 @@ const router = createRouter({
             path: '/auth/login',
             name: 'login',
             component: () => import('@/views/pages/auth/Login.vue')
+        },
+        {
+            path: '/unfinished',
+            name: 'UnfinishedTSSForm',
+            component: UnfinishedTSSForm
         },
         // {
         //     path: '/injury/:enccode',

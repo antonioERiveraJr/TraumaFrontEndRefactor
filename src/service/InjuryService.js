@@ -19,6 +19,20 @@ export default class InjuryService {
         // Initialize abortController as a property of the class
         this.abortController = null;
         this.router = router;
+    }   
+
+    async getUnfinishedTSSForms() {
+        try {
+            const response = await axios.get("/getUnfinishedTSSForms", {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("authToken"),
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching unfinished TSS forms:", error);
+            throw error; 
+        }
     }
 
     async updatePrimediag(enccode, diagtext, tstamp, diagid) {
