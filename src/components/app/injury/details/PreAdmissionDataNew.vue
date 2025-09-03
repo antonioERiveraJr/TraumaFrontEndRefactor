@@ -25,6 +25,7 @@ const compiledSelectedDiagnosis = ref(patientStore.details.hospitalFacilityData.
 const diagnosisDialog = ref(false);
 const listOfDiagnosis = ref();
 const selectedDiagnoses = ref([]);
+const listOfDiagnosisCounter = ref();
 
 const addDiagnosis = (diagnosis) => {
     if (!selectedDiagnoses.value.includes(diagnosis)) {
@@ -168,7 +169,7 @@ onMounted(async () => {
     // console.log('list of diagnosis: ', fetchListOfDiagnosis, patientStore.enccode);
     listOfDiagnosis.value = fetchListOfDiagnosis;
     // console.log('compiled: ', patientStore.details.hospitalFacilityData.customizedDiagnosis);
-
+    listOfDiagnosisCounter.value = listOfDiagnosis.value.length;
     patientStore.details.hospitalFacilityData.diagnosis = patientStore.header.dx;
     // console.log('diagnosis: ', patientStore.details.hospitalFacilityData.diagnosis, '\n finalDiag: ', patientStore.header.complete_diagnosis);
     loading.value = false;
@@ -249,7 +250,9 @@ watch(
                     <label for="hospitalFacilityData.diagnosis" class="p-float-label font-sans text-black-500 text-xs" style="color: #3366ff">
                         <i>Initial Impression/Diagnosis</i>
                     </label>
-                    <button class="button" @click="diagnosisDialog = true" style="padding: 5px 10px; font-size: 8px; background-color: lightgray; color: white; border: none; border-radius: 2px; cursor: pointer">+</button>
+                    <button v-if="listOfDiagnosisCounter > 1" class="button" @click="diagnosisDialog = true" style="padding: 5px 10px; font-size: 8px; background-color: lightgray; color: white; border: none; border-radius: 2px; cursor: pointer">
+                        +
+                    </button>
                 </div>
 
                 <div class="flex justify-content-end" v-if="patientStore.details.hospitalFacilityData.diagnosis == ''">
@@ -270,7 +273,7 @@ watch(
                 />
                 <!-- {{ patientStore.details.hospitalFacilityData.customizedDiagnosis }} -->
                 <div class="field mt-5" v-if="patientStore.details.hospitalFacilityData.customizedDiagnosis !== (undefined && null && '')">
-                    <span class="p-float-label" v-if="patientStore.details.hospitalFacilityData.customizedDiagnosis !== '' ">
+                    <span class="p-float-label" v-if="patientStore.details.hospitalFacilityData.customizedDiagnosis !== ''">
                         <Textarea disabled inputId="Customized Diagnosis Preview" class="font-bold" style="width: 100%" autoResize disable v-model="patientStore.details.hospitalFacilityData.customizedDiagnosis"></Textarea>
                         <label style="width: 100%" for="Unrecognized Fields">Customized Diagnosis Preview</label>
                     </span>

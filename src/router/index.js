@@ -2,11 +2,12 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
 import PatientFromEMR from '../views/pages/injury/PatientFromEMR.vue';
 import UnfinishedTSSForm from '../components/app/injury/doctorsForm/unfinishedTSSForm.vue';
+import PatientFromOPD from '../views/pages/injury/PatientFromOPD.vue';
 const List = () => import('@/views/pages/injury/List.vue');
 // const Home = () => import('@/views/pages/injury/Home.vue');
 const Logs = () => import('@/views/pages/injury/Logs.vue');
 const Repair = () => import('@/views/pages/injury/Repair.vue');
-const Stats = () => import('@/views/pages/injury/Stats.vue'); 
+const Stats = () => import('@/views/pages/injury/Stats.vue');
 const NewList = () => import('@/views/pages/injury/newList.vue');
 
 const router = createRouter({
@@ -133,6 +134,11 @@ const router = createRouter({
             // props: (route) => ({ token: route.query.token })
             // props: (route) => ({ token: route.query.access_token, enccode: route.query.enccode, empID: route.query.empID })
         },
+        {
+            path: '/injury/PatientFromOPD',
+            name: 'PatientFromOPD',
+            component: PatientFromOPD
+        }
         // {
         //     path: '/developer',
         //     name: 'developer',

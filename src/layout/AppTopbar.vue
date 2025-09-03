@@ -99,7 +99,7 @@ async function logout() {
         <router-link to="/home" class="layout-topbar-logo">
             <!-- <img :src="logoUrl" alt="logo" /> -->
             <img src="@/assets/images/BGHMC.png" alt="logo" />
-            <b>Trauma Surveillance System</b>
+            <b>BGHMC Trauma Surveillance System</b>
         </router-link>
 
         <button class="p-link layout-menu-button layout-topbar-button" @click="onMenuToggle()">

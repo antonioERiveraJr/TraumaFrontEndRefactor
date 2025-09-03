@@ -6,7 +6,9 @@ import useVuelidate from '@vuelidate/core';
 import LibraryService from '@/service/LibraryService';
 import SaveBackRemovePanelButton from '../../../custom/SaveBackRemovePanelButton.vue';
 import InputTextCheckBoxExternal from '../../../custom/inputTextCheckBoxExternal.vue';
+import InjuryService from '../../../../service/InjuryService';
 
+const injuryService = new InjuryService();
 const patientStore = usePatientStore();
 const loading = ref(true);
 const validationRules = createValidationRules();
@@ -26,7 +28,31 @@ const waterVehicles = libraryService.getWaterVehicles();
 const vehicleCodes = ref([]);
 const generatedText = ref('');
 const selectedBurnDegree = ref();
+const listOfFinalDiagnosis = ref();
+const ListOfFinalDiagnosisDialog = ref(false);
+const compiledSelectedFinalDiagnosis = ref(patientStore.details.hospitalFacilityData.customizedFinalDiagnosis);
 const unrecognizedFieldsPreview = ref(patientStore?.details?.ExternalCauseOfInjury?.ext_others_external_preview);
+const selectedFinalDiagnoses = ref([]);
+const finalDiagnosisListCounter = ref();
+
+const addDiagnosis = (diagnosis) => {
+    if (!selectedFinalDiagnoses.value.includes(diagnosis)) {
+        selectedFinalDiagnoses.value.push(diagnosis);
+        compiledSelectedFinalDiagnosis.value = selectedFinalDiagnoses.value.map((d) => d.diagtext).join('\n\n ');
+        patientStore.details.hospitalFacilityData.customizedFinalDiagnosis = compiledSelectedFinalDiagnosis;
+    }
+};
+
+const removeDiagnosis = (diagnosis) => {
+    selectedFinalDiagnoses.value = selectedFinalDiagnoses.value.filter((d) => d.tstamp !== diagnosis.tstamp);
+
+    // Compile selected diagnoses into a string after removal
+    const compiledSelectedDiagnosis = selectedFinalDiagnoses.value.map((d) => d.diagtext).join('\n\n '); // Join with a comma
+
+    // Update the patient store
+    patientStore.details.hospitalFacilityData.customizedDiagnosis = compiledSelectedDiagnosis;
+};
+
 const getRequiredValidation = (field) => {
     return v$.value.$silentErrors.some((error) => error.$property === field);
 };
@@ -405,6 +431,11 @@ watch(
     }
 );
 onMounted(async () => {
+    const fetchListOfFinalDiagnosis = await injuryService.getListOfFinalDiagnosis(patientStore.header.admEnccode);
+    listOfFinalDiagnosis.value = fetchListOfFinalDiagnosis;
+    finalDiagnosisListCounter.value = listOfFinalDiagnosis.value.length;
+    // console.log('counter: ', finalDiagnosisListCounter);
+    
     if (patientStore.details.ExternalCauseOfInjury.ext_battery === 'Y') {
         patientStore.details.ExternalCauseOfInjury.ext_maul = 'Y';
     }
@@ -853,10 +884,22 @@ onMounted(async () => {
 
             <div class="flex justify-content-end" v-if="patientStore.details.hospitalFacilityData.diagnosis == ''">
                 <small :class="'required-error'" class="text-red-800 text-xs font-bold">Value is required</small>
-            </div> 
-            <div class="line"></div> 
+            </div>
+            <div class="line"></div>
             <div v-if="patientStore.header.complete_diagnosis">
-                <p class="text-2xs text-black-500 flex justify-content-start"><b>FINAL DIAGNOSIS</b></p>
+                <div class="container" style="display: flex; justify-content: space-between; align-items: center; padding: 10px">
+                    <label for="hospitalFacilityData.diagnosis" class="p-float-label font-sans text-black-500 text-xs" style="color: #3366ff">
+                        <p class="text-2xs text-black-500 flex justify-content-start"><b>FINAL DIAGNOSIS</b></p>
+                    </label>
+                    <button
+                        v-if="finalDiagnosisListCounter > 1"
+                        class="button"
+                        @click="ListOfFinalDiagnosisDialog = true"
+                        style="padding: 5px 10px; font-size: 8px; background-color: lightgray; color: white; border: none; border-radius: 2px; cursor: pointer"
+                    >
+                        +
+                    </button>
+                </div>
                 <Textarea
                     style="text-transform: uppercase"
                     id="complete_diagnosis"
@@ -870,6 +913,12 @@ onMounted(async () => {
                         'bg-green-100': patientStore.header.complete_diagnosis === ''
                     }"
                 />
+                <div class="field mt-5" v-if="patientStore.details.hospitalFacilityData.customizedFinalDiagnosis !== (undefined && null && '')">
+                    <span class="p-float-label" v-if="patientStore.details.hospitalFacilityData.customizedFinalDiagnosis !== ''">
+                        <Textarea disabled inputId="Customized Final Diagnosis Preview" class="font-bold" style="width: 100%" autoResize disable v-model="patientStore.details.hospitalFacilityData.customizedFinalDiagnosis"></Textarea>
+                        <label style="width: 100%" for="Unrecognized Fields">Customized Final Diagnosis Preview</label>
+                    </span>
+                </div>
                 <div class="flex justify-content-evenly">
                     <b v-if="patientStore.header.disp_inpat">FINALDISP</b>
                     <b v-if="patientStore.header.outcome_inpat">FINALCOND</b>
@@ -885,10 +934,43 @@ onMounted(async () => {
                 <SaveBackRemovePanelButton />
             </div>
         </div>
+        <Dialog v-model:visible="ListOfFinalDiagnosisDialog" modal header="CUSTOMIZE FINAL DIAGNOSIS" :style="{ width: '50%', height: '60%' }">
+            <div style="display: flex; justify-content: space-between; padding: 20px">
+                <div style="flex: 1; margin-right: 10px">
+                    <strong>List of Final Diagnosis</strong>
+                    <ul>
+                        <li v-for="diagnosis in listOfFinalDiagnosis" :key="diagnosis.tstamp">
+                            <button @click="addDiagnosis(diagnosis)">{{ diagnosis.diagtext }}</button>
+                        </li>
+                    </ul>
+                </div>
+                <div style="flex: 1; margin-left: 10px">
+                    <strong>Selected Diagnosis</strong>
+                    <ul>
+                        <li v-for="selected in selectedFinalDiagnoses" :key="selected.tstamp">
+                            <button @click="removeDiagnosis(selected)">{{ selected.diagtext }}</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </Dialog>
     </div>
 </template>
 
 <style scoped>
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px 0;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
 .bg-green-100 {
     background-color: #4caf50;
 }

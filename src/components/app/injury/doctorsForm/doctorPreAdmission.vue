@@ -2,7 +2,7 @@
 import { usePatientStore } from '../../../../store/injury/patientStore';
 import createValidationRules from '../../../../validation/injuryValidations';
 import useVuelidate from '@vuelidate/core';
-import { ref, computed, watch, defineEmits, onUnmounted } from 'vue';
+import { ref, computed, watch, defineEmits, onUnmounted, onBeforeMount } from 'vue';
 import LibraryService from '@/service/LibraryService';
 import Swal from 'sweetalert2';
 import TickedPreAdmissionSwitch from './formInterfaces/tickedSwitches/tickedPreAdmissionSwitch.vue';
@@ -322,12 +322,21 @@ const patientDataIsLoaded = async () => {
     onResize();
     dataIsLoaded.value = true;
 };
-
+// Lifecycle hook before the component is mounted
+onBeforeMount(() => {
+    // Check the initial state of patientStore.dataIsLoaded
+    if (patientStore.dataIsLoaded) {
+        patientDataIsLoaded(); // Handle already loaded data
+        console.log('Doctor pre data is loaded on mount using before mounted: ', patientStore.dataIsLoaded);
+        dataIsLoaded.value = true;
+    }
+});
 watch(
     () => patientStore.dataIsLoaded,
     (newValue) => {
         if (newValue === true) {
             patientDataIsLoaded();
+            console.log('docto pre data is loaded: ', patientStore.dataIsLoaded);
             dataIsLoaded.value = true;
         }
     }

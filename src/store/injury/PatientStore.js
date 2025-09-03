@@ -15,8 +15,11 @@ store.use(resetStore);
 
 export default store;
 export const usePatientStore = defineStore('PatientStore', () => {
+    const progressionDay = '';
+    const patientTSSRecord = '';
     const submitForm = ref(null);
     const enccode = ref('');
+    const admEnccode = ref('');
     const status = ref('');
     // const resetSelectedPatients = ref(false);
     const loadSignal = ref(false);
@@ -396,6 +399,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             stat_reachdtl: '',
             diagnosis: '',
             customizedDiagnosis: '',
+            customizedFinalDiagnosis: '',
             icd_10_nature_er: '',
             icd_10_external_er: '',
             treatmentGiven: '',
@@ -446,6 +450,20 @@ export const usePatientStore = defineStore('PatientStore', () => {
             multiple_dislocation_closed: false,
             multiple_puncture: false,
             multiple_other: false
+        },
+        followUp: {
+            complaints: '',
+            complaints_details: '',
+            adverse_reaction: '',
+            adverse_reaction_details: '',
+            biting: '',
+            others: '',
+            wound_description: '',
+            wound_description_others: '',
+            erythema: '',
+            dischare: '',
+            tenderazzo: '',
+            hepatoma: ''
         }
     });
 
@@ -672,6 +690,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             status_code: '',
             mode_transport_code: '',
             customizedDiagnosis: '',
+            customizedFinalDiagnosis: '',
             stat_reachdtl: '',
             diagnosis: '',
             icd_10_nature_er: '',
@@ -723,6 +742,20 @@ export const usePatientStore = defineStore('PatientStore', () => {
             multiple_dislocation_closed: false,
             multiple_puncture: false,
             multiple_other: false
+        },
+        followUp: {
+            complaints: '',
+            complaints_details: '',
+            adverse_reaction: '',
+            adverse_reaction_details: '',
+            biting: '',
+            others: '',
+            wound_description: '',
+            wound_description_others: '',
+            erythema: '',
+            dischare: '',
+            tenderazzo: '',
+            hepatoma: ''
         }
     });
     watch(
@@ -797,6 +830,18 @@ export const usePatientStore = defineStore('PatientStore', () => {
     // const forSaving = ref({});
 
     // Function to set the loadList callback
+    async function loadOPDPatientData(patientData) {
+        header.value.patname = patientData.patientname;
+        header.value.hpercode = patientData.hpercode;
+        enccode.value = patientData.enccode;
+        // header.value.injtme = patientData.opdtime;
+        // header.value.injdte = patientData.opdtime;
+        header.value.patbdate = patientData.patientbirthdate;
+        header.value.admdate = patientData.opdtime;
+        // console.log('patientData: ', patientData);
+        // console.log('header: ', header);
+        dataIsLoaded.value = true;
+    }
 
     async function loadPatientData(enc) {
         // alert('hit');
@@ -810,12 +855,14 @@ export const usePatientStore = defineStore('PatientStore', () => {
                 }
             });
             // console.log('enccode:', response.data.enccode);
+            // console.log('admitting enccode:', response.data.admEnccode);
 
             // console.log('Response from loadPatientData(response):', response);
             ufiveID.value = response?.data?.details?.ufiveID;
             header.value = response.data.header;
             enccode.value = response.data.enccode;
             status.value = response.data.status;
+            admEnccode.value = response.data.admEnccode;
             //check if response.data.details has a value
             // console.log('Response from loadPatientData(data.details):', response.data.details);
             if (response.data.details != null) {
@@ -860,9 +907,12 @@ export const usePatientStore = defineStore('PatientStore', () => {
             });
             // console.log('enccode:', response.data.enccode);
 
+            // console.log('enccode:', response.data.enccode);
+            // console.log('admitting enccode:', response.data.header.admEnccode);
             // console.log('Response from loadPatientData(response):', response);
             ufiveID.value = response?.data?.idufive;
             header.value = response.data.header;
+            admEnccode.value = response.data.header.admEnccode;
             enccode.value = response.data.enccode;
             status.value = response.data.status;
             //check if response.data.details has a value
@@ -1049,6 +1099,34 @@ export const usePatientStore = defineStore('PatientStore', () => {
         return response;
     }
 
+    async function saveOPDFormattedData() {
+        const formattedData = formatDataForSaving();
+
+        const response = await axios
+            .post(
+                'saveOPDData',
+
+                {
+                    formattedData: formattedData
+                },
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                    }
+                }
+            )
+            .then((res) => {
+                return res;
+            })
+            .catch((err) => {
+                console.error(err);
+                return err.response;
+            });
+
+        console.log('response: ', response, '\n', 'formatted:', formattedData);
+        return response;
+    }
+
     async function saveFormattedData() {
         const formattedData = formatDataForSaving();
 
@@ -1144,7 +1222,23 @@ export const usePatientStore = defineStore('PatientStore', () => {
         //add more  fields as needed
         // NATURE of INJURY (GeneralDataNOI.vue)
         // alert('hit');
+        //folowup
+        details.value.followUp.complaints = '';
+        details.value.followUp.complaints_details = '';
+        details.value.followUp.adverse_reaction = '';
+        details.value.followUp.adverse_reaction_details = '';
+        details.value.followUp.biting = '';
+        details.value.followUp.others = '';
+        details.value.followUp.wound_description = '';
+        details.value.followUp.wound_description_others = '';
+        details.value.followUp.erythema = '';
+        details.value.followUp.dischare = '';
+        details.value.followUp.tenderazzo = '';
+        details.value.followUp.hepatoma = '';
+
+        //
         details.value.details.hospitalFacilityData.customizedDiagnosis = '';
+        details.value.details.hospitalFacilityData.customizedFinalDiagnosis = '';
         details.value.generalData.doctor_injtme = '';
         details.value.forTransportVehicularAccident.risk_alcliq = 'N';
         details.value.forTransportVehicularAccident.risk_smoke = 'N';
@@ -1373,8 +1467,10 @@ export const usePatientStore = defineStore('PatientStore', () => {
         loadPatientDataDev,
         formatDataForSaving,
         saveFormattedData,
+        saveOPDFormattedData,
         saveFormattedDataArchived,
         submitForm,
+        loadOPDPatientData,
         defaultDetails,
         // resetSelectedPatients,
         removeFromList,
@@ -1383,6 +1479,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         defaultHeader,
         loadSignal,
         finalDiagnosis,
+        patientTSSRecord,
         finalDoctorDetails,
         textFactorSafety,
         registry,
@@ -1397,6 +1494,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         storeBrgy,
         storeCities,
         storeProvinces,
-        storeRegions
+        storeRegions,
+        progressionDay
     };
 });

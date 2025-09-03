@@ -1,29 +1,36 @@
 <script setup>
 import { usePatientStore } from '@/store/injury/patientStore';
-import { watch, ref, defineAsyncComponent, onUnmounted, onMounted } from 'vue';
-import NewGeneralData from './doctorGeneralDataNOI.vue';
-import NewPreAdmission from './doctorPreAdmission.vue';
-import NewExternalCauses from './doctorExternalCauses.vue';
-import SaveBackRemovePanelButtonDoctor from '../../../custom/SaveBackRemovePanelButtonDoctor.vue';
-import InjuryService from '../../../../service/InjuryService';
-import saveTSSOnlyButton from '../../../custom/saveTSSOnlyButton.vue';
+import { watch, ref, onUnmounted, onMounted } from 'vue';
+import NewGeneralData from '../doctorsForm/doctorGeneralDataNOI.vue';
+import NewPreAdmission from '../doctorsForm/doctorPreAdmission.vue';
+// import NewExternalCauses from '../doctorsForm/doctorExternalCauses.vue';
+// import SaveBackRemovePanelButtonDoctor from '../../../custom/SaveBackRemovePanelButtonDoctor.vue';
+import InjuryService from '../../../../../src/service/InjuryService';
+// import saveTSSOnlyButton from '../../../../../src/components/custom/saveTSSOnlyButton.vue';
+import BiteForm from '../doctorsForm/subForm/biteForm.vue';
+import SaveOPDTSSOnlyButton from '../../../custom/saveOPDTSSOnlyButton.vue';
+import FollowUpForm from './followUpForm.vue';
 
 const props = defineProps({
     enccode: {
         type: String,
         required: true
     }
+    // day: {
+    //     type: String,
+    //     required: true
+    // }
 });
 const loader = ref(true);
 const injuryService = new InjuryService();
 const patientStore = usePatientStore();
 const requiredCountPreAdmission = ref(0);
-const requiredCountExternalCauses = ref(0);
+const requiredCountABTCForm = ref(0);
 const requiredCountGeneralData = ref(0);
 const collapsObjective = ref(true);
 const collapsSubjective = ref(true);
 const collapsDiagnosis = ref(true);
-const EntryOfDoctors = defineAsyncComponent(() => import('@/components/app/injury/doctorsForm/EntryOfDoctors.vue'));
+// const EntryOfDoctors = defineAsyncComponent(() => import('@/components/app/injury/doctorsForm/EntryOfDoctors.vue'));
 const detailsValue = ref(patientStore.finalDiagnosis);
 const latestEntryDoc = ref();
 const saving = ref(false);
@@ -62,9 +69,9 @@ const updateSaving = (value) => {
 const updateRequiredCountPreAdmission = (value) => {
     requiredCountPreAdmission.value = value;
 };
-const updateRequiredCountExternalCauses = (value) => {
-    requiredCountExternalCauses.value = value;
-};
+// const updateRequiredCountABTCForm = (value) => {
+//     requiredCountABTCForm.value = value;
+// };
 const updateRequiredCountGeneralData = (value) => {
     requiredCountGeneralData.value = value;
 };
@@ -103,6 +110,37 @@ const generateSafetyAndFactorText = () => {
         factorText: factorText.join(', ')
     };
 };
+const updateRequiredFieldCountForBite = () => {
+    requiredCountABTCForm.value = 0;
+
+    // Check if the bite injury is marked as 'Y'
+    if (patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y') {
+        // Increment the count for each missing field
+        if (patientStore.details.ExternalCauseOfInjury.ext_bite_sp === '') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.dogbiteDegree === '') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.bleeding === '') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.bitingAnimal === '') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.observation === '') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.first_aid_code === '') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.washingDone === '') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.previousARV === '') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.tetanusVaccination === '') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.allergies === '') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.adverseReaction === '') requiredCountABTCForm.value++;
+
+        // Include the additional first aid code check
+        if (patientStore.details.preAdmissionData.first_aid_code === '') requiredCountABTCForm.value++;
+
+        // Check vaccinations
+        if (patientStore.details.ExternalCauseOfInjury.hrig === 'Y' && patientStore.details.ExternalCauseOfInjury.hrig_num === '') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.erig === 'Y' && patientStore.details.ExternalCauseOfInjury.erig_num === '') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.ats === 'Y' && patientStore.details.ExternalCauseOfInjury.ats_num === '') requiredCountABTCForm.value++;
+
+        // Check sites for vaccinations
+        if (patientStore.details.ExternalCauseOfInjury.pvrv === 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv_site_4 !== 'Y') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.pcec === 'Y' && patientStore.details.ExternalCauseOfInjury.pcec_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pcec_site_4 !== 'Y') requiredCountABTCForm.value++;
+    }
+};
 
 const updateDetailsValue = () => {
     const { safetyText, factorText } = generateSafetyAndFactorText();
@@ -130,6 +168,11 @@ const updateDetailsValue = () => {
     }
 };
 const patientDataIsLoaded = async () => {
+    console.log('progression Day: ', patientStore.progressionDay);
+    // patientStore.dataIsLoaded = false;
+    // patientStore.dataIsLoaded = true;
+    console.log('data is loaded: ', patientStore.dataIsLoaded);
+
     try {
         latestEntry.value = await injuryService.getLatestEntryOfDoctors(patientStore.enccode);
         latestEntryDoc.value = latestEntry;
@@ -178,14 +221,18 @@ watch(
     },
     { deep: true }
 );
-watch(
-    () => patientStore.dataIsLoaded,
-    (newValue) => {
-        if (newValue === true) {
-            patientDataIsLoaded();
-        }
-    }
-);
+// watch(
+//     () => patientStore.progressionDay,
+//     () => {
+//         // console.log('progression day: ', props.day);
+//         console.log('hit');
+//         console.log('progression Day: ', patientStore.progressionDay);
+//         patientDataIsLoaded();
+//     },
+//     {
+//         deep: true
+//     }
+// );
 watch(
     () => patientStore.locationLoaded,
     (newValue) => {
@@ -269,12 +316,19 @@ watch(customizedDiagnosis, (newValue) => {
 watch(customizedDetails, (newValue) => {
     patientStore.header.final_doctor_details = newValue;
 });
+watch(
+    () => [patientStore.details.ExternalCauseOfInjury],
+    () => {
+        updateRequiredFieldCountForBite();
+    },
+    { deep: true }
+);
 
 const width = ref(window.innerWidth);
 const height = ref(window.innerHeight);
 const size = ref(35);
 watch(width, (newWidth) => {
-    size.value = newWidth < 1250 ? 0 : 35;
+    size.value = newWidth < 1900 ? 0 : 35;
 });
 const onResize = () => {
     width.value = window.innerWidth;
@@ -282,6 +336,11 @@ const onResize = () => {
 };
 window.addEventListener('resize', onResize);
 onMounted(() => {
+    patientDataIsLoaded();
+    console.log('mountedhit');
+    console.log(patientStore.progressionDay);
+    patientStore.details.ExternalCauseOfInjury.ext_bite = 'Y';
+    updateRequiredFieldCountForBite();
     window.addEventListener('resize', onResize);
     size.value = width.value < 1250 ? 0 : 35;
 });
@@ -295,7 +354,7 @@ onUnmounted(() => {
     </div>
     <div style="height: 100%">
         <Splitter style="height: 100%">
-            <SplitterPanel style="height: 100%" :size="75">
+            <SplitterPanel style="height: 100%" :size="100">
                 <Splitter layout="vertical">
                     <SplitterPanel style="background-color: #e5e5e5" :size="5" class="flex justify-content-center sticky">
                         <h1 class="font-bold">{{ patientStore.header.patname }}</h1>
@@ -309,12 +368,12 @@ onUnmounted(() => {
                                 <AccordionTab :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }"
                                     ><template #header>
                                         <span class="flex align-items-center gap-2 w-full">
-                                            <span style="color: #000080" class="font-bold white-space-nowrap">EXTERNAL CAUSES</span>
-                                            <i v-if="requiredCountExternalCauses" v-badge.danger="requiredCountExternalCauses" class="pi pi-file-edit" style="font-size: 2rem" v-tooltip.bottom="`${requiredCountExternalCauses} Required Fields`" />
+                                            <span style="color: #000080" class="font-bold white-space-nowrap">ABTC Form</span>
+                                            <i v-if="requiredCountABTCForm" v-badge.danger="requiredCountABTCForm" class="pi pi-file-edit" style="font-size: 2rem" v-tooltip.bottom="`${requiredCountABTCForm} Required Fields`" />
                                             <i v-else class="pi pi-file-edit" style="font-size: 2rem" />
                                         </span>
                                     </template>
-                                    <NewExternalCauses @update:requiredCountExternalCauses="updateRequiredCountExternalCauses" />
+                                    <BiteForm />
                                 </AccordionTab>
                                 <AccordionTab :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }"
                                     ><template #header>
@@ -335,6 +394,17 @@ onUnmounted(() => {
                                         </span>
                                     </template>
                                     <NewGeneralData @update:requiredCountGeneralData="updateRequiredCountGeneralData" />
+                                </AccordionTab>
+                                <AccordionTab v-if="patientStore.progressionDay !== '0'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
+                                    <template #header>
+                                        <span class="flex align-items-center gap-2 w-full">
+                                            <span style="color: #000080" class="font-bold white-space-nowrap">FOLLOW-UP FORM</span>
+                                            <i v-if="requiredCountGeneralData > 0" v-badge.danger="requiredCountGeneralData" class="pi pi-file-edit" style="font-size: 2rem" v-tooltip.bottom="`${requiredCountGeneralData} Required Fields`" />
+                                            <i v-else class="pi pi-file-edit" style="font-size: 2rem" />
+                                        </span>
+                                    </template>
+                                    <FollowUpForm />
+                                    <!-- <NewGeneralData @update:requiredCountGeneralData="updateRequiredCountGeneralData" /> -->
                                 </AccordionTab>
                             </Accordion>
                         </div>
@@ -359,7 +429,7 @@ onUnmounted(() => {
 
                         <div class="floating-tag" style="position: fixed; width: 40%; left: 50%; transform: translateX(-50%)">
                             <div style="width: 100%">
-                                <SaveBackRemovePanelButtonDoctor
+                                <!-- <SaveBackRemovePanelButtonDoctor
                                     @update:customizedObjectives="updateCustomizedObjective"
                                     @update:customizedDiagnosis="updateCustomizedDiagnosis"
                                     @update:customizedDetails="updateCustomizedDetails"
@@ -368,12 +438,12 @@ onUnmounted(() => {
                                     :diagnosis="customizedDiagnosis"
                                     :latestEntry="latestEntryDoc"
                                     @update:saving="updateSaving"
-                                />
+                                /> -->
                             </div>
                         </div>
                         <div class="floating-tag" style="position: fixed; width: 40%">
                             <div style="width: 100%">
-                                <saveTSSOnlyButton
+                                <SaveOPDTSSOnlyButton
                                     @update:customizedObjectives="updateCustomizedObjective"
                                     @update:customizedDiagnosis="updateCustomizedDiagnosis"
                                     @update:customizedDetails="updateCustomizedDetails"
@@ -389,7 +459,7 @@ onUnmounted(() => {
                 </Splitter>
             </SplitterPanel>
 
-            <SplitterPanel v-if="size === 35" class="justify-content-center rainbow-border" :size="25" :minSize="10" style="min-height: 98vh; height: 100%; overflow-y: auto">
+            <SplitterPanel hidden v-if="size === 35" class="justify-content-center rainbow-border" :size="25" :minSize="10" style="min-height: 98vh; height: 100%; overflow-y: auto">
                 <div class="sticky">
                     <div v-if="loader" class="flex justify-content-center align-items-center" style="top: 0; left: 0; width: 100%; height: 98vh; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
                         <img src="@/assets/images/loader.gif" alt="Loading..." style="height: 10rem; width: 10rem" />

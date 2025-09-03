@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
-import axios, { Axios } from 'axios';
-import { useDateFormat, useNow } from '@vueuse/core';
+import axios from 'axios';
+// import { useDateFormat, useNow } from '@vueuse/core';
 // import { useUserStore } from '../general/UserStore';
 // import { LogarithmicScale } from 'chart.js';
 import { useUserStore } from '../store/general/UserStore';
@@ -20,6 +20,22 @@ export default class InjuryService {
         this.abortController = null;
         this.router = router;
     }   
+    async getOPDPatientData(enccode) {
+        try{
+            console.log('enccode: ', enccode);
+            const response = await axios.get('/opdPatientData', {
+                params:{
+                    enccode:enccode
+                },
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("authToken"),
+                },
+            });
+            return response.data;
+        }catch(err){console.error('error: ', err);
+            throw err;
+        }
+    }
 
     async getUnfinishedTSSForms() {
         try {
@@ -135,7 +151,7 @@ export default class InjuryService {
 
             return response.data;
         } catch (error) {
-            console.log('Error fetching latest entry of doctors:', error);
+            console.log('Patient not locked');
 
             // throw error;
         }
@@ -505,6 +521,8 @@ export default class InjuryService {
         return response;
     }
 
+    
+
     async extractKeywords(text) {
         // console.log('getKeyTerms(' + text + ')');
         const response = await axios
@@ -548,7 +566,15 @@ export default class InjuryService {
     //         throw error; // Rethrow the error for handling in the component
     //     }
     // }
-
+async checkPatientTSSRecord(hpercode){
+        const response = await axios.get('checkPatientTSSRecord', {
+            params: {hpercode: hpercode},
+            headers: {
+                 Authorization: 'Bearer ' + localStorage.getItem('authToken')
+            }
+        })
+        return response;
+    }
     async fetchEmployeeNames(employeeIds) {
         const uncachedIds = employeeIds?.filter((id) => !employeeCache[id]);
         if (uncachedIds?.length === 0) {
@@ -788,6 +814,21 @@ export default class InjuryService {
         try {
             const response = await axios.get('/getListOfDiagnosis', {
                 params: { enccode },
+
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.log('error generating report: ', error);
+        }
+    }
+
+      async getListOfFinalDiagnosis(admEnccode) {
+        try {
+            const response = await axios.get('/getListOfFinalDiagnosis', {
+                params: { admEnccode },
 
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('authToken')

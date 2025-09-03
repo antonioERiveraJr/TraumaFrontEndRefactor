@@ -77,6 +77,7 @@ async function onRowSelect(e) {
             console.error('Row data is undefined or null');
             return;
         }
+
         const patientMap = new Map();
         const enccodes = new Set();
         props.list.forEach((patient) => {
@@ -95,7 +96,7 @@ async function onRowSelect(e) {
             console.error('Patient not found for enccode:', enccode);
             return;
         }
-
+        console.log('enccode: ', patient.enccode);
         patientStore.enccode = patient.enccode;
         patientStore.status = patient.status;
         patientStore.header = patient.header;

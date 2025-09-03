@@ -2,7 +2,7 @@
 import { usePatientStore } from '@/store/injury/PatientStore';
 import { useLocationsStore } from '../../../../store/general/LocationsStore';
 
-import { ref, watch, defineEmits, onUnmounted } from 'vue';
+import { ref, watch, defineEmits, onUnmounted, onBeforeMount } from 'vue';
 
 import createValidationRules from '../../../../validation/injuryValidations';
 import useVuelidate from '@vuelidate/core';
@@ -34,7 +34,7 @@ const v$ = useVuelidate(validationRules, detailsData);
 const injuryIntents = libraryService.getInjuryIntents();
 const modesOfTransport = libraryService.getModesOfTransport();
 const statusReaching = libraryService.getStatusReaching();
-const loading = ref(true);
+const loading = ref(false);
 const injuryDate = ref(patientStore.details.generalData.doctor_injtme);
 const dateSituation = ref('Complete');
 const erDate = ref();
@@ -281,7 +281,13 @@ watch(
         }
     }
 );
-
+onBeforeMount(() => {
+    // Check the initial state of patientStore.dataIsLoaded
+    if (patientStore.dataIsLoaded) {
+        patientDataIsLoaded(); // Handle already loaded data
+        console.log('Doctor pre data is loaded on mount using before mounted: ', patientStore.dataIsLoaded);
+    }
+});
 watch(
     () => patientStore.details.generalData.plc_regcode,
     async (newRegionCode) => {
@@ -678,10 +684,10 @@ watch([newDate, newTime], ([newDateValue, newTimeValue]) => {
                                 style="width: 100%; height: 3rem"
                                 v-model="allCityValue"
                                 :options="listOfCities"
-                                optionLabel="ctyname" 
+                                optionLabel="ctyname"
                                 class="font-bold"
                                 :virtualScrollerOptions="{ itemSize: 38 }"
-                                :pt="{ 
+                                :pt="{
                                     header: { style: { backgroundColor: 'lightgray' } },
                                     item: { style: { padding: '0.2rem' } },
                                     itemLabel: { style: { height: '100%', width: '100%' } }

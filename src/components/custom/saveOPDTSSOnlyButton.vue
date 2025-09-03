@@ -1,26 +1,17 @@
 <script setup>
 import { useToast } from 'primevue/usetoast';
-import { useConfirm } from 'primevue/useconfirm';
-import { inject, onMounted, ref, computed, watch } from 'vue';
+import { inject, ref, computed, watch } from 'vue';
 import { usePatientStore } from '@/store/injury/PatientStore';
 import useToastWaitingForFetch from '@/composables/useToastWaitingForFetch';
 import InjuryService from '../../service/InjuryService';
 import createValidationRules from '../../validation/doctorsInjuryValidation';
-import { useLocationsStore } from '../../store/general/LocationsStore';
 import Swal from 'sweetalert2';
 import { useUserStore } from '../../store/general/UserStore';
-
-// import { generateNOI } from '../app/injury/doctorsForm/GeneralDataDoctor.vue';
-// import moment from 'moment';
-
 const user = useUserStore();
-const locationsStore = useLocationsStore();
 const toast = useToast();
-// const confirm = useConfirm();
 const emit = defineEmits(['update:saving', 'update:customizedObjectives', 'update:customizedDiagnosis', 'update:customizedDetails']);
 const v = inject('v$');
 const patientStore = usePatientStore();
-// const hideRemove = ref(false);
 const injuryService = new InjuryService();
 const isUpdateForm = ref(false);
 const confirmEMRDetails = ref(false);
@@ -43,26 +34,16 @@ const props = defineProps({
         required: false
     }
 });
+// const diag = ref(props.diagnosis);
+// const det = ref(props.details);
+// const obj = ref(props.objective);
 
-// //
-
-//     if (diag.value === '') {
-//         diag.value = patientStore.header.doctor_diagnosis;
-//     }
-//     if (det.value === '') {
-//         det.value = patientStore.finalDoctorDetails;
-//     }
-//     if (obj.value === '') {
-//         obj.value = patientStore.header.doctor_objective;
-//     }
-//
 const diag = ref(patientStore.header.doctor_diagnosis);
 const det = ref(patientStore.finalDoctorDetails);
 const obj = ref(patientStore.header.doctor_objective);
 const loader = ref(true);
 
 const allowUpdateFormn = async () => {
-    // console.log('user: ', user.userInfo.employeeid, '\nlatest entry user: ', props?.latestEntry?.value?.entryby);
     if (user.userInfo.employeeid === props?.latestEntry?.value?.entryby) {
         isUpdateForm.value = true;
     } else {
@@ -72,8 +53,6 @@ const allowUpdateFormn = async () => {
 
     loader.value = false;
 };
-// const tstamp = ref();
-// const FormatDate = moment().format('YYYY-MM-DD HH:mm:ss.SSS');
 
 const regionName = computed(() => {
     console.log('regions: ', patientStore.storeRegions);
@@ -148,43 +127,36 @@ const savePatientData = async () => {
     }
     placeOccCode;
     const getNoi = patientStore.header.doctor_noi.join(', ');
-    // console.log('noi: ', getNoi);
-    await injuryService.updateMedilogs(patientStore.enccode, patientStore.details.generalData.doctor_injtme, getNoi, placeOccCode, injIntentCode);
+    console.log('noi: ', getNoi);
+    // await injuryService.updateMedilogs(patientStore.enccode, patientStore.details.generalData.doctor_injtme, getNoi, placeOccCode, injIntentCode);
     patientStore.details.hospitalFacilityData.disposition_code = patientStore.header.dispcode;
     patientStore.details.hospitalFacilityData.condition_code = patientStore.header.condcode;
 
-    const insert = await injuryService.insertObjSubj(
-        patientStore.enccode,
-        'NOI: ' +
-            patientStore.header.doctor_noi +
-            '\nPOI: ' +
-            `${regionName.value} , ` +
-            `${provinceName.value} ,` +
-            `${cityName.value} ,` +
-            `${barangayName.value} ` +
-            '\nDOI: ' +
-            patientStore.details.generalData.doctor_doi +
-            '\nTOI: ' +
-            patientStore.details.generalData.doctor_toi +
-            '\n' +
-            '\nDetail(s): \n' +
-            patientStore.header.final_doctor_details,
-        patientStore.header.final_doctor_objective,
-        patientStore.header.hpercode,
-        isUpdateForm.value,
-        patientStore.ufiveID
-    );
+    // const insert = await injuryService.insertObjSubj(
+    //     patientStore.enccode,
+    //     'NOI: ' +
+    //         patientStore.header.doctor_noi +
+    //         '\nPOI: ' +
+    //         `${regionName.value} , ` +
+    //         `${provinceName.value} ,` +
+    //         `${cityName.value} ,` +
+    //         `${barangayName.value} ` +
+    //         '\nDOI: ' +
+    //         patientStore.details.generalData.doctor_doi +
+    //         '\nTOI: ' +
+    //         patientStore.details.generalData.doctor_toi +
+    //         '\n' +
+    //         '\nDetail(s): \n' +
+    //         patientStore.header.final_doctor_details,
+    //     patientStore.header.final_doctor_objective,
+    //     patientStore.header.hpercode,
+    //     isUpdateForm.value,
+    //     patientStore.ufiveID
+    // );
 
-    if (!patientStore.ufiveID) {
-        // console.log('insert:', insert.data);
-        // alert('hit');
-        // console.log('insertobjsubj:', insert?.data?.data?.id);
-        patientStore.ufiveID = insert?.data?.data?.id;
-    }
-
-    // alert('check');
-    // alert('it');
-
+    // if (!patientStore.ufiveID) {
+    //     patientStore.ufiveID = insert?.data?.data?.id;
+    // }
     // update objective
     (patientStore.header.objective =
         'NOI: ' +
@@ -210,18 +182,12 @@ const savePatientData = async () => {
     //update diagnosis
     patientStore.details.hospitalFacilityData.diagnosis = patientStore.header.final_doctor_diagnosis;
     patientStore.header.dx = patientStore.header.final_doctor_diagnosis;
-    // patientStore.doctor_objective = patientStore.final_doctor_objective;
-    // patientStore.header.subjective = patientStore.final_doctor_objective;
-    if (patientStore.firstDiagnosis) {
-        await injuryService.insertBillingDiagnosis(patientStore.enccode, patientStore.header.final_doctor_diagnosis, patientStore.header.hpercode);
-    }
+    // if (patientStore.firstDiagnosis) {
+    //     await injuryService.insertBillingDiagnosis(patientStore.enccode, patientStore.header.final_doctor_diagnosis, patientStore.header.hpercode);
+    // }
+    // await injuryService.insertDiagnosis(patientStore.enccode, patientStore.header.final_doctor_diagnosis, isUpdateForm.value);
 
-    // await injuryService.insertDiagnosis(patientStore.enccode, patientStore.header.final_doctor_diagnosis);
-    await injuryService.insertDiagnosis(patientStore.enccode, patientStore.header.final_doctor_diagnosis, isUpdateForm.value);
-
-    const response = await patientStore.saveFormattedData();
-
-    // console.log('saved: ', response);
+    const response = await patientStore.saveOPDFormattedData();
 
     return response;
 };
@@ -242,25 +208,8 @@ const toastWaitingForFetchSave = useToastWaitingForFetch(
 );
 
 const toOthers = () => {
-    // if (patientStore.details.natureOfInjury.noi_othersPhysical) {
-    //     // alert('savedOthers');
-    //     patientStore.details.natureOfInjury.noi_others = 'Y';
-    //     patientStore.details.natureOfInjury.noi_otherinj = patientStore.details.natureOfInjury.noi_otherinj + patientStore.details.natureOfInjury.noi_othersPhysical;
-    // }
-    // if (patientStore.details.ExternalCauseOfInjury.ext_others_external) {
-    //     // alert('savedOthersphys');
-    //     patientStore.details.ExternalCauseOfInjury.ext_other = 'Y';
-    //     patientStore.details.ExternalCauseOfInjury.ext_other_sp = patientStore.details.ExternalCauseOfInjury.ext_other_sp + patientStore.details.ExternalCauseOfInjury.ext_otherPhysical;
-    // }
-
     //set the value of mult_inj for ONEISS
     const fields = patientStore.details.multipleFields;
-
-    //log values that was saved
-    // Object.entries(fields).forEach(([key, value]) => {
-    //     console.log(`${key}: ${value}`);
-    // });
-
     const hasMultipleInjury = Object.values(fields).some((value) => value === 'Y');
 
     if (hasMultipleInjury) {
@@ -275,36 +224,11 @@ const submitForm = async () => {
 
         patientStore.header.status = '1';
         patientStore.status = '1';
-
-        //set latest details, sub, and diagnosis
-        // patientStore.header.dia= patientStore.header.final_doctor_details;
-        // = patientStore.header.final_doctor_diagnosis;
-        // = patientStore.header.final_doctor_objective;
-
         if (response.status == 200) {
-            // alert('check');
             localStorage.setItem('enccode', JSON.stringify(patientStore.enccode));
             localStorage.setItem('status', JSON.stringify('1'));
             localStorage.setItem('header', JSON.stringify(patientStore.header));
             localStorage.setItem('details', JSON.stringify(patientStore.details));
-
-            // console.log('POI: ', patientStore.header.doctor_poi);
-            // console.log('update to EMR: ', patientStore.header.hpercode);
-
-            // console.log('update to EMR: ', patientStore.enccode, patientStore.header.doctor_details, patientStore.header.doctor_objective);
-
-            // console.log('time: ', patientStore.header.doctor_injtme);
-
-            // await injuryService.insertDiagnosis(patientStore.enccode, patientStore.header.doctor_diagnosis);
-
-            // patientStore.details.hospitalFacilityData.diagnosis = patientStore.header.doctor_diagnosis;
-            // console.log('updated diagnosis: ', mediResponse);
-
-            // window.location.reload();
-
-            // params: { enccode: e.data.enccode }
-
-            // const response = await patientStore.saveFormattedData();
         }
     } else {
         toast.add({
@@ -316,168 +240,6 @@ const submitForm = async () => {
     }
     return result;
 };
-
-// const removeUnusedString = () => {
-//     if (patientStore.details.ExternalCauseOfInjury.ext_drown_r === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_drown_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_expo_nature_r === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_expo_nature_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_firecracker_r === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_firecracker_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_foreign_body === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_foreign_body_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_caustic_ingestion === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_caustic_ingestion_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_encavement === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_encavement_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_crushing === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_crushing_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_stab_wound === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_stab_wound_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_sharp === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_sharp_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.contact_blurt === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.contact_blurt_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_vape === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_vape_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_gun === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_gun_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_hang === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_hang_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_maul === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_maul_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_transport === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_transport_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_sexual === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_sexual_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_physical === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_physical_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_neglect === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_neglect_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.vawc === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.vawc_sp = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_abrasion === 'N') {
-//         patientStore.details.natureOfInjury.noi_abradtl = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_avulsion === 'N') {
-//         patientStore.details.natureOfInjury.noi_avuldtl = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_burn_r === 'N') {
-//         patientStore.details.natureOfInjury.degree_burn1 = '';
-//         patientStore.details.natureOfInjury.degree_burn2 = '';
-//         patientStore.details.natureOfInjury.degree_burn3 = '';
-//         patientStore.details.natureOfInjury.degree_burn4 = '';
-//         patientStore.details.natureOfInjury.noi_burndtl = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_brain === 'N') {
-//         patientStore.details.natureOfInjury.noi_brain_stg = '';
-//         patientStore.details.natureOfInjury.noi_braindtl = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_gunshot === 'N') {
-//         patientStore.details.natureOfInjury.noi_gunshotdtl = '';
-//     }
-
-//     if (patientStore.details.natureOfInjury.noi_stab_wound === 'N') {
-//         patientStore.details.natureOfInjury.noi_stab_wounddtl = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_disl_open === 'N') {
-//         patientStore.details.natureOfInjury.noi_disl_open_sp = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_disl_close === 'N') {
-//         patientStore.details.natureOfInjury.noi_disl_close_sp = '';
-//     }
-//     if (patientStore.details.forTransportVehicularAccident.risk_none === 'N') {
-//         patientStore.details.forTransportVehicularAccident.risk_alcliq = '';
-//         patientStore.details.forTransportVehicularAccident.risk_sleep = '';
-//         patientStore.details.forTransportVehicularAccident.risk_smoke = '';
-//         patientStore.details.forTransportVehicularAccident.risk_mobpho = '';
-//         patientStore.details.forTransportVehicularAccident.risk_other = '';
-//         patientStore.details.forTransportVehicularAccident.risk_etc_spec = '';
-//     }
-//     if (patientStore.details.forTransportVehicularAccident.safe_none === 'N') {
-//         patientStore.details.forTransportVehicularAccident.safe_unkn = '';
-//         patientStore.details.forTransportVehicularAccident.safe_airbag = '';
-//         patientStore.details.forTransportVehicularAccident.safe_helmet = '';
-//         patientStore.details.forTransportVehicularAccident.safe_cseat = '';
-//         patientStore.details.forTransportVehicularAccident.safe_sbelt = '';
-//         patientStore.details.forTransportVehicularAccident.safe_vest = '';
-//         patientStore.details.forTransportVehicularAccident.safe_other = '';
-//         patientStore.details.forTransportVehicularAccident.safe_etc_spec = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_concussion === 'N') {
-//         patientStore.details.natureOfInjury.noi_concussiondtl = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_contusion === 'N') {
-//         patientStore.details.natureOfInjury.noi_contudtl = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_frac_ope === 'N') {
-//         patientStore.details.natureOfInjury.noi_fropdtl = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_frac_clo === 'N') {
-//         patientStore.details.natureOfInjury.noi_frcldtl = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_owound === 'N') {
-//         patientStore.details.natureOfInjury.noi_owoudtl = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_amp === 'N') {
-//         patientStore.details.natureOfInjury.noi_ampdtl = '';
-//     }
-//     if (patientStore.details.natureOfInjury.noi_others === 'N') {
-//         patientStore.details.natureOfInjury.noi_otherinj = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_bite === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_bite_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_burn_r === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ref_burn_code = '';
-//         patientStore.details.ExternalCauseOfInjury.ext_burn_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_drown_r === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ref_drowning_cope = '';
-//         patientStore.details.ExternalCauseOfInjury.ext_drown_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_expo_nature_r === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ref_expnature_code = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_sharp === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_sharp_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_fall === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_falldtl = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_chem === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_chem_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_firecracker_r === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.firecracker_code = '';
-//         patientStore.details.ExternalCauseOfInjury.ext_firecracker_sp = '';
-//     }
-//     if (patientStore.details.ExternalCauseOfInjury.ext_other === 'N') {
-//         patientStore.details.ExternalCauseOfInjury.ext_other_sp = '';
-//     }
-//     if (patientStore.details.hospitalFacilityData.mode_transport_code !== '04') {
-//         patientStore.details.hospitalFacilityData.stat_reachdtl = '';
-//     }
-// };
 
 // Clear all values of the unselected subfields.
 const removeUnusedString = () => {
@@ -558,7 +320,6 @@ const removeUnusedString = () => {
 
     fieldsToClear.forEach(({ condition, fields }) => {
         if (condition) {
-            // alert('clear');
             fields.forEach((field) => {
                 const [section, key] = field.split('.');
                 if (key) {
@@ -571,9 +332,7 @@ const removeUnusedString = () => {
     });
 };
 
-const confirmSaves = async (event) => {
-    // console.log('ufiveID: ', patientStore.ufiveID);
-    // console.log('details: ', patientStore.finalDoctorDetails + '\nsubjective: ' + patientStore.header.doctor_objective + '\ndiagnosis:' + patientStore.header.doctor_diagnosis);
+const confirmSaves = async () => {
     if (!patientStore.header.final_doctor_diagnosis) {
         patientStore.header.final_doctor_diagnosis = patientStore.header.doctor_diagnosis;
     }
@@ -583,7 +342,6 @@ const confirmSaves = async (event) => {
     if (!patientStore.header.final_doctor_objective) {
         patientStore.header.final_doctor_objective = patientStore.header.doctor_objective;
     }
-    //removal of unticked fields
     removeUnusedString();
     if (patientStore.details.ExternalCauseOfInjury.ref_expnature_code !== '07') {
         patientStore.details.ExternalCauseOfInjury.ext_expo_nature_sp = '';
@@ -633,72 +391,14 @@ const confirmSaves = async (event) => {
         obj.value = patientStore.header.doctor_objective;
     }
 
-    confirmEMRDetails.value = true;
-
-    //set the values of det, obj, and diag to generated text
-
-    diag.value = patientStore.header.doctor_diagnosis;
-    det.value = patientStore.finalDoctorDetails;
-    obj.value = patientStore.header.doctor_objective;
-
-    return new Promise((resolve, reject) => {
-        Swal.fire({
-            title: 'Do you want to save the changes?',
-            showDenyButton: true,
-            position: 'bottom',
-            confirmButtonText: 'Save',
-            denyButtonText: `Cancel`
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                loader.value = true;
-                emit('update:saving', true);
-                try {
-                    if (patientStore.header.doctor_injtme) {
-                        patientStore.header.injtme = patientStore.header.doctor_injtme;
-                    }
-                    if (patientStore.finalDiagnosis) {
-                        patientStore.header.doctor_details = patientStore.finalDiagnosis;
-                    }
-                    // console.log('final:', patientStore.finalDiagnosis);
-                    // console.log('updateddiag:', patientStore.header.doctor_details);
-
-                    // alert('hit');
-                    await submitForm();
-                    await toOthers();
-                    patientStore.header.doctor_details = patientStore.header.doctor_details + '\n' + patientStore.textFactorSafety;
-
-                    confirmEMRDetails.value = false;
-                    loader.value = false;
-                    emit('update:saving', false);
-                    patientStore.loadSignal = true;
-                    Swal.fire('Saved!', '', 'success');
-                    resolve();
-                    // window.location.href = `http://192.168.6.58:8000/api/fromEMR?empID=${user.userInfo.employeeid}&enccode=${patientStore.enccode}`;
-                    // window.location.href = `http://192.168.6.172/soapIndex?enccode=${patientStore.enccode}&id=-1#/`;
-                    await new Promise((resolve) => setTimeout(resolve, 3000)); // Add delay of 1 second
-                    window.close();
-                    // http://192.168.6.172/soapIndex?enccode=ER856756Apr072025094452&id=-1#/
-                    // window.location.href = `https://192.168.7.66:9050/api/fromEMR?empID=${user.userInfo.employeeid}&enccode=${patientStore.enccode}`;
-                } catch (error) {
-                    reject(error);
-                }
-            } else if (result.isDenied) {
-                Swal.fire('Changes are not saved', '', 'info');
-                confirmEMRDetails.value = false;
-            } else {
-                console.log('saving cancelled');
-                confirmEMRDetails.value = false;
-            }
-        });
-    });
     // return new Promise((resolve, reject) => {
     //     Swal.fire({
     //         title: 'Do you want to save the changes?',
+    //         text: "This will only update the TSS; it won't reflect on the EMR.",
     //         showDenyButton: true,
-    //         showCloseButton: true,
     //         position: 'bottom',
     //         confirmButtonText: 'Save',
-    //         denyButtonText: `Don't save`
+    //         denyButtonText: `Cancel`
     //     }).then(async (result) => {
     //         if (result.isConfirmed) {
     //             loader.value = true;
@@ -710,69 +410,95 @@ const confirmSaves = async (event) => {
     //                 if (patientStore.finalDiagnosis) {
     //                     patientStore.header.doctor_details = patientStore.finalDiagnosis;
     //                 }
-    //                 // console.log('final:', patientStore.finalDiagnosis);
-    //                 // console.log('updateddiag:', patientStore.header.doctor_details);
-
-    //                 // alert('hit');
     //                 await submitForm();
     //                 await toOthers();
     //                 patientStore.header.doctor_details = patientStore.header.doctor_details + '\n' + patientStore.textFactorSafety;
-    //                 if (patientStore.details.ExternalCauseOfInjury.washingDone === 'YES' && patientStore.details.preAdmissionData.first_aid_code === 'Y') {
-    //                     patientStore.details.preAdmissionData.firstaid_others = 'Washing of Wound Done, ' + patientStore.details.preAdmissionData.firstaid_others;
-    //                 }
+
+    //                 confirmEMRDetails.value = false;
     //                 loader.value = false;
     //                 emit('update:saving', false);
     //                 patientStore.loadSignal = true;
     //                 Swal.fire('Saved!', '', 'success');
     //                 resolve();
-    //                 // window.location.href = `http://192.168.6.58:8000/api/fromEMR?empID=${user.userInfo.employeeid}&enccode=${patientStore.enccode}`;
-    //                 // window.location.href = `http://192.168.6.172/soapIndex?enccode=${patientStore.enccode}&id=-1#/`;
     //                 await new Promise((resolve) => setTimeout(resolve, 3000)); // Add delay of 1 second
     //                 window.close();
-    //                 // http://192.168.6.172/soapIndex?enccode=ER856756Apr072025094452&id=-1#/
-    //                 // window.location.href = `https://192.168.7.66:9050/api/fromEMR?empID=${user.userInfo.employeeid}&enccode=${patientStore.enccode}`;
     //             } catch (error) {
     //                 reject(error);
     //             }
     //         } else if (result.isDenied) {
     //             Swal.fire('Changes are not saved', '', 'info');
+    //             confirmEMRDetails.value = false;
     //         } else {
     //             console.log('saving cancelled');
+    //             confirmEMRDetails.value = false;
     //         }
     //     });
     // });
+    return new Promise((resolve, reject) => {
+        Swal.fire({
+            title: 'Important Information',
+            text: 'This will only change/update the TSS form and will not affect the data in the EMR.',
+            icon: 'info',
+            confirmButtonText: 'OK'
+        }).then(() => {
+            //set the values of det, obj, and diag to generated text
+            diag.value = patientStore.header.doctor_diagnosis;
+            det.value = patientStore.finalDoctorDetails;
+            obj.value = patientStore.header.doctor_objective;
+            // confirmEMRDetails.value = true;
+            Swal.fire({
+                title: 'Do you want to save the changes on TSS Form only?',
+                text: 'This will only update the TSS; it will not reflect on the EMR.',
+                showDenyButton: true,
+                position: 'bottom',
+                confirmButtonText: 'Save',
+                denyButtonText: 'Cancel'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    // Inform the user about the TSS change
+                    loader.value = true;
+                    emit('update:saving', true);
+                    try {
+                        if (patientStore.header.doctor_injtme) {
+                            patientStore.header.injtme = patientStore.header.doctor_injtme;
+                        }
+                        if (patientStore.finalDiagnosis) {
+                            patientStore.header.doctor_details = patientStore.finalDiagnosis;
+                        }
+                        await submitForm();
+                        await toOthers();
+                        patientStore.header.doctor_details += '\n' + patientStore.textFactorSafety;
+
+                        confirmEMRDetails.value = false;
+                        loader.value = false;
+                        emit('update:saving', false);
+                        patientStore.loadSignal = true;
+                        Swal.fire('Saved!', '', 'success');
+                        resolve();
+                        await new Promise((resolve) => setTimeout(resolve, 3000)); // Add delay of 3 seconds
+                        window.close();
+                    } catch (error) {
+                        reject(error);
+                    }
+                } else if (result.isDenied) {
+                    Swal.fire('Changes are not saved', '', 'info');
+                    confirmEMRDetails.value = false;
+                } else {
+                    console.log('saving cancelled');
+                    confirmEMRDetails.value = false;
+                }
+            });
+        });
+    });
 };
 const patientDataIsLoaded = async () => {
     // await user.getUserInfo();
-
-    isLocked.value = await injuryService.checkLockedEnccode(patientStore.enccode);
-    // console.log('isLocked:', isLocked);
     allowUpdateFormn();
 };
-// onMounted(async () => {
-//     loader.value = true;
-//     // const fullUrl = window.location.href;
-//     // const match = fullUrl.match(/[?&]enccode=([^&#]*)/);
-//     // const match3 = fullUrl.match(/[?&]access_token=([^&#]*)/);
-//     // const match2 = fullUrl.match(/[?&]empID=([^&#]*)/);
-//     // const enccode = match ? match[1] : null;
-//     // const empID = match2 ? match2[1] : null;
-//     // const getToken = match3 ? match3[1] : null;
-//     user.getUserInfo();
-//     if (patientStore.ufiveID) {
-//         console.log('ufiveID:', patientStore.ufiveID);
-//     }
-
-//     // if (enccode === null && empID === null && getToken === null) {
-//     //     hideRemove.value = true;
-//     // }
-//     allowUpdateFormn();
-// });
 watch(
     () => patientStore.latestEntryAvailable,
-    (newValue) => {
+    () => {
         if (patientStore.latestEntryAvailable === true) {
-            // console.log('loading');
             patientDataIsLoaded();
         }
     }
@@ -819,25 +545,25 @@ watch(det, (newValue) => {
     <!-- <div v-if="loader" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)"></div> -->
     <div>
         <span class="flex justify-content-center">
-            <!-- {{ patientStore.details.ExternalCauseOfInjury }} -->
-
             <div v-if="isLocked === '1'"><Message :closable="false">Encounter is Locked</Message></div>
             <div v-else>
                 <div v-if="isUpdateForm">
                     <Button
-                        label="Update (EMR and TSS)"
+                        label="Update (TSS Only)"
                         icon="pi pi-save"
-                        class="w-auto border border-gray-400 rounded-lg bg-blue-500 text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
+                        style="background-color: darkolivegreen"
+                        class="w-auto border border-gray-400 rounded-lg text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
                         v-tooltip.top="{ value: 'Click to update your latest form', class: 'text-center' }"
                         @click="confirmSaves($event)"
                     />
                 </div>
                 <div v-else>
                     <Button
-                        label="Save (EMR and TSS)"
+                        label="Save (TSS Only)"
                         icon="pi pi-save"
-                        class="w-auto border border-gray-300 rounded-lg bg-blue-500 text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
-                        v-tooltip.top="{ value: 'Click to save the new form', class: 'text-center' }"
+                        style="background-color: darkolivegreen"
+                        class="w-auto border border-gray-300 rounded-lg text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
+                        v-tooltip.top="{ value: 'This will only update the TSS; it will not reflect on the EMR.', class: 'text-center' }"
                         @click="confirmSaves($event)"
                     />
                 </div>
@@ -846,7 +572,7 @@ watch(det, (newValue) => {
     </div>
     <Dialog
         v-model:visible="confirmEMRDetails"
-        header="Verify the details to be saved in the EMR."
+        header="Verify the details to be saved on the TSS."
         style="width: 95%; height: 100vh; margin-top: 10vh; margin-bottom: 20vh"
         :closable="false"
         maximize
@@ -950,7 +676,7 @@ watch(det, (newValue) => {
             </SplitterPanel>
             <SplitterPanel style="height: 100%" :size="50">
                 <div class="flex justify-content-center">
-                    <h5 style="color: #000080" class="font-bold">FINAL DETAILS TO BE SAVED IN THE EMR</h5>
+                    <h5 style="color: #000080" class="font-bold">FINAL DETAILS TO BE SAVED ON THE TSS</h5>
                 </div>
                 <div class="flex justify-content-center mx-2">
                     <Textarea style="width: 100%" v-model="det" class="mt-1 flex justify-content-center font-bold" autoResize />
