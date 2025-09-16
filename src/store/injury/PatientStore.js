@@ -462,8 +462,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
             wound_description_others: '',
             erythema: '',
             dischare: '',
-            tenderazzo: '',
-            hepatoma: ''
+            tenderness: '',
+            hematoma: ''
         }
     });
 
@@ -753,9 +753,9 @@ export const usePatientStore = defineStore('PatientStore', () => {
             wound_description: '',
             wound_description_others: '',
             erythema: '',
-            dischare: '',
-            tenderazzo: '',
-            hepatoma: ''
+            discharge: '',
+            tenderness: '',
+            hematoma: ''
         }
     });
     watch(
@@ -831,15 +831,34 @@ export const usePatientStore = defineStore('PatientStore', () => {
 
     // Function to set the loadList callback
     async function loadOPDPatientData(patientData) {
-        header.value.patname = patientData.patientname;
-        header.value.hpercode = patientData.hpercode;
-        enccode.value = patientData.enccode;
-        // header.value.injtme = patientData.opdtime;
-        // header.value.injdte = patientData.opdtime;
-        header.value.patbdate = patientData.patientbirthdate;
-        header.value.admdate = patientData.opdtime;
+        if (patientData?.data) {
+            // console.log('hihi: ', patientData.data.header);
+            header.value = patientData.data.header;
+            header.value.hpercode = patientData.data.header.hpercode;
+            // ufiveID.value = patientData?.data?.details?.ufiveID;
+            // header.value = patientData?.data?.header;
+            // enccode.value = patientData?.data?.enccode;
+            // status.value = patientData?.data?.status;
+            if (patientData.data != null) {
+                console.log('Details found, using details from server');
+                details.value = patientData.data;
+            } else {
+                // console.log('No details found, using default details');
+                details.value = { ...defaultDetails.value };
+            }
+            // admEnccode.value = patientData?.data?.admEnccode;
+        } else {
+            header.value.patname = patientData.patientname;
+            header.value.hpercode = patientData.hpercode;
+            enccode.value = patientData.enccode;
+            // header.value.injtme = patientData.opdtime;
+            // header.value.injdte = patientData.opdtime;
+            header.value.patbdate = patientData.patientbirthdate;
+            header.value.admdate = patientData.opdtime;
+        }
         // console.log('patientData: ', patientData);
         // console.log('header: ', header);
+
         dataIsLoaded.value = true;
     }
 
@@ -854,7 +873,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
                     withCredentials: true
                 }
             });
-            // console.log('enccode:', response.data.enccode);
+            console.log('enccode:', response.data);
             // console.log('admitting enccode:', response.data.admEnccode);
 
             // console.log('Response from loadPatientData(response):', response);
@@ -905,7 +924,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
                     withCredentials: true
                 }
             });
-            // console.log('enccode:', response.data.enccode);
+            console.log('enccode:', response.data);
 
             // console.log('enccode:', response.data.enccode);
             // console.log('admitting enccode:', response.data.header.admEnccode);
@@ -1233,8 +1252,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
         details.value.followUp.wound_description_others = '';
         details.value.followUp.erythema = '';
         details.value.followUp.dischare = '';
-        details.value.followUp.tenderazzo = '';
-        details.value.followUp.hepatoma = '';
+        details.value.followUp.tenderness = '';
+        details.value.followUp.hematoma = '';
 
         //
         details.value.details.hospitalFacilityData.customizedDiagnosis = '';

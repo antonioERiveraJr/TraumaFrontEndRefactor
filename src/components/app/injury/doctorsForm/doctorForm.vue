@@ -291,7 +291,7 @@ onUnmounted(() => {
 </script>
 <template>
     <div v-if="saving" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 98vh; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
-        <img src="@/assets/images/loader.gif" alt="Loading..." style="height: 10rem; width: 10rem" />
+        <img src="@/assets/images/loader.gif" alt="Loading..." style="height: 100%; width: 100%" />
     </div>
     <div style="height: 100%">
         <Splitter style="height: 100%">

@@ -509,6 +509,8 @@ onUnmounted(() => {
                         <div class="flex flex-column">
                             <div class="flex justify-content-between">
                                 <!-- {{ patientStore.details.multipleFields }} -->
+                                <!-- {{ 'occs:' + patientStore.details.preAdmissionData.place_occ_code }}
+                                {{ '\ninjs:' + patientStore.details.preAdmissionData.inj_intent_code }} -->
                                 <label style="color: #000080" for="preAdmissionData.place_occ_code" class="text-s"><i>Place of Occurence</i></label>
                                 <div class="flex justify-content-end" v-if="patientStore.details.preAdmissionData.place_occ_code === ''">
                                     <small :class="'required-error'" class="text-red-800 text-s font-bold">Value is required</small>
@@ -579,7 +581,7 @@ onUnmounted(() => {
                             />
                         </div>
 
-                        <div class="flex flex-column">
+                        <div v-if="patientStore.progressionDay === ''" class="flex flex-column">
                             <div class="flex justify-content-between">
                                 <label style="color: #000080" for="generalData.inj_intent_code" class="text-s"><i>First Aid Given?</i></label>
                                 <div class="flex justify-content-end" v-if="patientStore.details.preAdmissionData.first_aid_code === ''">

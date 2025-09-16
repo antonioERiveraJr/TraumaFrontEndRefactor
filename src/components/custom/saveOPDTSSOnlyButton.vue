@@ -3,7 +3,7 @@ import { useToast } from 'primevue/usetoast';
 import { inject, ref, computed, watch } from 'vue';
 import { usePatientStore } from '@/store/injury/PatientStore';
 import useToastWaitingForFetch from '@/composables/useToastWaitingForFetch';
-import InjuryService from '../../service/InjuryService';
+// import InjuryService from '../../service/InjuryService';
 import createValidationRules from '../../validation/doctorsInjuryValidation';
 import Swal from 'sweetalert2';
 import { useUserStore } from '../../store/general/UserStore';
@@ -12,7 +12,7 @@ const toast = useToast();
 const emit = defineEmits(['update:saving', 'update:customizedObjectives', 'update:customizedDiagnosis', 'update:customizedDetails']);
 const v = inject('v$');
 const patientStore = usePatientStore();
-const injuryService = new InjuryService();
+// const injuryService = new InjuryService();
 const isUpdateForm = ref(false);
 const confirmEMRDetails = ref(false);
 const isLocked = ref(false);
@@ -34,6 +34,7 @@ const props = defineProps({
         required: false
     }
 });
+
 // const diag = ref(props.diagnosis);
 // const det = ref(props.details);
 // const obj = ref(props.objective);
@@ -445,7 +446,7 @@ const confirmSaves = async () => {
             diag.value = patientStore.header.doctor_diagnosis;
             det.value = patientStore.finalDoctorDetails;
             obj.value = patientStore.header.doctor_objective;
-            // confirmEMRDetails.value = true;
+            confirmEMRDetails.value = true;
             Swal.fire({
                 title: 'Do you want to save the changes on TSS Form only?',
                 text: 'This will only update the TSS; it will not reflect on the EMR.',

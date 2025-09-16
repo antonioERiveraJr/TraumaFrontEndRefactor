@@ -352,7 +352,7 @@ onUnmounted(() => {
     <div v-if="saving" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 98vh; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
         <img src="@/assets/images/loader.gif" alt="Loading..." style="height: 10rem; width: 10rem" />
     </div>
-    <div style="height: 100%">
+    <div style="height: 100%; width: 100%">
         <Splitter style="height: 100%">
             <SplitterPanel style="height: 100%" :size="100">
                 <Splitter layout="vertical">
@@ -363,12 +363,17 @@ onUnmounted(() => {
                         </h5>
                     </SplitterPanel>
                     <SplitterPanel :size="95">
-                        <div class="card" style="height: 90%">
+                        <!-- <div v-if="patientStore.patientTSSRecord?.data?.[0] && patientStore.progressionDay !== '0'"> -->
+                        <div v-if="patientStore.patientTSSRecord?.data?.[0] && patientStore.progressionDay !== '0'">
+                            <FollowUpForm />
+                            <!-- <BiteForm /> -->
+                        </div>
+                        <div v-else style="height: 90%">
                             <Accordion :activeIndex="0">
                                 <AccordionTab :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }"
                                     ><template #header>
                                         <span class="flex align-items-center gap-2 w-full">
-                                            <span style="color: #000080" class="font-bold white-space-nowrap">ABTC Form</span>
+                                            <span style="color: #000080" class="font-bold white-space-nowrap">ABTC FORM</span>
                                             <i v-if="requiredCountABTCForm" v-badge.danger="requiredCountABTCForm" class="pi pi-file-edit" style="font-size: 2rem" v-tooltip.bottom="`${requiredCountABTCForm} Required Fields`" />
                                             <i v-else class="pi pi-file-edit" style="font-size: 2rem" />
                                         </span>
@@ -408,6 +413,7 @@ onUnmounted(() => {
                                 </AccordionTab>
                             </Accordion>
                         </div>
+
                         <!-- <div class="ml-5">
                             <EntryOfDoctors :enccode="props.enccode" :latestEntry="latestEntry" />
                         </div> -->
@@ -427,9 +433,9 @@ onUnmounted(() => {
                             </div>
                         </div> -->
 
-                        <div class="floating-tag" style="position: fixed; width: 40%; left: 50%; transform: translateX(-50%)">
+                        <!-- <div class="floating-tag" style="position: fixed; width: 40%; left: 50%; transform: translateX(-50%)">
                             <div style="width: 100%">
-                                <!-- <SaveBackRemovePanelButtonDoctor
+                                  <SaveBackRemovePanelButtonDoctor
                                     @update:customizedObjectives="updateCustomizedObjective"
                                     @update:customizedDiagnosis="updateCustomizedDiagnosis"
                                     @update:customizedDetails="updateCustomizedDetails"
@@ -438,10 +444,10 @@ onUnmounted(() => {
                                     :diagnosis="customizedDiagnosis"
                                     :latestEntry="latestEntryDoc"
                                     @update:saving="updateSaving"
-                                /> -->
+                                /> 
                             </div>
-                        </div>
-                        <div class="floating-tag" style="position: fixed; width: 40%">
+                        </div> -->
+                        <div class="floating-tag" style="position: fixed; width: 100%">
                             <div style="width: 100%">
                                 <SaveOPDTSSOnlyButton
                                     @update:customizedObjectives="updateCustomizedObjective"

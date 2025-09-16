@@ -791,7 +791,7 @@ watch([newDate, newTime], ([newDateValue, newTimeValue]) => {
                             </div>
                             <InputText style="text-transform: uppercase; width: 100%" class="flex font-bold" placeholder="Mode of Transport" v-model="patientStore.details.hospitalFacilityData.stat_reachdtl" />
                         </div>
-                        <SelectButton v-model="patientStore.details.hospitalFacilityData.coord_uncoord" :options="options" class="flex justify-content-center" />
+                        <!-- <SelectButton v-model="patientStore.details.hospitalFacilityData.coord_uncoord" :options="options" class="flex justify-content-center" />
                         <div v-if="patientStore.details.hospitalFacilityData.coord_uncoord === 'COORDINATED'">
                             <div class="flex justify-content-between">
                                 <label style="color: #000080" class="text-s" for="preAdmissionData.trans_type"><i>Transferred from/Referred by another hospital?</i></label>
@@ -841,7 +841,7 @@ watch([newDate, newTime], ([newDateValue, newTimeValue]) => {
                                     />
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>

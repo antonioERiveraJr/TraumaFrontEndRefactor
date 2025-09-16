@@ -44,7 +44,7 @@ watch(
 );
 </script>
 <template>
-    <div :style="{ width: widths < 1500 ? '100%' : '66%' }" class="mt-1">
+    <div v-if="patientStore.progressionDay === ''" :style="{ width: widths < 1500 ? '100%' : '66%' }" class="mt-1">
         <div :class="['grid grid-cols-3 card flex justify-content-center relative', { 'custom-shadow': props.noPhysical }]">
             <div :style="{ width: widths < 950 ? '100%' : widths < 1100 ? '49%' : '32%' }">
                 <div>
@@ -325,6 +325,119 @@ watch(
                         </div>
                     </div>
                 </Transition>
+            </div>
+            <div class="flex justify-content-center absolute top-0">
+                <InputSwitch v-model="patientStore.details.natureOfInjury.noi_no_physical" trueValue="Y" falseValue="N" id="inputswitch" />
+                <label for="inputswitch" class="font-bold ml-2 mt-1"> NO EXTERNAL SIGN OF PHYSICAL INJURY </label>
+            </div>
+            <div v-if="props?.noPhysical" class="bg-red-200 p-2 absolute bottom-0 text-center text-gray-700 font-semibold italic" style="border-radius: 0 0 1rem 1rem; width: 100%; font-size: 1rem; margin: 0 !important">Value is Required</div>
+        </div>
+    </div>
+    <div v-else :style="{ width: widths < 1500 ? '100%' : '66%' }" class="mt-1">
+        <div :class="['grid grid-cols-3 card flex justify-content-center relative', { 'custom-shadow': props.noPhysical }]">
+            <div :style="{ width: widths < 950 ? '100%' : widths < 1100 ? '49%' : '32%' }">
+                <div>
+                    <InputTextCheckBoxDoctor2
+                        v-model:modelValue="patientStore.details.natureOfInjury.noi_abrasion"
+                        v-model:desc="patientStore.details.natureOfInjury.noi_abradtl"
+                        v-model:isMultiple="patientStore.details.multipleFields.multiple_abrasion"
+                        label="Abrasion"
+                        :binary="true"
+                    />
+                </div>
+                <Transition name="slide-fade" mode="out-in">
+                    <div class="burns" v-if="patientStore.details.natureOfInjury.noi_burn_r !== 'Y'">
+                        <div class="flex align-content-center align-items-center mt-1">
+                            <InputSwitch v-model="patientStore.details.natureOfInjury.noi_burn_r" trueValue="Y" falseValue="N" id="inputswitch" />
+                            <label for="inputswitch" class="mx-2 font-bold">Burn</label>
+                        </div>
+                        <div v-if="patientStore.details.natureOfInjury.noi_burn_r == 'Y'" class="mt-1 ml-4">
+                            <div class="flex column">
+                                <div class="flex justify-content-between w-25rem">
+                                    <label style="color: #000080" for="natureOfInjury.burnDegrees" class="text-s mt-1">Burn Degree</label>
+                                    <div class="flex justify-content-end" v-if="!burnDegreeValue">
+                                        <small :class="'required-error'" class="text-red-800 text-s font-bold">Value is required</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <Dropdown
+                                id="natureOfInjury.burnDegrees"
+                                v-model="burnDegreeValue"
+                                placeholder="Select Burn Type"
+                                :options="burnDegrees"
+                                optionLabel="degree_burn_desc"
+                                optionValue="degree_burn"
+                                :class="{
+                                    'p-inputtext-filled font-bold max-w-full w-25rem myCSS-inputtext-required text-s': true,
+                                    'bg-white-100': !burnDegreeValue
+                                }"
+                            />
+                            <div v-if="burnDegreeValue">
+                                <label style="color: #000080" for="natureOfInjury.noi_burndtl" class="text-s mt-1">Specify</label>
+                                <TextAreaPreAdmissionDoctor v-model:desc="patientStore.details.natureOfInjury.noi_burndtl" v-model:isMultiple="patientStore.details.multipleFields.multiple_burn" />
+                                <div class="flex justify-content-center w-24rem">
+                                    <div class="flex justify-content-end" v-if="patientStore.details.natureOfInjury.noi_burndtl === ''">
+                                        <small :class="'required-error'" class="text-red-800 text-s font-bold mt-1">Value is required</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </Transition>
+                <InputTextCheckBoxDoctor2
+                    v-model:modelValue="patientStore.details.natureOfInjury.noi_avulsion"
+                    v-model:desc="patientStore.details.natureOfInjury.noi_avuldtl"
+                    v-model:isMultiple="patientStore.details.multipleFields.multiple_avulsion"
+                    label="Avulsion"
+                    :binary="true"
+                />
+            </div>
+            <div :style="{ width: widths < 950 ? '100%' : widths < 1100 ? '49%' : '32%' }" class="mb-2">
+                <InputTextCheckBoxDoctor2
+                    v-model:modelValue="patientStore.details.natureOfInjury.noi_owound"
+                    v-model:desc="patientStore.details.natureOfInjury.noi_owoudtl"
+                    v-model:isMultiple="patientStore.details.multipleFields.multiple_laceration"
+                    label="Laceration"
+                    :binary="true"
+                />
+
+                <InputTextCheckBoxDoctor2
+                    v-model:modelValue="patientStore.details.natureOfInjury.noi_incision"
+                    v-model:desc="patientStore.details.natureOfInjury.noi_incision_sp"
+                    v-model:isMultiple="patientStore.details.multipleFields.multiple_incision"
+                    label="Incision"
+                    :binary="true"
+                />
+                <InputTextCheckBoxDoctor2
+                    v-model:modelValue="patientStore.details.natureOfInjury.noi_amp"
+                    v-model:desc="patientStore.details.natureOfInjury.noi_ampdtl"
+                    v-model:isMultiple="patientStore.details.multipleFields.multiple_traumatic_amputation"
+                    label="Traumatic Amputation"
+                    :binary="true"
+                />
+            </div>
+            <div :style="{ width: widths < 950 ? '100%' : widths < 1100 ? '49%' : '32%' }">
+                <InputTextCheckBoxDoctor2
+                    v-model:modelValue="patientStore.details.natureOfInjury.noi_contusion"
+                    v-model:desc="patientStore.details.natureOfInjury.noi_contudtl"
+                    v-model:isMultiple="patientStore.details.multipleFields.multiple_contusion"
+                    label="Contusion"
+                    :binary="true"
+                />
+                <InputTextCheckBoxDoctor2
+                    v-model:modelValue="patientStore.details.natureOfInjury.noi_punc"
+                    v-model:desc="patientStore.details.natureOfInjury.noi_punc_sp"
+                    v-model:isMultiple="patientStore.details.multipleFields.multiple_puncture"
+                    label="Puncture"
+                    :binary="true"
+                />
+                <InputTextCheckBoxDoctor2
+                    v-model:modelValue="patientStore.details.natureOfInjury.noi_others"
+                    v-model:desc="patientStore.details.natureOfInjury.noi_otherinj"
+                    v-model:isMultiple="patientStore.details.multipleFields.multiple_other"
+                    label="Others"
+                    :binary="true"
+                />
             </div>
             <div class="flex justify-content-center absolute top-0">
                 <InputSwitch v-model="patientStore.details.natureOfInjury.noi_no_physical" trueValue="Y" falseValue="N" id="inputswitch" />

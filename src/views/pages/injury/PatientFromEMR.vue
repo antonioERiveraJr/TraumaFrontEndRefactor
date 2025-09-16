@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, provide, defineAsyncComponent } from 'vue';
+import { onMounted, ref, provide } from 'vue';
 import { usePatientStore } from '../../../store/injury/PatientStore';
 import createValidationRules from '../../../validation/injuryValidations';
 import useVuelidate from '@vuelidate/core';
@@ -21,7 +21,7 @@ onMounted(async () => {
     const match2 = fullUrl.match(/[?&]empID=([^&#]*)/);
     enccode.value = match ? match[1] : null;
     const empID = match2 ? match2[1] : null;
-    const getToken = match3 ? match3[1] : null; 
+    const getToken = match3 ? match3[1] : null;
     if (localStorage.getItem('enccode') === null) {
         localStorage.setItem('authToken', getToken);
         localStorage.setItem('empID', empID);
@@ -64,11 +64,9 @@ onMounted(async () => {
 .slide-fade-enter-active {
     transition: all 0.4s ease-out;
 }
-
 .slide-fade-leave-active {
     transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 }
-
 .slide-fade-enter-from,
 .slide-fade-leave-to {
     transform: translateY(20px);

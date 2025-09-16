@@ -86,10 +86,10 @@ export default class LibraryService {
 
     getStatusReaching() {
         const statusReaching = [
-            {
-                status_code: '',
-                status_desc: ''
-            },
+            // {
+            //     status_code: '',
+            //     status_desc: ''
+            // },
             {
                 status_code: '01',
                 status_desc: 'Dead on Arrival'
@@ -142,10 +142,10 @@ export default class LibraryService {
 
     getActivities() {
         const activities = [
-            {
-                activity_code: '',
-                activity_desc: ''
-            },
+            // {
+            //     activity_code: '',
+            //     activity_desc: ''
+            // },
             {
                 activity_code: '30',
                 activity_desc: 'Work Related'
