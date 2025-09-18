@@ -12,6 +12,13 @@ const setDay = (day) => {
     }
     patientStore.progressionDay = day;
     console.log(patientStore.progressionDay);
+    if (day === '0') {
+        patientStore.details.preAdmissionData.inj_intent_code = '01';
+        patientStore.details.preAdmissionData.place_occ_code = '10';
+        patientStore.details.preAdmissionData.activity_code = '99';
+        patientStore.details.hospitalFacilityData.status_code = '03';
+        patientStore.details.hospitalFacilityData.mode_transport_code = '03';
+    }
 };
 const dataIsLoaded = async () => {
     console.log('hpercode: ', patientStore.header.hpercode);
@@ -31,14 +38,14 @@ watch(
 </script>
 <template>
     <div style="width: 100%; height: 100vh">
-        <div style="background-color: #4a6274; width: 100%; height: 100%">
+        <div style="background-color: #9bb0bf; width: 100%; height: 100%">
             <div class="flex flex-column justify-content-center" style="height: 100%; width: 100%">
-                <Button @click="setDay('0')" label="Day 0" style="color: black; background-color: #f9ddd2; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%; font-weight: bolder; font-size: 200%" />
-                <Button @click="setDay('3')" label="Day 3" style="background-color: #4a6274; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%; font-weight: bolder; font-size: 200%" />
-                <Button @click="setDay('7')" label="Day 7" style="color: black; background-color: #f9ddd2; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%; font-weight: bolder; font-size: 200%" />
-                <Button @click="setDay('14')" label="Day 14" style="background-color: #4a6274; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%; font-weight: bolder; font-size: 200%" />
-                <Button @click="setDay('21')" label="Day 21" style="color: black; background-color: #f9ddd2; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%; font-weight: bolder; font-size: 200%" />
-                <Button @click="setDay('28')" label="Day 28" style="background-color: #4a6274; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%; font-weight: bolder; font-size: 200%" />
+                <Button @click="setDay('0')" label="Day 0" style="color: black; background-color: white; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%; font-weight: bolder; font-size: 200%" />
+                <Button @click="setDay('3')" label="Day 3" style="background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%; font-weight: bolder; font-size: 200%" />
+                <Button @click="setDay('7')" label="Day 7" style="color: black; background-color: white; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%; font-weight: bolder; font-size: 200%" />
+                <Button @click="setDay('14')" label="Day 14" style="background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%; font-weight: bolder; font-size: 200%" />
+                <Button @click="setDay('21')" label="Day 21" style="color: black; background-color: white; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%; font-weight: bolder; font-size: 200%" />
+                <Button @click="setDay('28')" label="Day 28" style="background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%; font-weight: bolder; font-size: 200%" />
             </div>
         </div>
     </div>

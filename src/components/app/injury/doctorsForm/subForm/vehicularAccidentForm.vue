@@ -179,7 +179,7 @@ onMounted(async () => {
                 >
                     <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
                 </div>
-                <div class="flex justify-content-between"> 
+                <div class="flex justify-content-between">
                     <label style="color: #000080" for="inputswitch" class="mx-2 align-self-center font-bold"> Contributing Factor </label>
                     <i style="color: blue; font-style: italic">Reasons that may have led to the incident</i>
                 </div>
@@ -216,9 +216,9 @@ onMounted(async () => {
                     <i v-badge.danger="'Value is Required'" style="font-size: 5rem; width: 100%" />
                 </div>
 
-                <div class="flex justify-content-between"> 
+                <div class="flex justify-content-between">
                     <label style="color: #000080" for="inputswitch" class="mx-2 align-self-center font-bold"> Safety Gear and Measures </label
-                    ><i style="color: red; font-style: italic"> Safety equipment of the patient that was used during the incident, depending on the vehicle type </i> 
+                    ><i style="color: red; font-style: italic"> Safety equipment of the patient that was used during the incident, depending on the vehicle type </i>
                 </div>
                 <div class="flex justify-content-center card">
                     <div class="grid grid-cols-4 gap-4">
@@ -226,7 +226,7 @@ onMounted(async () => {
                         <CheckBoxMultiple v-model="patientStore.details.forTransportVehicularAccident.safe_sbelt" label="SEAT BELT" />
                         <CheckBoxMultiple v-model="patientStore.details.forTransportVehicularAccident.safe_airbag" label="AIRBAG" />
                         <CheckBoxMultiple v-model="patientStore.details.forTransportVehicularAccident.safe_cseat" label="CHILD SEAT" />
-                        <CheckBoxMultiple v-model="patientStore.details.forTransportVehicularAccident.safe_vest" label="LIFE VEST" /> 
+                        <CheckBoxMultiple v-model="patientStore.details.forTransportVehicularAccident.safe_vest" label="LIFE VEST" />
                         <CheckBoxMultiple v-model="patientStore.details.forTransportVehicularAccident.safe_unkn" label="UNKNOWN" />
                         <CheckBoxMultiple v-model="patientStore.details.forTransportVehicularAccident.safe_not_applicable" label="NONE" />
                         <CheckBoxMultiple v-model="patientStore.details.forTransportVehicularAccident.safe_other" label="OTHER" />

@@ -1,83 +1,9 @@
 <script setup>
 import { usePatientStore } from '../../../../store/injury/PatientStore';
-import { ref, watch } from 'vue';
 
 const PatientStore = usePatientStore();
-const followUp = PatientStore.details.followUp;
 
 // Create refs for all necessary fields
-const complaints = ref(followUp?.complaints);
-const adverseReaction = ref(followUp?.adverse_reaction);
-const biting = ref(followUp?.biting);
-const others = ref(followUp?.others);
-const woundDescription = ref(followUp?.wound_description);
-const woundDescriptionOthers = ref(followUp?.wound_description_others);
-const erythema = ref(followUp?.erythema);
-const dischare = ref(followUp?.dischare);
-const tenderness = ref(followUp?.tenderness);
-const hematoma = ref(followUp?.hematoma);
-
-// Watchers to update the refs when the store changes
-watch(
-    () => followUp?.complaints,
-    (newValue) => {
-        complaints.value = newValue;
-    }
-);
-watch(
-    () => followUp?.adverse_reaction,
-    (newValue) => {
-        adverseReaction.value = newValue;
-    }
-);
-watch(
-    () => followUp?.biting,
-    (newValue) => {
-        biting.value = newValue;
-    }
-);
-watch(
-    () => followUp?.others,
-    (newValue) => {
-        others.value = newValue;
-    }
-);
-watch(
-    () => followUp?.wound_description,
-    (newValue) => {
-        woundDescription.value = newValue;
-    }
-);
-watch(
-    () => followUp?.wound_description_others,
-    (newValue) => {
-        woundDescriptionOthers.value = newValue;
-    }
-);
-watch(
-    () => followUp?.erythema,
-    (newValue) => {
-        erythema.value = newValue;
-    }
-);
-watch(
-    () => followUp?.dischare,
-    (newValue) => {
-        dischare.value = newValue;
-    }
-);
-watch(
-    () => followUp?.tenderness,
-    (newValue) => {
-        tenderness.value = newValue;
-    }
-);
-watch(
-    () => followUp?.hematoma,
-    (newValue) => {
-        hematoma.value = newValue;
-    }
-);
 
 const bitingOptions = ['ALIVE', 'DIED', 'UNKNOWN'];
 const woundDescriptionOptions = ['HEALED', 'DRY', 'OTHERS'];
@@ -85,9 +11,7 @@ const erythDischOption = ['WITH', 'NO'];
 const tendHeptOption = ['+', '-'];
 </script>
 <template>
-    <h5 style="text-align: center; font-weight: bolder; color: #333">FOLLOW-UP FORM DAY {{ PatientStore.progressionDay }}</h5>
-
-    <!-- {{ PatientStore }} -->
+    <h5 style="text-align: center; font-weight: bolder; color: #333">FOLLOW-UP FORM</h5>
 
     <div style="width: 100%" class="flex justify-content-evenly">
         <Fieldset style="width: 48%" pt:content:class="flex justify-center" :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '0rem' } } }">
@@ -98,21 +22,21 @@ const tendHeptOption = ['+', '-'];
             <div>
                 <label for="complaints" class="text-black text-xs" style="color: #000080"><i>complaints </i></label>
                 <div>
-                    <Textarea style="width: 100%" v-model="complaints" rows="1" class="justify-content-center font-bold" autoResize />
+                    <Textarea style="width: 100%" v-model="PatientStore.details.followUp.complaints" rows="1" class="justify-content-center font-bold" autoResize />
                 </div>
             </div>
 
             <div>
                 <label for="Adverse" class="text-black text-xs" style="color: #000080"><i>Adverse reaction from previous vaccination </i></label>
                 <div>
-                    <Textarea style="width: 100%" v-model="adverseReaction" rows="1" class="justify-content-center font-bold" autoResize />
+                    <Textarea style="width: 100%" v-model="PatientStore.details.followUp.adverseReaction" rows="1" class="justify-content-center font-bold" autoResize />
                 </div>
             </div>
 
             <div style="width: 100%">
                 <label for="Biting" class="text-black text-xs" style="color: #000080"><i>Biting </i></label>
                 <SelectButton
-                    v-model="biting"
+                    v-model="PatientStore.details.followUp.biting"
                     :options="bitingOptions"
                     aria-labelledby="basic"
                     :pt="{
@@ -131,7 +55,7 @@ const tendHeptOption = ['+', '-'];
             <div>
                 <label for="others" class="text-black text-xs" style="color: #000080"><i>Others</i></label>
                 <div>
-                    <Textarea style="width: 100%" v-model="others" rows="1" class="justify-content-center font-bold" autoResize />
+                    <Textarea style="width: 100%" v-model="PatientStore.details.followUp.others" rows="1" class="justify-content-center font-bold" autoResize />
                 </div>
             </div>
         </Fieldset>
@@ -143,17 +67,17 @@ const tendHeptOption = ['+', '-'];
 
             <div style="width: 100%">
                 <label for="woundDesc" class="text-black text-xs" style="color: #000080"><i>Wound Description</i></label>
-                <Dropdown style="width: 98%" id="woundDescription" class="font-bold" v-model="woundDescription" :options="woundDescriptionOptions" />
-                <div v-if="woundDescription === 'OTHERS'">
+                <Dropdown style="width: 98%" id="woundDescription" class="font-bold" v-model="PatientStore.details.followUp.woundDescription" :options="woundDescriptionOptions" />
+                <div v-if="PatientStore.details.followUp.woundDescription === 'OTHERS'">
                     <label for="woundOthDescription" class="text-black text-xs" style="color: #000080"><i>Others</i></label>
-                    <Textarea style="width: 98%" id="woundOthDescription" v-model="woundDescriptionOthers" rows="1" class="mt-2 justify-content-center font-bold" autoResize />
+                    <Textarea style="width: 98%" id="woundOthDescription" v-model="PatientStore.details.followUp.woundDescriptionOthers" rows="1" class="mt-2 justify-content-center font-bold" autoResize />
                 </div>
             </div>
 
             <div style="width: 100%">
                 <label for="Erythema" class="text-black text-xs" style="color: #000080"><i>Erythema </i></label>
                 <SelectButton
-                    v-model="erythema"
+                    v-model="PatientStore.details.followUp.erythema"
                     :options="erythDischOption"
                     aria-labelledby="basic"
                     :pt="{
@@ -172,7 +96,7 @@ const tendHeptOption = ['+', '-'];
             <div style="width: 100%">
                 <label for="Dischare" class="text-black text-xs" style="color: #000080"><i>Discharge </i></label>
                 <SelectButton
-                    v-model="dischare"
+                    v-model="PatientStore.details.followUp.dischare"
                     :options="erythDischOption"
                     aria-labelledby="basic"
                     :pt="{
@@ -191,7 +115,7 @@ const tendHeptOption = ['+', '-'];
             <div style="width: 100%">
                 <label for="Tenderness" class="text-black text-xs" style="color: #000080"><i>Tenderness </i></label>
                 <SelectButton
-                    v-model="tenderness"
+                    v-model="PatientStore.details.followUp.tenderness"
                     :options="tendHeptOption"
                     aria-labelledby="basic"
                     :pt="{
@@ -210,7 +134,7 @@ const tendHeptOption = ['+', '-'];
             <div style="width: 100%">
                 <label for="Hematoma" class="text-black text-xs" style="color: #000080"><i>Hematoma </i></label>
                 <SelectButton
-                    v-model="hematoma"
+                    v-model="PatientStore.details.followUp.hematoma"
                     :options="tendHeptOption"
                     aria-labelledby="basic"
                     :pt="{
@@ -232,7 +156,7 @@ const tendHeptOption = ['+', '-'];
         <Fieldset
             style="width: 96%"
             :toggleable="true"
-            :collapsed="collapsObjective"
+            :collapsed="true"
             :pt="{
                 root: { style: { backgroundColor: 'transparent', border: 'none', padding: 'none' } },
                 legend: { style: { border: 'none', backgroundColor: 'transparent', textAlign: 'center' } },

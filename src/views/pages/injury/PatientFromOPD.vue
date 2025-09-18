@@ -19,26 +19,26 @@ const injuryService = new InjuryService();
 provide('v$', v$);
 
 // Panel widths
-const panel1Width = ref('30%');
-const panel2Width = ref('70%');
+const panel1Width = ref('20%');
+const panel2Width = ref('80%');
 
 // Hover function
 const handleHover = (panel) => {
     if (patientStore.progressionDay !== '') {
         if (panel === 'panel1') {
-            panel1Width.value = '30%';
-            panel2Width.value = '70%';
+            panel1Width.value = '20%';
+            panel2Width.value = '80%';
         } else {
-            panel1Width.value = '5%';
-            panel2Width.value = '95%';
+            panel1Width.value = '3%';
+            panel2Width.value = '97%';
         }
     }
 };
 
 const handleMouseLeave = () => {
     if (patientStore.progressionDay !== '') {
-        panel1Width.value = '5%';
-        panel2Width.value = '95%';
+        panel1Width.value = '3%';
+        panel2Width.value = '97%';
     }
 };
 
@@ -53,12 +53,18 @@ onMounted(async () => {
     const empID = match2 ? match2[1] : null;
     const getToken = match3 ? match3[1] : null;
 
-    if (!localStorage.getItem('enccode')) {
+    if (localStorage.getItem('enccode') === enccode.value) {
+        if (!localStorage.getItem('enccode')) {
+            localStorage.setItem('authToken', getToken);
+            localStorage.setItem('empID', empID);
+            localStorage.setItem('enccode', enccode.value);
+        } else if (!localStorage.getItem('authToken')) {
+            localStorage.setItem('authToken', getToken);
+        }
+    } else {
         localStorage.setItem('authToken', getToken);
         localStorage.setItem('empID', empID);
         localStorage.setItem('enccode', enccode.value);
-    } else if (!localStorage.getItem('authToken')) {
-        localStorage.setItem('authToken', getToken);
     }
 
     const userInfo = await user.getUserInfo();
@@ -94,13 +100,29 @@ onMounted(async () => {
 <template>
     <div style="width: 100%; height: 100%">
         <div class="flex" style="height: 100%">
-            <div style="height: 100vh" :style="{ width: panel1Width, backgroundColor: '#4a6274', transition: 'width 0.3s ease' }" class="flex justify-content-center" @mouseover="handleHover('panel1')" @mouseleave="handleMouseLeave">
-                <div v-if="panel1Width === '5%'" class="vertical-text">Progression Day</div>
+            <div style="height: 100vh" :style="{ width: panel1Width, backgroundColor: '#9bb0bf', transition: 'width 0.3s ease' }" class="flex justify-content-center" @mouseover="handleHover('panel1')" @mouseleave="handleMouseLeave">
+                <div v-if="panel1Width === '3%'" class="vertical-text">
+                    <strong>PROGRESSION DAY (DAY {{ patientStore.progressionDay }})</strong>
+                </div>
                 <ProgressionDay v-else />
             </div>
             <div style="height: 100vh" :style="{ width: panel2Width, transition: 'width 0.3s ease' }" class="flex justify-content-center" @mouseover="handleHover('panel2')" @mouseleave="handleMouseLeave">
-                <ABTCForm :enccode="enccode" v-if="patientStore.progressionDay !== ''" />
-                <div v-else><img src="@/assets/images/ABTCloader.gif" alt="Loading..." style="height: 100%; width: 100%" /></div>
+                <div style="height: 100%; width: 100%">
+                    <ABTCForm :enccode="enccode" v-if="patientStore.progressionDay !== ''" />
+                    <SplitterPanel v-else style="height: 100%" :size="100">
+                        <Splitter layout="vertical">
+                            <SplitterPanel style="background-color: #e5e5e5" :size="5" class="flex justify-content-center sticky">
+                                <h1 class="font-bold">{{ patientStore.header.patname }}</h1>
+                                <h5 class="text-blue-800">
+                                    <strong>{{ patientStore.header.hpercode }}</strong>
+                                </h5>
+                            </SplitterPanel>
+                            <SplitterPanel class="flex" :size="95">
+                                <img class="flex justify-content-center" src="@/assets/images/ABTCloader.gif" alt="Loading..." />
+                            </SplitterPanel>
+                        </Splitter>
+                    </SplitterPanel>
+                </div>
             </div>
         </div>
     </div>

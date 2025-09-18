@@ -738,23 +738,23 @@ const generateText = () => {
             compiledDiagnosis = `${patientStore.details.ExternalCauseOfInjury.ext_bite_sp} (Category ${patientStore.details.ExternalCauseOfInjury.dogbiteDegree}), ${specifyDetails}  \n`;
             patientStore.header.doctor_objective = specifyDetails;
             const tally = {
-                '               Nature of Injury': patientStore.details.ExternalCauseOfInjury.ext_bite_sp,
-                '               Bite Category': patientStore.details.ExternalCauseOfInjury.dogbiteDegree,
-                '               Bleeding of Injury': patientStore.details.ExternalCauseOfInjury.bleeding,
-                '               Biting Animal': patientStore.details.ExternalCauseOfInjury.bitingAnimal,
-                '               Biting Animal Can Be Observed': patientStore.details.ExternalCauseOfInjury.observation,
-                '               Washing of Wound Done': patientStore.details.ExternalCauseOfInjury.washingDone,
-                '               Applied Anything to Wound': patientStore.details.preAdmissionData.first_aid_code === 'Y' ? 'Yes' : patientStore.details.preAdmissionData.first_aid_code,
-                '               First Aid': patientStore.details.preAdmissionData.firstaid_others,
-                '               By Whom': patientStore.details.preAdmissionData.firstaid_others2,
-                '               Previous Completed ARV': patientStore.details.ExternalCauseOfInjury.previousARV,
-                '               Date of Previous ARV': patientStore.details.ExternalCauseOfInjury.arvDate,
-                '               Previous Anti-Tetanus Vaccination': patientStore.details.ExternalCauseOfInjury.tetanusVaccination,
-                '               # of Tetanus Doses Given': patientStore.details.ExternalCauseOfInjury.tetanusDoses,
-                '               Last Tetanus Dose Given': patientStore.details.ExternalCauseOfInjury.lastTetanusDose,
-                '               Allergies': patientStore.details.ExternalCauseOfInjury.allergies,
-                '               Adverse Reaction from Previous Vaccination': patientStore.details.ExternalCauseOfInjury.adverseReaction,
-                '               Other Pertinent': patientStore.details.ExternalCauseOfInjury.bite_more_details
+                // '               Nature of Injurys': patientStore.details.ExternalCauseOfInjury.ext_bite_sp,
+                // '               Bite Category': patientStore.details.ExternalCauseOfInjury.dogbiteDegree,
+                // '               Bleeding of Injury': patientStore.details.ExternalCauseOfInjury.bleeding,
+                // '               Biting Animal': patientStore.details.ExternalCauseOfInjury.bitingAnimal,
+                // '               Biting Animal Can Be Observed': patientStore.details.ExternalCauseOfInjury.observation,
+                // '               Washing of Wound Done': patientStore.details.ExternalCauseOfInjury.washingDone,
+                // '               Applied Anything to Wound': patientStore.details.preAdmissionData.first_aid_code === 'Y' ? 'Yes' : patientStore.details.preAdmissionData.first_aid_code,
+                // '               First Aid': patientStore.details.preAdmissionData.firstaid_others,
+                // '               By Whom': patientStore.details.preAdmissionData.firstaid_others2,
+                // '               Previous Completed ARV': patientStore.details.ExternalCauseOfInjury.previousARV,
+                // '               Date of Previous ARV': patientStore.details.ExternalCauseOfInjury.arvDate,
+                // '               Previous Anti-Tetanus Vaccination': patientStore.details.ExternalCauseOfInjury.tetanusVaccination,
+                // '               # of Tetanus Doses Given': patientStore.details.ExternalCauseOfInjury.tetanusDoses,
+                // '               Last Tetanus Dose Given': patientStore.details.ExternalCauseOfInjury.lastTetanusDose,
+                // '               Allergies': patientStore.details.ExternalCauseOfInjury.allergies,
+                // '               Adverse Reaction from Previous Vaccination': patientStore.details.ExternalCauseOfInjury.adverseReaction,
+                // '               Other Pertinent': patientStore.details.ExternalCauseOfInjury.bite_more_details
             };
             const filteredTally = Object.fromEntries(
                 Object.entries(tally).filter(([key, value]) => {

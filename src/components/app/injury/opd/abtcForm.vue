@@ -10,6 +10,7 @@ import InjuryService from '../../../../../src/service/InjuryService';
 import BiteForm from '../doctorsForm/subForm/biteForm.vue';
 import SaveOPDTSSOnlyButton from '../../../custom/saveOPDTSSOnlyButton.vue';
 import FollowUpForm from './followUpForm.vue';
+import SaveOPDButton from '../../../custom/saveOPDButton.vue';
 
 const props = defineProps({
     enccode: {
@@ -433,9 +434,9 @@ onUnmounted(() => {
                             </div>
                         </div> -->
 
-                        <!-- <div class="floating-tag" style="position: fixed; width: 40%; left: 50%; transform: translateX(-50%)">
-                            <div style="width: 100%">
-                                  <SaveBackRemovePanelButtonDoctor
+                        <div class="floating-tag">
+                            <div class="button-container">
+                                <SaveOPDButton
                                     @update:customizedObjectives="updateCustomizedObjective"
                                     @update:customizedDiagnosis="updateCustomizedDiagnosis"
                                     @update:customizedDetails="updateCustomizedDetails"
@@ -444,11 +445,7 @@ onUnmounted(() => {
                                     :diagnosis="customizedDiagnosis"
                                     :latestEntry="latestEntryDoc"
                                     @update:saving="updateSaving"
-                                /> 
-                            </div>
-                        </div> -->
-                        <div class="floating-tag" style="position: fixed; width: 100%">
-                            <div style="width: 100%">
+                                />
                                 <SaveOPDTSSOnlyButton
                                     @update:customizedObjectives="updateCustomizedObjective"
                                     @update:customizedDiagnosis="updateCustomizedDiagnosis"
@@ -461,6 +458,11 @@ onUnmounted(() => {
                                 />
                             </div>
                         </div>
+                        <!-- <div class="floating-tag" style="position: fixed; width: 50%; right: 20%; transform: translateX(-50%)">
+                            <div style="width: 100%">
+                                
+                            </div>
+                        </div> -->
                     </SplitterPanel>
                 </Splitter>
             </SplitterPanel>
@@ -634,6 +636,16 @@ onUnmounted(() => {
 .floating-tag {
     position: fixed;
     bottom: 20px;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex; /* Use flexbox for horizontal alignment */
+    justify-content: center; /* Center the button container */
+}
+
+.button-container {
+    display: flex; /* Ensure buttons are inline */
+    gap: 20px; /* Adjusted space between buttons (increase as needed) */
 }
 .badge-button {
     background: none;

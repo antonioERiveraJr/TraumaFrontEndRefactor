@@ -515,10 +515,10 @@ export default function createValidationRules() {
                 requiredIf: patientStore.details.ExternalCauseOfInjury.ext_drown_r === 'Y'
             },
 
-            ext_gun_sp: {
-                requiredIf: patientStore.details.ExternalCauseOfInjury.ext_gun === 'Y'
-                // resetIfN: patientStore.details.ExternalCauseOfInjury.ext_bite === 'N'
-            },
+            // ext_gun_sp: {
+            //     requiredIf: patientStore.details.ExternalCauseOfInjury.ext_gun === 'Y'
+            //     // resetIfN: patientStore.details.ExternalCauseOfInjury.ext_bite === 'N'
+            // },
             ref_burn_code: {
                 requiredIf: patientStore.details.ExternalCauseOfInjury.ext_burn_r === 'Y'
                 // resetIfN: patientStore.details.ExternalCauseOfInjury.ext_burn_r === 'N'

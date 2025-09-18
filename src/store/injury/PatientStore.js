@@ -15,7 +15,7 @@ store.use(resetStore);
 
 export default store;
 export const usePatientStore = defineStore('PatientStore', () => {
-    const progressionDay = '';
+    const progressionDay = ref('');
     const patientTSSRecord = '';
     const submitForm = ref(null);
     const enccode = ref('');
@@ -842,10 +842,17 @@ export const usePatientStore = defineStore('PatientStore', () => {
             if (patientData.data != null) {
                 console.log('Details found, using details from server');
                 details.value = patientData.data;
-            } else {
-                // console.log('No details found, using default details');
-                details.value = { ...defaultDetails.value };
+                details.value.followUp = { ...defaultDetails.value.followUp };
             }
+            // else {
+            //     // console.log('No details found, using default details');
+            //     details.value = { ...defaultDetails.value };
+            //     details.value.preAdmissionData.inj_intent_code = '01';
+            //     details.value.preAdmissionData.place_occ_code = '10';
+            //     details.value.preAdmissionData.activity_code = '99';
+            //     details.value.hospitalFacilityData.status_code = '03';
+            //     details.value.hospitalFacilityData.mode_transport_code = '03';
+            // }
             // admEnccode.value = patientData?.data?.admEnccode;
         } else {
             header.value.patname = patientData.patientname;
@@ -855,6 +862,14 @@ export const usePatientStore = defineStore('PatientStore', () => {
             // header.value.injdte = patientData.opdtime;
             header.value.patbdate = patientData.patientbirthdate;
             header.value.admdate = patientData.opdtime;
+
+            //set deafult value of ABTC
+
+            details.value.preAdmissionData.inj_intent_code = '01';
+            details.value.preAdmissionData.place_occ_code = '10';
+            details.value.preAdmissionData.activity_code = '99';
+            details.value.hospitalFacilityData.status_code = '03';
+            details.value.hospitalFacilityData.mode_transport_code = '03';
         }
         // console.log('patientData: ', patientData);
         // console.log('header: ', header);
@@ -1035,6 +1050,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             // details: {
             ufiveID: ufiveID.value,
             enccode: enccode.value,
+            progressionDay: progressionDay.value,
             // entryBy: entryBy.value,
             entryBy: employeeid,
             status: status.value,
@@ -1047,13 +1063,14 @@ export const usePatientStore = defineStore('PatientStore', () => {
             hospitalFacilityData: { ...details.value.hospitalFacilityData },
             inPatient: { ...details.value.inPatient },
             bghdata: { ...details.value.bghdata },
-            multipleFields: { ...details.value.multipleFields }
+            multipleFields: { ...details.value.multipleFields },
+            followUp: { ...details.value.followUp }
             // multipleFields: { ...details.value.multipleFields }
             // entryby_doctor: user.userInfo.employeeid,
 
             // }
         });
-        // console.log('dataToReturn: ', dataToReturn);
+        console.log('dataToReturn: ', dataToReturn);
         // alert('read');
         // console.log('dataForSaving:', dataToReturn);
         return dataToReturn;
@@ -1226,6 +1243,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
             ExternalCauseOfInjury.value.ext_burn_r = value === 'Y' ? 'Y' : 'N';
         }
     );
+
+   
 
     //
     // const { ExternalCauseOfInjury, natureOfInjury } = toRefs(details.value);
