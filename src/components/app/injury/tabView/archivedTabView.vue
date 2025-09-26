@@ -29,6 +29,11 @@ const employeeList = ref(false);
 const emit = defineEmits(['update:exporting']);
 const exporting = ref(false);
 const props = defineProps({
+    isAdmit: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     list: {
         type: Array,
         required: true
@@ -48,7 +53,7 @@ const filters = ref({
     status: { value: null, matchMode: FilterMatchMode.IN },
     date: { value: null, matchMode: FilterMatchMode.EQUALS }
 });
-onMounted(() => { 
+onMounted(() => {
     transitions();
 });
 
@@ -58,7 +63,7 @@ const exportArchivedData = async () => {
     emit('update:exporting', exporting.value);
 
     const dateNow = useNow().value;
-    try { 
+    try {
         const archivedData = forArchived.value.map((item) => ({
             enccode: item.enccode,
             patname: item.header.patlast + ', ' + item.header.patfirst + ' ' + item.header.patmiddle,
@@ -68,9 +73,9 @@ const exportArchivedData = async () => {
             injtme: item.header.injtme,
             injloc: item.header.injloc
         }));
-
+        console.log('archivedData: ', archivedData);
         try {
-            await injuryService.sendArrayToServer(archivedData, dateNow);
+            await injuryService.sendArrayToServer(archivedData, dateNow, props.isAdmit);
             Swal.fire({
                 toast: true,
                 position: 'top-end',
@@ -160,7 +165,7 @@ function onRowSelectArchived(e) {
         if (!e || !e.data) {
             console.error('Row data is undefined');
             return;
-        } 
+        }
         archivedDialogVisible.value = true;
         originalForArchived.value = forArchived.value;
         const selectedArchdate = e.data.archdate;
@@ -224,13 +229,13 @@ function transitions() {
     }, externalcausesarchived);
 }
 
-function openPatientDetailsArchived(slotProps) { 
+function openPatientDetailsArchived(slotProps) {
     if (patientStore.header.status !== 2) {
         if (!patientStore.enccode) {
-            if (patientStore.registry === 'old') { 
+            if (patientStore.registry === 'old') {
                 patientStore.loadPatientDataDev(slotProps.data.enccode);
             }
-            if (patientStore.registry === 'new') { 
+            if (patientStore.registry === 'new') {
                 patientStore.loadPatientData(slotProps.data.enccode);
             }
         }
@@ -239,15 +244,15 @@ function openPatientDetailsArchived(slotProps) {
         showPatientDialogArchived.value = true;
         transitions();
         exporting.value = false;
-    } 
+    }
 }
 
 watch(
     () => patientStore.enccode,
     () => {
         if (patientStore.details.ExternalCauseOfInjury.ext_burn_r_doctor === 'Y') {
-            patientStore.details.ExternalCauseOfInjury.ext_burn_r = 'Y'; 
-            // Get burn details from doctor 
+            patientStore.details.ExternalCauseOfInjury.ext_burn_r = 'Y';
+            // Get burn details from doctor
             // Determine the corresponding burn code based on the doctor's burn code
             const doctorBurnCode = patientStore.details.ExternalCauseOfInjury.ref_burn_code_doctor;
 
@@ -282,8 +287,8 @@ watch(
 );
 watch(
     () => props.filterValue,
-    (newValue) => { 
-        filters.value.global.value = newValue; 
+    (newValue) => {
+        filters.value.global.value = newValue;
     }
 );
 </script>
@@ -317,7 +322,7 @@ watch(
             <Column field="archdate" header="Archived Date" :sortable="true"></Column>
             <Column header="Export By">
                 <template #body="slotProps">
-                    <span>{{ slotProps.data.items[0]?.header.exportby || slotProps.data.items[0].exportby || 'N/A' }}</span>
+                    <span>{{ slotProps.data?.items[0]?.header?.exportby || slotProps?.data?.items[0]?.exportby || 'N/A' }}</span>
                 </template>
             </Column>
             <Column field="count" header="Count" :sortable="true"></Column>
@@ -368,7 +373,7 @@ watch(
                     </template>
                 </Column>
             </DataTable>
-        </Dialog> 
+        </Dialog>
         <Dialog v-model:visible="showPatientDialogArchived" maximizable modal header="Patient Injury Form" :style="{ width: '99%' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }" @hide="patientStore.$reset()">
             <div class="grid grid-cols-4 gap-4 justify-content-center mt-1">
                 <div class="generaldata w-1/4">

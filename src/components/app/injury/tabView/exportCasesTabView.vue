@@ -7,6 +7,7 @@ import LibraryService from '@/service/LibraryService';
 
 // Props and Emits
 const props = defineProps({
+    isAdmit: { type: Boolean, required: true, default: false },
     list: { type: Array, required: true },
     filterValue: { type: String, required: false },
     loading: { type: Boolean, required: true },
@@ -72,8 +73,8 @@ const onRowUnselect = (event) => {
 
 async function onRowSelect(e) {
     try {
-        if (!e || !e.data) return console.error('Row data is undefined or null'); 
-        const enccodesInList = new Set(props.list.map((patient) => patient.enccode)); 
+        if (!e || !e.data) return console.error('Row data is undefined or null');
+        const enccodesInList = new Set(props.list.map((patient) => patient.enccode));
         selectedPatients.value = selectedPatients.value.filter((patient) => enccodesInList.has(patient.enccode));
         const patientMap = new Map();
         const enccodes = new Set();
@@ -104,8 +105,7 @@ async function onRowSelect(e) {
 
 const openPatientDetails = async (slotProps) => {
     loadingPatientData.value = true;
-    console.log('slotprops: ', slotProps.data.enccode);
-    selectedPatient.value = slotProps.data; 
+    selectedPatient.value = slotProps.data;
 
     transitions();
 
@@ -117,7 +117,15 @@ const openPatientDetails = async (slotProps) => {
     //         await patientStore.loadPatientData(slotProps.data.enccode);
     //     }
     // }
-    await patientStore.loadPatientDataDev(slotProps.data.enccode);
+    if (props.isAdmit) {
+        console.log('slotpropss: ', slotProps.data.enccode);
+        const response = await patientStore.loadAdmittedPatientData(slotProps.data.enccode);
+        console.log('   response: ', response);
+    } else {
+        // console.log('slotprops: ', slotProps.data.enccode);
+        await patientStore.loadPatientDataDev(slotProps.data.enccode);
+    }
+
     loadingPatientData.value = false;
     showPatientDialogExport.value = true;
     if (patientStore.details.forTransportVehicularAccident.safe_not_applicable === 'Y') {
@@ -225,7 +233,7 @@ watch(
     {
         deep: true
     }
-); 
+);
 
 watch(
     () => selectedPatients.value,
@@ -239,7 +247,6 @@ watch(
         }
     }
 );
- 
 </script>
 
 <template>
@@ -268,7 +275,7 @@ watch(
                     @rowUnselect="onRowUnselect"
                     @selectionChange="onSelectionChange"
                     responsiveLayout="scroll"
-                    sortField="header.injtme"
+                    sortField="header.dispdate"
                     :sortOrder="-1"
                     class="p-datatable-sm shadow-2"
                     style="min-height: 90%; font-weight: bold"
@@ -310,6 +317,7 @@ watch(
                         </template>
                     </Column>
                     <Column field="header.injtme" header="Date/Time of Incident" :sortable="true"></Column>
+                    <Column v-if="isAdmit" field="header.dispdate" header="Date/Time of Disposition" :sortable="true"></Column>
                     <Column headerStyle="width: 3rem; text-align: center" header="Edit" bodyStyle="text-align: center; overflow: visible">
                         <template #body="slotProps">
                             <Button icon="pi pi-user-edit" style="height: 2px" @click="openPatientDetails(slotProps)" />
@@ -412,6 +420,7 @@ watch(
                             </template>
                         </Column>
                         <Column field="details.header.injtme" header="Date/Time of Incident" :sortable="true"></Column>
+                        <Column v-if="isAdmit" field="details.header.dispdate" header="Date/Time of Disposition" :sortable="true"></Column>
                     </DataTable>
                 </SplitterPanel>
             </Splitter>

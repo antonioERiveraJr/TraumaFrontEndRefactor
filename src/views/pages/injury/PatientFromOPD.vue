@@ -136,9 +136,13 @@ onMounted(async () => {
 }
 
 .vertical-text {
-    writing-mode: vertical-rl; /* Vertical text */
-    transform: rotate(180deg); /* Rotate text for correct orientation */
-    font-size: 20px; /* Adjust font size if needed */
-    color: white; /* Change color for better visibility */
+    writing-mode: vertical-rl;
+    /* Vertical text */
+    transform: rotate(180deg);
+    /* Rotate text for correct orientation */
+    font-size: 20px;
+    /* Adjust font size if needed */
+    color: white;
+    /* Change color for better visibility */
 }
 </style>

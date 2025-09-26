@@ -888,7 +888,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
                     withCredentials: true
                 }
             });
-            console.log('enccode:', response.data);
+            console.log('enccodess:', response.data);
             // console.log('admitting enccode:', response.data.admEnccode);
 
             // console.log('Response from loadPatientData(response):', response);
@@ -939,15 +939,15 @@ export const usePatientStore = defineStore('PatientStore', () => {
                     withCredentials: true
                 }
             });
-            console.log('enccode:', response.data);
+            console.log('enccodes:', response.data);
 
             // console.log('enccode:', response.data.enccode);
             // console.log('admitting enccode:', response.data.header.admEnccode);
             // console.log('Response from loadPatientData(response):', response);
             ufiveID.value = response?.data?.idufive;
             header.value = response.data.header;
-            admEnccode.value = response.data.header.admEnccode;
-            enccode.value = response.data.enccode;
+            admEnccode.value = response?.data?.header?.admEnccode;
+            enccode.value = response?.data?.enccode;
             status.value = response.data.status;
             //check if response.data.details has a value
             // console.log('Response from loadPatientData(data.details):', response.data.details);
@@ -998,6 +998,46 @@ export const usePatientStore = defineStore('PatientStore', () => {
         } catch (error) {
             dataIsLoaded.value = true;
             // console.log('authToken:', localStorage.getItem('authToken'));
+            console.error('Failed to load patient data:', error);
+        }
+    }
+
+    async function loadAdmittedPatientData(enc) {
+        try {
+            const response = await axios.get('admittedInjuryListData/' + enc, {
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('authToken'),
+                    withCredentials: true
+                }
+            });
+            // console.log('enccodes:', response.data);
+
+            ufiveID.value = response?.data?.idufive;
+            header.value = response.data.header;
+            admEnccode.value = response?.data?.header?.admEnccode;
+            enccode.value = response?.data?.enccode;
+            status.value = response.data.status;
+
+            if (response.data.details != null) {
+                if (!response.data.details?.multipleFields) {
+                    if (Array.isArray(response.data.details)) {
+                        response.data.details.push(details.value.multipleFields);
+                    } else {
+                        response.data.details.multipleFields = { ...details.value.multipleFields };
+                    }
+                }
+                details.value = response.data.details;
+            } else {
+                details.value = { ...defaultDetails.value };
+            }
+
+            header.value.subjective = header.value.subjective.replace(/\n\n/, '');
+            header.value.objective = header.value.objective.replace(/\n\n/, '');
+
+            dataIsLoaded.value = true;
+            return response.data;
+        } catch (error) {
+            dataIsLoaded.value = true;
             console.error('Failed to load patient data:', error);
         }
     }
@@ -1243,8 +1283,6 @@ export const usePatientStore = defineStore('PatientStore', () => {
             ExternalCauseOfInjury.value.ext_burn_r = value === 'Y' ? 'Y' : 'N';
         }
     );
-
-   
 
     //
     // const { ExternalCauseOfInjury, natureOfInjury } = toRefs(details.value);
@@ -1533,6 +1571,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         storeCities,
         storeProvinces,
         storeRegions,
-        progressionDay
+        progressionDay,
+        loadAdmittedPatientData
     };
 });

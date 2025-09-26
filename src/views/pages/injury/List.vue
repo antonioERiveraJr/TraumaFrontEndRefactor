@@ -17,7 +17,7 @@ export default {
 
     setup() {
         const libraryService = new LibraryService();
-        const startDate = ref(moment().subtract(7, 'days').toDate());
+        const startDate = ref(moment().subtract(5, 'days').toDate());
         const endDate = ref(moment().toDate());
         const patientStore = usePatientStore();
         const toast = ref(null);

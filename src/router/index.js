@@ -89,6 +89,11 @@ const router = createRouter({
             name: 'UnfinishedTSSForm',
             component: UnfinishedTSSForm
         },
+        {
+            path: '/erstats',
+            name: 'erstats',
+            component: Stats
+        },
         // {
         //     path: '/injury/:enccode',
         //     name: 'injurypatient',

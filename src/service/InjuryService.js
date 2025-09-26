@@ -7,6 +7,7 @@ import { useUserStore } from '../store/general/UserStore';
 import { useRouter } from 'vue-router';
 
 import Swal from 'sweetalert2';
+import { is } from '@vee-validate/rules';
 // const user = useUserStore();
 // const contextPath = import.meta.env.BASE_URL;
 // const API_URL = 'http://127.0.0.1:8000/api/';
@@ -19,35 +20,36 @@ export default class InjuryService {
         // Initialize abortController as a property of the class
         this.abortController = null;
         this.router = router;
-    }   
+    }
     async getOPDPatientData(enccode) {
-        try{
+        try {
             console.log('enccode: ', enccode);
             const response = await axios.get('/opdPatientData', {
-                params:{
-                    enccode:enccode
+                params: {
+                    enccode: enccode
                 },
                 headers: {
-                    Authorization: "Bearer " + localStorage.getItem("authToken"),
-                },
+                    Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                }
             });
             return response.data;
-        }catch(err){console.error('error: ', err);
+        } catch (err) {
+            console.error('error: ', err);
             throw err;
         }
     }
 
     async getUnfinishedTSSForms() {
         try {
-            const response = await axios.get("/getUnfinishedTSSForms", {
+            const response = await axios.get('/getUnfinishedTSSForms', {
                 headers: {
-                    Authorization: "Bearer " + localStorage.getItem("authToken"),
-                },
+                    Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                }
             });
             return response.data;
         } catch (error) {
-            console.error("Error fetching unfinished TSS forms:", error);
-            throw error; 
+            console.error('Error fetching unfinished TSS forms:', error);
+            throw error;
         }
     }
 
@@ -320,6 +322,35 @@ export default class InjuryService {
             }
         }
     }
+    async admittedInjuryList(status) {
+        if (this.abortController) {
+            this.abortController.abort();
+        }
+
+        this.abortController = new AbortController();
+
+        try {
+            const response = await axios.post(
+                'admittedInjuryList',
+                { status: status },
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                    },
+                    signal: this.abortController.signal
+                }
+            );
+
+            return response;
+        } catch (err) {
+            if (axios.isCancel(err)) {
+                // console.log('Request canceled:', err.message);
+            } else {
+                return err.response;
+            }
+        }
+    }
+
     async injuryList3(hardRefresh, status = null, startdate = null, enddate = null, dateDescription = null) {
         // Abort the previous request if it's still ongoing
         if (this.abortController) {
@@ -521,8 +552,6 @@ export default class InjuryService {
         return response;
     }
 
-    
-
     async extractKeywords(text) {
         // console.log('getKeyTerms(' + text + ')');
         const response = await axios
@@ -566,13 +595,13 @@ export default class InjuryService {
     //         throw error; // Rethrow the error for handling in the component
     //     }
     // }
-async checkPatientTSSRecord(hpercode){
+    async checkPatientTSSRecord(hpercode) {
         const response = await axios.get('checkPatientTSSRecord', {
-            params: {hpercode: hpercode},
+            params: { hpercode: hpercode },
             headers: {
-                 Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                Authorization: 'Bearer ' + localStorage.getItem('authToken')
             }
-        })
+        });
         return response;
     }
     async fetchEmployeeNames(employeeIds) {
@@ -825,7 +854,7 @@ async checkPatientTSSRecord(hpercode){
         }
     }
 
-      async getListOfFinalDiagnosis(admEnccode) {
+    async getListOfFinalDiagnosis(admEnccode) {
         try {
             const response = await axios.get('/getListOfFinalDiagnosis', {
                 params: { admEnccode },
@@ -851,7 +880,7 @@ async checkPatientTSSRecord(hpercode){
             });
             return response.data;
         } catch (error) {
-            console.log('error generating report: ', error);
+            return error;
         }
     }
 
@@ -885,14 +914,14 @@ async checkPatientTSSRecord(hpercode){
         }
     }
 
-    async sendArrayToServer(array, dateNow) {
+    async sendArrayToServer(array, dateNow, isAdmit) {
         // const dateNow = useNow();
         // console.log('array:', array);
 
         try {
             const response = await axios.post(
                 '/getArrayFromFrontEnd',
-                { array: array },
+                { array: array, isAdmit: isAdmit },
                 {
                     headers: {
                         Authorization: 'Bearer ' + localStorage.getItem('authToken')

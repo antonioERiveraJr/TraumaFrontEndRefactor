@@ -156,9 +156,25 @@ const checkCondition = async (hardRefresh, hardRefreshStatus) => {
     return injuryList;
 };
 
+const checkAdmittedCondition = async () => {
+    isLoading.value = true;
+    const response = await injuryService.admittedInjuryList('1');
+    isLoading.value = false;
+    console.log('admitted List: ', response);
+    return response;
+};
+
 const checkConditionArchived = async (hardRefresh, hardRefreshStatus) => {
     isLoading.value = true;
     const injuryList = await getInjuryListArchived(hardRefresh, hardRefreshStatus, formattedStartDate.value, formattedEndDate.value, props.value);
+    return injuryList;
+};
+const checkConditionArchivedAdmission = async () => {
+    isLoading.value = true;
+    const injuryList = await injuryService.admittedInjuryList('2');
+    console.log('admitted List: ', injuryList);
+    // const injuryList = await getInjuryListArchived(hardRefresh, hardRefreshStatus, formattedStartDate.value, formattedEndDate.value, props.value);
+    isLoading.value = false;
     return injuryList;
 };
 
@@ -200,6 +216,7 @@ const loadList = async (hardRefresh) => {
             });
             return;
         }
+        // console.log('admitted List: ', response.data);
         injuryList.value = response?.data;
     }
     if (activePanel.value == 1) {
@@ -219,6 +236,7 @@ const loadList = async (hardRefresh) => {
             });
             return;
         }
+        // console.log('admitted List: ', response.data);
         injuryList.value = response.data;
     }
     if (activePanel.value == 2) {
@@ -226,7 +244,7 @@ const loadList = async (hardRefresh) => {
         patientStore.resets();
 
         forExportList.value = null;
-        response = await toastWaitingForExport.fetchData();
+        response = await toastWaitingForExportAdmitted.fetchData();
         if (response && response.status === 401) {
             console.warn('401 Unauthorized');
             localStorage.removeItem('authToken');
@@ -241,6 +259,8 @@ const loadList = async (hardRefresh) => {
             });
             return;
         }
+
+        // console.log('admitted List: ', response.data.data);
         forExportList.value = response.data;
     }
     if (activePanel.value == 3) {
@@ -263,7 +283,9 @@ const loadList = async (hardRefresh) => {
             });
             return;
         }
-        forExportList.value = response?.data;
+
+        // console.log('admitted List: ', response.data);
+        forExportList.value = response.data;
     }
     if (activePanel.value == 4) {
         selectedPatient.value = '';
@@ -298,6 +320,38 @@ const loadList = async (hardRefresh) => {
         }
     }
     if (activePanel.value == 5) {
+        selectedPatient.value = '';
+        patientStore.resets();
+        forArchived.value = null;
+        const response = await toastWaitingForFetchArchivedAdmission.fetchData();
+        forArchived.value = response.data;
+        const employeeIds = forArchived.value.map((item) => item.exportby).filter(Boolean);
+        await injuryService.fetchEmployeeNames(employeeIds);
+        if (forArchived.value) {
+            totalCounts.value = Object.groupBy(forArchived.value, getExportBy, getPatName);
+            if (employeeIds.length > 0) {
+                try {
+                    const employeeDataArray = await injuryService.fetchEmployeeNames(employeeIds);
+                    for (let i = 0; i < forArchived.value.length; i++) {
+                        const employeeData = employeeDataArray[i];
+                        if (employeeData) {
+                            forArchived.value[i].header.exportby = `${employeeData.firstname} ${employeeData.lastname}`;
+                        } else {
+                            forArchived.value[i].header.exportby = 'Unknown';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch employee names:', error);
+                    for (const item of forArchived.value) {
+                        item.header.exportby = 'Unknown';
+                    }
+                }
+            }
+        } else {
+            console.log('No archived data available.');
+        }
+    }
+    if (activePanel.value == 6) {
         patientStore.resets();
         injuryList.value = [];
 
@@ -371,6 +425,22 @@ const toastWaitingForFetchArchived = useToastWaitingForFetch(
     { errorSeverity: 'error', errorSummary: 'Error', errorMessage: 'Server Error!' },
     { asyncFunction: checkConditionArchived, asyncFunctionParams: [hardRefresh, '2'] }
 );
+// Toast Archived Admission List
+const toastWaitingForFetchArchivedAdmission = useToastWaitingForFetch(
+    {
+        waitingSeverity: 'info',
+        waitingSummary: 'Please wait...',
+        waitingMessage: 'Retrieving Archived Injury Cases list...'
+    },
+    {
+        successSeverity: 'success',
+        successSummary: 'Sucess!',
+        successMessage: 'Archived Injury Cases List loaded successfully',
+        successLife: 3000
+    },
+    { errorSeverity: 'error', errorSummary: 'Error', errorMessage: 'Server Error!' },
+    { asyncFunction: checkConditionArchivedAdmission, asyncFunctionParams: [hardRefresh, '2'] }
+);
 // Toast Export List
 const toastWaitingForExport = useToastWaitingForFetch(
     {
@@ -386,6 +456,22 @@ const toastWaitingForExport = useToastWaitingForFetch(
     },
     { errorSeverity: 'error', errorSummary: 'Error', errorMessage: 'Server Error!' },
     { asyncFunction: checkCondition, asyncFunctionParams: [hardRefresh, '1'] }
+);
+// Toast Admitted Export List
+const toastWaitingForExportAdmitted = useToastWaitingForFetch(
+    {
+        waitingSeverity: 'info',
+        waitingSummary: 'Please wait...',
+        waitingMessage: 'Retrieving For Admitted Export list...'
+    },
+    {
+        successSeverity: 'success',
+        successSummary: 'Sucess!',
+        successMessage: 'For Admitted Export List loaded successfully',
+        successLife: 3000
+    },
+    { errorSeverity: 'error', errorSummary: 'Error', errorMessage: 'Server Error!' },
+    { asyncFunction: checkAdmittedCondition, asyncFunctionParams: [hardRefresh, '1'] }
 );
 // Toast Admitted List
 const toastWaitingForFetchAdmitted = useToastWaitingForFetch(
@@ -422,7 +508,7 @@ const toastWaitingForFetchStashed = useToastWaitingForFetch(
 // ***************************************INJURY LIST***************************************
 const filteredInjuryListAdmitRemoved = computed(() => {
     if (injuryList.value) {
-        return injuryList.value.filter((item) => item.header.dispcode !== 'ADMIT');
+        return injuryList.value.filter((item) => item?.header?.dispcode !== 'ADMIT');
     }
     return [];
 });
@@ -481,9 +567,9 @@ const filteredInjuryList = computed(() => {
 // // ***************************************ADMITTED CASES EXPORT***************************************
 
 const filteredExportList = computed(() => {
-    // console.log('field: ', forExportList.value);
+    console.log('field: ', forExportList.value);
     if (forExportList.value) {
-        return forExportList.value.filter((item) => item.header.dispcode === 'ADMIT');
+        return forExportList.value;
     }
 
     return [];
@@ -560,7 +646,7 @@ const stashPatients = async () => {
 };
 
 // Export
-const exportToExcel = async () => {
+const exportToExcel = async (isAdmit) => {
     exporting.value = true;
     exportDone.value = false;
     patientStore.loadSignal = true;
@@ -601,7 +687,7 @@ const exportToExcel = async () => {
             return;
         }
         await patientStore.saveFormattedDataArchived(enccodess, dateNow);
-        await injuryService.sendArrayToServer(archivedData, dateNow);
+        await injuryService.sendArrayToServer(archivedData, dateNow, isAdmit);
     } catch (error) {
         console.error('Error exporting data to Excel:', error);
         toast.add({
@@ -637,23 +723,44 @@ const updateSelectedPatients = (newSelectedPatients) => {
 
 // ***************************************ARCHIVED LIST***************************************
 // Archive List
-const groupedArchivedData = computed(() => {
-    return Object.entries(groupedArchivedItems.value).map(([archdate, items]) => {
-        const cleanedDate = archdate.replace('Injury', '').trim();
-        const dateObject = new Date(cleanedDate);
-        const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
-        const formattedDate = dateObject.toLocaleString('en-US', options).replace(',', '');
-        const names = items.map((item) => item.header.patname).filter((name) => name);
-        const exportByIDs = items.map((item) => item.header.hpercode).filter((id) => id);
+// const groupedArchivedData = computed(() => {
+//     return Object.entries(groupedArchivedItems.value).map(([archdate, items]) => {
+//         const cleanedDate = archdate.replace('Injury', '').trim();
+//         const dateObject = new Date(cleanedDate);
+//         const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+//         const formattedDate = dateObject.toLocaleString('en-US', options).replace(',', '');
+//         const names = items.map((item) => item.header.patname).filter((name) => name);
+//         const exportByIDs = items.map((item) => item.header.hpercode).filter((id) => id);
 
-        return {
-            archdate: formattedDate,
-            items,
-            count: items.length,
-            names,
-            exportByIDs
-        };
-    });
+//         return {
+//             archdate: formattedDate,
+//             items,
+//             count: items.length,
+//             names,
+//             exportByIDs
+//         };
+//     });
+// });
+
+const groupedArchivedData = computed(() => {
+    return Object.entries(groupedArchivedItems.value)
+        .map(([archdate, items]) => {
+            const cleanedDate = archdate.replace('Injury', '').trim();
+            const dateObject = new Date(cleanedDate);
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const formattedDate = dateObject.toLocaleString('en-US', options).replace(',', '');
+            const names = items.map((item) => item.header.patname).filter((name) => name);
+            const exportByIDs = items.map((item) => item.header.hpercode).filter((id) => id);
+
+            return {
+                archdate: formattedDate,
+                items,
+                count: items.length,
+                names,
+                exportByIDs
+            };
+        })
+        .filter((entry) => entry.count > 0); // Filter out entries with count 0
 });
 // *************************************** WATCHERS ***************************************
 
@@ -700,22 +807,54 @@ watch(selectedDate, (newDate) => {
         filters.value.global.value = formattedDate;
     }
 });
+// watch(
+//     forArchived,
+//     (newValue) => {
+//         if (newValue) {
+//             const uniqueItems = newValue.reduce((acc, current) => {
+//                 acc.push(current);
+//                 return acc;
+//             }, []);
+//             uniqueArchivedItems.value = uniqueItems;
+//             const groupedItems = uniqueItems.reduce((acc, item) => {
+//                 // const archdate = item.header.archdate;
+//                 const archdate = item.archdate;
+//                 if (!acc[archdate]) {
+//                     acc[archdate] = [];
+//                 }
+//                 console.log('item: ', item?.details?.header?.dispdate);
+//                 acc[archdate].push(item);
+//                 return acc;
+//             }, {});
+//             groupedArchivedItems.value = groupedItems;
+//         } else {
+//             uniqueArchivedItems.value = [];
+//             groupedArchivedItems.value = {};
+//         }
+//     },
+//     { immediate: true }
+// );
 watch(
     forArchived,
     (newValue) => {
         if (newValue) {
             const uniqueItems = newValue.reduce((acc, current) => {
+                // Check if dispdate is not null
                 acc.push(current);
                 return acc;
             }, []);
             uniqueArchivedItems.value = uniqueItems;
+
             const groupedItems = uniqueItems.reduce((acc, item) => {
-                // const archdate = item.header.archdate;
                 const archdate = item.archdate;
                 if (!acc[archdate]) {
                     acc[archdate] = [];
                 }
-                acc[archdate].push(item);
+                if (!item.details?.header?.dispdate && activePanel.value === 4) {
+                    acc[archdate].push(item);
+                } else if (activePanel.value === 5) {
+                    acc[archdate].push(item);
+                }
                 return acc;
             }, {});
             groupedArchivedItems.value = groupedItems;
@@ -756,8 +895,17 @@ if (patientStore.details.loader != null) {
             <div class="spinner"></div>
             <p class="loading-message">PLEASE WAIT...</p>
         </div>
-        <div class="col-12 xl:col-12" v-if="showT" style="width: 100%">
-            <div class="shadow-4 opacity-90" style="height: 100%; width: 100%">
+        <div class="col-12 xl:col-12" v-if="showT">
+            <div class="shadow-4 mx-5 opacity-90" style="height: 100%">
+                <div class="flex align-items-center mb-2 justify-content-between">
+                    <div class="flex align-items-center">
+                        <!-- <span class="p-input-icon-left">
+                            <i class="pi pi-search" />
+                            <InputText v-model="filterValue" placeholder="( Name / Hospital# / DOI / NOI)" class="w-18rem shadow-2" style="width: 40%" />
+                        </span>
+                        <Calendar v-model="selectedDate" :showIcon="true" class="calendar-icon-only" /> -->
+                    </div>
+                </div>
                 <TabView :lazy="false" @tab-change="updateActivePanel">
                     <TabPanel header="Injury Cases">
                         <template #header>
@@ -772,12 +920,12 @@ if (patientStore.details.loader != null) {
                         <InjuryCasesTabView :filterValue="filterValue" :list="filteredInjuryList" :loading="isLoading" />
                     </TabPanel>
                     <TabPanel header="Export Admitted Cases">
-                        <Button label="Export" icon="pi pi-file-excel" :disabled="isExportDisabled" class="col-12 shadow-4 mb-3" v-tooltip.top="'Export to Excel'" @click="exportToExcel()" :loading="exporting" />
-                        <ExportCasesTabView :filterValue="filterValue" :list="filteredExportList" :loading="isLoading" @update:selectedPatients="updateSelectedPatients" :exportDone="exportDone" />
+                        <Button label="Export" icon="pi pi-file-excel" :disabled="isExportDisabled" class="col-12 shadow-4 mb-3" v-tooltip.top="'Export to Excel'" @click="exportToExcel(true)" :loading="exporting" />
+                        <ExportCasesTabView :isAdmit="true" :filtPerValue="filterValue" :list="filteredExportList" :loading="isLoading" @update:selectedPatients="updateSelectedPatients" :exportDone="exportDone" />
                     </TabPanel>
                     <TabPanel header="For Export">
                         <div v-if="user.userInfo.employeeid === '000001' || user.userInfo.employeeid === 'TP2015075'" class="flex justify-content-between" style="width: 100%">
-                            <Button label="Export" icon="pi pi-file-excel" :disabled="isExportDisabled" class="col-12 shadow-4 mb-3" v-tooltip.top="'Export to Excel'" @click="exportToExcel()" :loading="exporting" style="width: 78%" />
+                            <Button label="Export" icon="pi pi-file-excel" :disabled="isExportDisabled" class="col-12 shadow-4 mb-3" v-tooltip.top="'Export to Excel'" @click="exportToExcel(false)" :loading="exporting" style="width: 78%" />
                             <Button
                                 label="Stash"
                                 icon="pi pi-trash"
@@ -790,14 +938,17 @@ if (patientStore.details.loader != null) {
                             />
                         </div>
                         <Button v-else label="Export" icon="pi pi-file-excel" :disabled="isExportDisabled" class="col-12 shadow-4 mb-3" v-tooltip.top="'Export to Excel'" @click="exportToExcel()" :loading="exporting" />
-                        <ExportCasesTabView :filterValue="filterValue" :list="filteredExportListAdmitRemoved" @update:selectedPatients="updateSelectedPatients" :loading="isLoading" />
+                        <ExportCasesTabView :isAdmit="false" :filterValue="filterValue" :list="filteredExportListAdmitRemoved" @update:selectedPatients="updateSelectedPatients" :loading="isLoading" />
                     </TabPanel>
                     <TabPanel header="Archived">
                         <template #header>
                             <i class="pi pi-spin pi-spinner ml-2" v-if="!groupedArchivedData && activePanel == '4'"></i>
                         </template>
-                        <ArchivedTabView :filterValue="filterValue" :list="groupedArchivedData" :loading="isLoading" />
+                        <ArchivedTabView :isAdmit="false" :filterValue="filterValue" :list="groupedArchivedData" :loading="isLoading" />
                         <!-- <ArchivedTabView :filterValue="filterValue" :list="groupedArchivedData" :loading="isLoading" @update:exporting="updateExporting" /> -->
+                    </TabPanel>
+                    <TabPanel header="Archived Admissions">
+                        <ArchivedTabView :isAdmit="true" :filterValue="filterValue" :list="groupedArchivedData" :loading="isLoading" />
                     </TabPanel>
                     <TabPanel v-if="user.userInfo.employeeid === '000001' || user.userInfo.employeeid === 'TP2015075'" header="Stashed">
                         <StashCasesTabView :filterValue="filterValue" :list="injuryList" :loading="isLoading" />
