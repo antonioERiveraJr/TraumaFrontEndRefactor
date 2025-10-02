@@ -14,7 +14,7 @@ export const useUserStore = defineStore('userStore', () => {
         } catch (error) {
             console.error('Failed to refresh token:', error);
             // Redirect to login or handle it as needed
-            window.location.href = '/login';
+            window.location.href = 'localhost:5173/#/auth/login';
             throw error; // Re-throw to handle it in getUserInfo
         }
     }
