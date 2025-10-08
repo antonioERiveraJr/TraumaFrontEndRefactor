@@ -26,7 +26,7 @@ export default class InjuryService {
             console.log('enccode: ', enccode);
             const response = await axios.get('/opdPatientData', {
                 params: {
-                    enccode: enccode
+                    enccode: enccode 
                 },
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('authToken')
@@ -882,6 +882,7 @@ export default class InjuryService {
         } catch (error) {
             return error;
         }
+        
     }
 
     async generateStatsToExcel(array) {

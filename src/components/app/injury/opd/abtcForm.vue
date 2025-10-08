@@ -381,7 +381,7 @@ onUnmounted(() => {
                                     </template>
                                     <BiteForm />
                                 </AccordionTab>
-                                <AccordionTab :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }"
+                                <AccordionTab v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }"
                                     ><template #header>
                                         <span class="flex align-items-center gap-2 w-full">
                                             <span style="color: #000080" class="font-bold white-space-nowrap">PREADMISSION DATA</span>
@@ -391,7 +391,7 @@ onUnmounted(() => {
                                     </template>
                                     <NewPreAdmission @update:requiredCountPreAdmission="updateRequiredCountPreAdmission"
                                 /></AccordionTab>
-                                <AccordionTab :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
+                                <AccordionTab v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
                                     <template #header>
                                         <span class="flex align-items-center gap-2 w-full">
                                             <span style="color: #000080" class="font-bold white-space-nowrap">GENERAL DATA</span>

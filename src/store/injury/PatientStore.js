@@ -39,6 +39,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
     const storeProvinces = ref([]);
     const storeCities = ref([]);
     const storeBrgy = ref([]);
+    const type_prophylaxis = ref();
 
     // const entryBy = ref('');
 
@@ -260,6 +261,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             noi_incision_sp: ''
         },
         ExternalCauseOfInjury: {
+            prophylaxis: '',
             pvrv: '',
             pcec: '',
             pvrv_site_2: '',
@@ -553,6 +555,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             noi_incision_sp: ''
         },
         ExternalCauseOfInjury: {
+            prophylaxis: '',
             pvrv: '',
             pcec: '',
             pvrv_site_2: '',
@@ -832,7 +835,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
     // Function to set the loadList callback
     async function loadOPDPatientData(patientData) {
         if (patientData?.data) {
-            // console.log('hihi: ', patientData.data.header);
+            console.log('has data: ', patientData.data);
             header.value = patientData.data.header;
             header.value.hpercode = patientData.data.header.hpercode;
             // ufiveID.value = patientData?.data?.details?.ufiveID;
@@ -842,7 +845,10 @@ export const usePatientStore = defineStore('PatientStore', () => {
             if (patientData.data != null) {
                 console.log('Details found, using details from server');
                 details.value = patientData.data;
-                details.value.followUp = { ...defaultDetails.value.followUp };
+                if (progressionDay.value !== patientData.data.progressionDay) {
+                    console.log('day not the same : ', progressionDay.value + ': ', patientData.data.progressionDay);
+                    details.value.followUp = { ...defaultDetails.value.followUp };
+                }
             }
             // else {
             //     // console.log('No details found, using default details');
@@ -855,6 +861,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             // }
             // admEnccode.value = patientData?.data?.admEnccode;
         } else {
+            console.log('doesnt have data: ', patientData);
             header.value.patname = patientData.patientname;
             header.value.hpercode = patientData.hpercode;
             enccode.value = patientData.enccode;
@@ -1422,6 +1429,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         details.value.ExternalCauseOfInjury.pcec_site_2 = '';
         details.value.ExternalCauseOfInjury.pvrv_site_4 = '';
         details.value.ExternalCauseOfInjury.pcec_site_5 = '';
+        details.value.ExternalCauseOfInjury.prophylaxis = '';
         details.value.ExternalCauseOfInjury.pvrv = '';
         details.value.ExternalCauseOfInjury.pcec = '';
         details.value.ExternalCauseOfInjury.hrig = '';
@@ -1572,6 +1580,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         storeProvinces,
         storeRegions,
         progressionDay,
-        loadAdmittedPatientData
+        loadAdmittedPatientData,
+        type_prophylaxis
     };
 });

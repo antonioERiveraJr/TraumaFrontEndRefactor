@@ -31,7 +31,7 @@ export const useUserStore = defineStore('userStore', () => {
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 try {
-                    const newToken = await refreshToken(); // Attempt to refresh the token
+                    const newToken = await refreshToken(); // Attempt to    refresh the token
                     const uInfo = await axios.get('getUserInfo', {
                         headers: {
                             Authorization: 'Bearer ' + newToken

@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, provide } from 'vue';
+import { onMounted, ref, provide, watch } from 'vue';
 import { usePatientStore } from '../../../store/injury/PatientStore';
 import createValidationRules from '../../../validation/doctorsInjuryValidation';
 import useVuelidate from '@vuelidate/core';
@@ -12,33 +12,36 @@ const patientStore = usePatientStore();
 const validations = createValidationRules();
 const v$ = useVuelidate(validations, patientStore.details);
 const loading = ref(false);
+const fetchingPatientData = ref(true);
+const typesOfProphylaxis = ['PRE-EXPOSURE', 'POST-EXPOSURE'];
 const enccode = ref();
 const user = useUserStore();
+const checkPatientTSSRecord = ref();
 const patientData = ref(null);
 const injuryService = new InjuryService();
 provide('v$', v$);
 
 // Panel widths
-const panel1Width = ref('20%');
-const panel2Width = ref('80%');
+const panel1Width = ref('3%');
+const panel2Width = ref('95%');
 
 // Hover function
 const handleHover = (panel) => {
-    if (patientStore.progressionDay !== '') {
+    if (patientStore.progressionDay !== '' && patientStore.type_prophylaxis !== '') {
         if (panel === 'panel1') {
             panel1Width.value = '20%';
-            panel2Width.value = '80%';
+            panel2Width.value = '78%';
         } else {
             panel1Width.value = '3%';
-            panel2Width.value = '97%';
+            panel2Width.value = '95%';
         }
     }
 };
 
 const handleMouseLeave = () => {
-    if (patientStore.progressionDay !== '') {
+    if (patientStore.progressionDay !== '' && patientStore.type_prophylaxis !== '') {
         panel1Width.value = '3%';
-        panel2Width.value = '97%';
+        panel2Width.value = '95%';
     }
 };
 
@@ -73,7 +76,12 @@ onMounted(async () => {
     if (!patientStore.enccode) {
         enccode.value = localStorage.getItem('enccode') || enccode.value;
         patientData.value = await injuryService.getOPDPatientData(enccode.value);
-        patientStore.loadOPDPatientData(patientData.value);
+        console.log('patientData: ', patientData.value);
+        await patientStore.loadOPDPatientData(patientData.value);
+
+        checkPatientTSSRecord.value = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode);
+        console.log('checkPatientTSSRecord: ', checkPatientTSSRecord.value);
+        patientStore.patientTSSRecord = checkPatientTSSRecord;
     }
 
     // Set initial values for detailsData
@@ -95,6 +103,31 @@ onMounted(async () => {
 
     loading.value = false;
 });
+
+watch(
+    () => fetchingPatientData.value,
+    (newValue) => {
+        console.log('fetchingPatientData: ', newValue);
+    }
+);
+
+watch(
+    () => patientStore.type_prophylaxis,
+    () => {
+        panel1Width.value = '20%';
+        panel2Width.value = '78%';
+    }
+);
+
+// watch(
+//     () => patientStore.patientTSSRecord,
+//     (newvalue) => {
+//         console.log('patientTSSRecord: ', newvalue);
+//     },
+//     {
+//         deep: true
+//     }
+// );
 </script>
 
 <template>
@@ -104,12 +137,12 @@ onMounted(async () => {
                 <div v-if="panel1Width === '3%'" class="vertical-text">
                     <strong>PROGRESSION DAY (DAY {{ patientStore.progressionDay }})</strong>
                 </div>
-                <ProgressionDay v-else />
+                <ProgressionDay v-model:loading="fetchingPatientData" v-else />
             </div>
             <div style="height: 100vh" :style="{ width: panel2Width, transition: 'width 0.3s ease' }" class="flex justify-content-center" @mouseover="handleHover('panel2')" @mouseleave="handleMouseLeave">
                 <div style="height: 100%; width: 100%">
-                    <ABTCForm :enccode="enccode" v-if="patientStore.progressionDay !== ''" />
-                    <SplitterPanel v-else style="height: 100%" :size="100">
+                    <!-- <SplitterPanel v-if="patientStore.progressionDay === '' || fetchingPatientData" style="height: 100%" :size="100"> -->
+                    <SplitterPanel v-if="patientStore.progressionDay === ''" style="height: 100%" :size="100">
                         <Splitter layout="vertical">
                             <SplitterPanel style="background-color: #e5e5e5" :size="5" class="flex justify-content-center sticky">
                                 <h1 class="font-bold">{{ patientStore.header.patname }}</h1>
@@ -122,8 +155,48 @@ onMounted(async () => {
                             </SplitterPanel>
                         </Splitter>
                     </SplitterPanel>
+                    <ABTCForm :enccode="enccode" v-else />
                 </div>
             </div>
+            <SelectButton
+                v-model="patientStore.type_prophylaxis"
+                :options="typesOfProphylaxis"
+                aria-labelledby="basic"
+                style="width: 2%"
+                :label="'Prophylaxis'"
+                :pt="{
+                    root: {
+                        style: {
+                            width: '100%',
+                            height: '100vh',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center', // Center horizontally
+                            justifyContent: 'center' // Center vertically
+                        }
+                    },
+                    button: {
+                        style: {
+                            width: '90%',
+                            height: '50%',
+                            marginX: '5%', // Space between buttons, adjust as needed
+                            position: 'relative',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            textAlign: 'center' // Center text
+                        }
+                    },
+                    label: {
+                        style: {
+                            writingMode: 'vertical-rl', // Vertical display
+                            transform: 'rotate(180deg)', // Correct orientation
+                            marginBottom: '10px' // Space between label and button
+                        }
+                    }
+                }"
+            />
         </div>
     </div>
 </template>
