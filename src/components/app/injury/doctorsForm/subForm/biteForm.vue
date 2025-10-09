@@ -529,9 +529,9 @@ watch(
             <div class="grid grid-cols-4 gap-4 flex justify-content-evenly">
                 <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="patientStore.details.ExternalCauseOfInjury.pvrv" label="PVRV" />
                 <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="patientStore.details.ExternalCauseOfInjury.pcec" label="PCEC" />
-                <CheckBoxMultiple class="justify-content-center" style="width: 10%" v-model="patientStore.details.ExternalCauseOfInjury.hrig" label="HRIG" />
-                <CheckBoxMultiple class="justify-content-center" style="width: 10%" v-model="patientStore.details.ExternalCauseOfInjury.erig" label="ERIG" />
-                <CheckBoxMultiple class="justify-content-center" style="width: 10%" v-model="patientStore.details.ExternalCauseOfInjury.ats" label="ATS" />
+                <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ExternalCauseOfInjury.hrig" label="HRIG" />
+                <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ExternalCauseOfInjury.erig" label="ERIG" />
+                <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ExternalCauseOfInjury.ats" label="ATS" />
                 <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="patientStore.details.ExternalCauseOfInjury.tt" label="TT" />
                 <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="patientStore.details.ExternalCauseOfInjury.vaccine_none" label="NONE" />
             </div>

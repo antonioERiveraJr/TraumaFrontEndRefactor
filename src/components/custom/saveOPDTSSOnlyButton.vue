@@ -544,26 +544,26 @@ watch(det, (newValue) => {
 </script>
 <template>
     <!-- <div v-if="loader" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)"></div> -->
-    <div>
-        <span class="flex justify-content-center">
+    <div style="width: 100%;">
+        <span class="flex" style="width: 100%;">
             <div v-if="isLocked === '1'"><Message :closable="false">Encounter is Locked</Message></div>
-            <div v-else>
-                <div v-if="isUpdateForm">
+            <div v-else style="width: 100%;">
+                <div v-if="isUpdateForm" style="width: 100%;">
                     <Button
                         label="Update (TSS Only)"
                         icon="pi pi-save"
-                        style="background-color: darkolivegreen"
-                        class="w-auto border border-gray-400 rounded-lg text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
+                        style="background-color: darkolivegreen; width: 100%"
+                        class="border border-gray-400 rounded-lg text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
                         v-tooltip.top="{ value: 'Click to update your latest form', class: 'text-center' }"
                         @click="confirmSaves($event)"
                     />
                 </div>
-                <div v-else>
+                <div v-else style="width: 100%;">
                     <Button
                         label="Save (TSS Only)"
                         icon="pi pi-save"
-                        style="background-color: darkolivegreen"
-                        class="w-auto border border-gray-300 rounded-lg text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
+                        style="background-color: darkolivegreen; width: 100%"
+                        class="border border-gray-300 rounded-lg text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
                         v-tooltip.top="{ value: 'This will only update the TSS; it will not reflect on the EMR.', class: 'text-center' }"
                         @click="confirmSaves($event)"
                     />

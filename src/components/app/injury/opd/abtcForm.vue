@@ -350,13 +350,13 @@ onUnmounted(() => {
 });
 </script>
 <template>
-    <div v-if="saving" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 98vh; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
+    <div v-if="saving" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 98%; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
         <img src="@/assets/images/loader.gif" alt="Loading..." style="height: 10rem; width: 10rem" />
     </div>
-    <div style="height: 100%; width: 100%">
+    <div id="form" style="height: 95%; width: 100%; overflow-y: auto">
         <Splitter style="height: 100%">
             <SplitterPanel style="height: 100%" :size="100">
-                <Splitter layout="vertical">
+                <Splitter layout="vertical" style="height: 100%">
                     <SplitterPanel style="background-color: #e5e5e5" :size="5" class="flex justify-content-center sticky">
                         <h1 class="font-bold">{{ patientStore.header.patname }}</h1>
                         <h5 class="text-blue-800">
@@ -434,7 +434,7 @@ onUnmounted(() => {
                             </div>
                         </div> -->
 
-                        <div class="floating-tag">
+                        <!-- <div class="floating-tag">
                             <div class="button-container">
                                 <SaveOPDButton
                                     @update:customizedObjectives="updateCustomizedObjective"
@@ -457,7 +457,7 @@ onUnmounted(() => {
                                     @update:saving="updateSaving"
                                 />
                             </div>
-                        </div>
+                        </div> -->
                         <!-- <div class="floating-tag" style="position: fixed; width: 50%; right: 20%; transform: translateX(-50%)">
                             <div style="width: 100%">
                                 
@@ -467,9 +467,9 @@ onUnmounted(() => {
                 </Splitter>
             </SplitterPanel>
 
-            <SplitterPanel hidden v-if="size === 35" class="justify-content-center rainbow-border" :size="25" :minSize="10" style="min-height: 98vh; height: 100%; overflow-y: auto">
+            <SplitterPanel hidden v-if="size === 35" class="justify-content-center rainbow-border" :size="25" :minSize="10" style="min-height: 98%; height: 100%; overflow-y: auto">
                 <div class="sticky">
-                    <div v-if="loader" class="flex justify-content-center align-items-center" style="top: 0; left: 0; width: 100%; height: 98vh; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
+                    <div v-if="loader" class="flex justify-content-center align-items-center" style="top: 0; left: 0; width: 100%; height: 98%; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
                         <img src="@/assets/images/loader.gif" alt="Loading..." style="height: 10rem; width: 10rem" />
                     </div>
                     <div v-else>
@@ -618,6 +618,30 @@ onUnmounted(() => {
                 </div>
             </SplitterPanel>
         </Splitter>
+    </div>
+    <div style="height: 5%; width: 100%" class="flex">
+        <SaveOPDButton
+            
+            @update:customizedObjectives="updateCustomizedObjective"
+            @update:customizedDiagnosis="updateCustomizedDiagnosis"
+            @update:customizedDetails="updateCustomizedDetails"
+            :objective="customizedObjective"
+            :details="customizedDetails"
+            :diagnosis="customizedDiagnosis"
+            :latestEntry="latestEntryDoc"
+            @update:saving="updateSaving"
+        />
+        <SaveOPDTSSOnlyButton
+            
+            @update:customizedObjectives="updateCustomizedObjective"
+            @update:customizedDiagnosis="updateCustomizedDiagnosis"
+            @update:customizedDetails="updateCustomizedDetails"
+            :objective="customizedObjective"
+            :details="customizedDetails"
+            :diagnosis="customizedDiagnosis"
+            :latestEntry="latestEntryDoc"
+            @update:saving="updateSaving"
+        />
     </div>
 </template>
 <style>

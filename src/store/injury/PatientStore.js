@@ -459,6 +459,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
             adverse_reaction: '',
             adverse_reaction_details: '',
             biting: '',
+            finding: '',
+            finding_sp: '',
             others: '',
             wound_description: '',
             wound_description_others: '',
@@ -752,6 +754,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
             adverse_reaction: '',
             adverse_reaction_details: '',
             biting: '',
+            finding: '',
+            finding_sp: '',
             others: '',
             wound_description: '',
             wound_description_others: '',
@@ -1311,6 +1315,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
         details.value.followUp.adverse_reaction = '';
         details.value.followUp.adverse_reaction_details = '';
         details.value.followUp.biting = '';
+        details.value.followUp.finding = '';
+        details.value.followUp.finding_sp = '';
         details.value.followUp.others = '';
         details.value.followUp.wound_description = '';
         details.value.followUp.wound_description_others = '';

@@ -1,17 +1,17 @@
 <script setup>
-import { useToast } from 'primevue/usetoast'; 
-import { inject,  ref, computed, watch } from 'vue';
+import { useToast } from 'primevue/usetoast';
+import { inject, ref, computed, watch } from 'vue';
 import { usePatientStore } from '@/store/injury/PatientStore';
 import useToastWaitingForFetch from '@/composables/useToastWaitingForFetch';
 import InjuryService from '../../service/InjuryService';
-import createValidationRules from '../../validation/doctorsInjuryValidation'; 
+import createValidationRules from '../../validation/doctorsInjuryValidation';
 import Swal from 'sweetalert2';
 import { useUserStore } from '../../store/general/UserStore';
 
 // import { generateNOI } from '../app/injury/doctorsForm/GeneralDataDoctor.vue';
 // import moment from 'moment';
 
-const user = useUserStore(); 
+const user = useUserStore();
 const toast = useToast();
 // const confirm = useConfirm();
 const emit = defineEmits(['update:saving', 'update:customizedObjectives', 'update:customizedDiagnosis', 'update:customizedDetails']);
@@ -814,26 +814,28 @@ watch(det, (newValue) => {
 </script>
 <template>
     <!-- <div v-if="loader" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)"></div> -->
-    <div>
-        <span class="flex justify-content-center">
-            <!-- {{ patientStore.details.ExternalCauseOfInjury }} -->
-
-            <div v-if="isLocked === '1'"><Message :closable="false">Encounter is Locked</Message></div>
-            <div v-else>
+    <div style="width: 100%; height: 100%">
+        <span class="flex" style="width: 100%; height: 100%">
+            <div v-if="isLocked === '1'">
+                <Message :closable="false">Encounter is Locked</Message>
+            </div>
+            <div v-else style="width: 100%; height: 100%">
                 <div v-if="isUpdateForm">
                     <Button
+                        style="width: 100%; height: 100%"
                         label="Update (EMR and TSS)"
                         icon="pi pi-save"
-                        class="w-auto border border-gray-400 rounded-lg bg-blue-500 text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
+                        class="border border-gray-400 rounded-lg bg-blue-500 text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
                         v-tooltip.top="{ value: 'Click to update your latest form', class: 'text-center' }"
                         @click="confirmSaves($event)"
                     />
                 </div>
                 <div v-else>
                     <Button
+                        style="width: 100%; height: 100%"
                         label="Save (EMR and TSS)"
                         icon="pi pi-save"
-                        class="w-auto border border-gray-300 rounded-lg bg-blue-500 text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
+                        class="border border-gray-300 rounded-lg bg-blue-500 text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
                         v-tooltip.top="{ value: 'Click to save the new form', class: 'text-center' }"
                         @click="confirmSaves($event)"
                     />

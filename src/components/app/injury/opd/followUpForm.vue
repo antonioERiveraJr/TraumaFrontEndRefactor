@@ -1,5 +1,6 @@
 <script setup>
 import { usePatientStore } from '../../../../store/injury/PatientStore';
+import CheckBoxMultiple from '../../../custom/checkBoxMultiple.vue';
 
 const PatientStore = usePatientStore();
 
@@ -9,6 +10,7 @@ const bitingOptions = ['ALIVE', 'DIED', 'UNKNOWN'];
 const woundDescriptionOptions = ['HEALED', 'DRY', 'OTHERS'];
 const erythDischOption = ['WITH', 'NO'];
 const tendHeptOption = ['+', '-'];
+const findingOption = ['ESSENTIALLY NORMAL, PE FINDING', 'WITH FINDINGS'];
 </script>
 <template>
     <h5 style="text-align: center; font-weight: bolder; color: #333">FOLLOW-UP FORM</h5>
@@ -33,7 +35,7 @@ const tendHeptOption = ['+', '-'];
                 </div>
             </div>
 
-            <div style="width: 100%">
+            <div style="width: 100%" v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'">
                 <label for="Biting" class="text-black text-xs" style="color: #000080"><i>Biting </i></label>
                 <SelectButton
                     v-model="PatientStore.details.followUp.biting"
@@ -64,90 +66,199 @@ const tendHeptOption = ['+', '-'];
             <template #legend>
                 <span style="color: #000080" class="font-bold white-space-nowrap">Objective</span>
             </template>
+            <div v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'">
+                <div style="width: 100%">
+                    <label for="woundDesc" class="text-black text-xs" style="color: #000080"><i>Wound Description</i></label>
+                    <Dropdown style="width: 98%" id="woundDescription" class="font-bold" v-model="PatientStore.details.followUp.woundDescription" :options="woundDescriptionOptions" />
+                    <div v-if="PatientStore.details.followUp.woundDescription === 'OTHERS'">
+                        <label for="woundOthDescription" class="text-black text-xs" style="color: #000080"><i>Others</i></label>
+                        <Textarea style="width: 98%" id="woundOthDescription" v-model="PatientStore.details.followUp.woundDescriptionOthers" rows="1" class="mt-2 justify-content-center font-bold" autoResize />
+                    </div>
+                </div>
 
-            <div style="width: 100%">
-                <label for="woundDesc" class="text-black text-xs" style="color: #000080"><i>Wound Description</i></label>
-                <Dropdown style="width: 98%" id="woundDescription" class="font-bold" v-model="PatientStore.details.followUp.woundDescription" :options="woundDescriptionOptions" />
-                <div v-if="PatientStore.details.followUp.woundDescription === 'OTHERS'">
-                    <label for="woundOthDescription" class="text-black text-xs" style="color: #000080"><i>Others</i></label>
-                    <Textarea style="width: 98%" id="woundOthDescription" v-model="PatientStore.details.followUp.woundDescriptionOthers" rows="1" class="mt-2 justify-content-center font-bold" autoResize />
+                <div style="width: 100%">
+                    <label for="Erythema" class="text-black text-xs" style="color: #000080"><i>Erythema </i></label>
+                    <SelectButton
+                        v-model="PatientStore.details.followUp.erythema"
+                        :options="erythDischOption"
+                        aria-labelledby="basic"
+                        :pt="{
+                            root: {
+                                style: { width: '100%' }
+                            },
+                            button: {
+                                style: {
+                                    width: '49%'
+                                }
+                            }
+                        }"
+                    />
+                </div>
+
+                <div style="width: 100%">
+                    <label for="Dischare" class="text-black text-xs" style="color: #000080"><i>Discharge </i></label>
+                    <SelectButton
+                        v-model="PatientStore.details.followUp.dischare"
+                        :options="erythDischOption"
+                        aria-labelledby="basic"
+                        :pt="{
+                            root: {
+                                style: { width: '100%' }
+                            },
+                            button: {
+                                style: {
+                                    width: '49%'
+                                }
+                            }
+                        }"
+                    />
+                </div>
+
+                <div style="width: 100%">
+                    <label for="Hematoma" class="text-black text-xs" style="color: #000080"><i>Hematoma </i></label>
+                    <SelectButton
+                        v-model="PatientStore.details.followUp.hematoma"
+                        :options="tendHeptOption"
+                        aria-labelledby="basic"
+                        :pt="{
+                            root: {
+                                style: { width: '100%' }
+                            },
+                            button: {
+                                style: {
+                                    width: '49%'
+                                }
+                            }
+                        }"
+                    />
                 </div>
             </div>
-
-            <div style="width: 100%">
-                <label for="Erythema" class="text-black text-xs" style="color: #000080"><i>Erythema </i></label>
-                <SelectButton
-                    v-model="PatientStore.details.followUp.erythema"
-                    :options="erythDischOption"
-                    aria-labelledby="basic"
-                    :pt="{
-                        root: {
-                            style: { width: '100%' }
-                        },
-                        button: {
-                            style: {
-                                width: '49%'
+            <div v-else>
+                <div style="width: 100%">
+                    <label for="Tenderness" class="text-black text-xs" style="color: #000080"><i>Finding </i></label>
+                    <SelectButton
+                        v-model="PatientStore.details.followUp.finding"
+                        :options="findingOption"
+                        aria-labelledby="basic"
+                        :pt="{
+                            root: {
+                                style: { width: '100%' }
+                            },
+                            button: {
+                                style: {
+                                    width: '49%'
+                                }
                             }
-                        }
-                    }"
-                />
+                        }"
+                    />
+                    <label for="Tenderness" v-if="PatientStore.details.followUp.finding === 'WITH FINDINGS'" class="text-black text-xs" style="color: #000080; width: 100%"><i>Finding </i></label>
+                    <Textarea v-if="PatientStore.details.followUp.finding === 'WITH FINDINGS'" v-model="PatientStore.details.followUp.finding_sp" style="width: 100%" />
+                </div>
             </div>
+        </Fieldset>
+    </div>
 
-            <div style="width: 100%">
-                <label for="Dischare" class="text-black text-xs" style="color: #000080"><i>Discharge </i></label>
-                <SelectButton
-                    v-model="PatientStore.details.followUp.dischare"
-                    :options="erythDischOption"
-                    aria-labelledby="basic"
-                    :pt="{
-                        root: {
-                            style: { width: '100%' }
-                        },
-                        button: {
-                            style: {
-                                width: '49%'
-                            }
-                        }
-                    }"
-                />
+    <div class="flex">
+        <Fieldset style="width: 98%" pt:content:class="flex" :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '1rem' } } }">
+            <template #legend>
+                <span style="color: #000080" class="flex justify-content-center font-bold white-space-nowrap">VACCINE TO BE GIVEN ( {{ PatientStore.type_prophylaxis }} )</span>
+            </template>
+
+            <div class="grid grid-cols-4 gap-4 flex justify-content-evenly">
+                <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="PatientStore.details.ExternalCauseOfInjury.pvrv" label="PVRV" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="PatientStore.details.ExternalCauseOfInjury.pcec" label="PCEC" />
+                <CheckBoxMultiple v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="PatientStore.details.ExternalCauseOfInjury.hrig" label="HRIG" />
+                <CheckBoxMultiple v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="PatientStore.details.ExternalCauseOfInjury.erig" label="ERIG" />
+                <CheckBoxMultiple v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="PatientStore.details.ExternalCauseOfInjury.ats" label="ATS" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="PatientStore.details.ExternalCauseOfInjury.tt" label="TT" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="PatientStore.details.ExternalCauseOfInjury.vaccine_none" label="NONE" />
             </div>
-
-            <div style="width: 100%">
-                <label for="Tenderness" class="text-black text-xs" style="color: #000080"><i>Tenderness </i></label>
-                <SelectButton
-                    v-model="PatientStore.details.followUp.tenderness"
-                    :options="tendHeptOption"
-                    aria-labelledby="basic"
-                    :pt="{
-                        root: {
-                            style: { width: '100%' }
-                        },
-                        button: {
-                            style: {
-                                width: '49%'
-                            }
-                        }
-                    }"
-                />
-            </div>
-
-            <div style="width: 100%">
-                <label for="Hematoma" class="text-black text-xs" style="color: #000080"><i>Hematoma </i></label>
-                <SelectButton
-                    v-model="PatientStore.details.followUp.hematoma"
-                    :options="tendHeptOption"
-                    aria-labelledby="basic"
-                    :pt="{
-                        root: {
-                            style: { width: '100%' }
-                        },
-                        button: {
-                            style: {
-                                width: '49%'
-                            }
-                        }
-                    }"
-                />
+            <div class="grid grid-cols-4 gap-4 justify-content-evenly mt-3">
+                <div style="width: 13%">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="PatientStore.details.ExternalCauseOfInjury.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ExternalCauseOfInjury.pvrv_site_2" label="2-sites" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ExternalCauseOfInjury.pvrv_site_4" label="4-sites" />
+                        </div>
+                    </Transition>
+                </div>
+                <div style="width: 13%">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="PatientStore.details.ExternalCauseOfInjury.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ExternalCauseOfInjury.pcec_site_2" label="2-sites" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ExternalCauseOfInjury.pcec_site_4" label="4-sites" />
+                        </div>
+                    </Transition>
+                </div>
+                <div style="width: 10%">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="PatientStore.details.ExternalCauseOfInjury.hrig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                            <div class="field">
+                                <span class="p-float-label">
+                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="hrig" v-model="PatientStore.details.ExternalCauseOfInjury.hrig_num" />
+                                    <label for="hrig">Amount to be Given</label>
+                                </span>
+                            </div>
+                        </div>
+                    </Transition>
+                </div>
+                <div style="width: 10%">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="PatientStore.details.ExternalCauseOfInjury.erig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                            <div class="field">
+                                <span class="p-float-label">
+                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="PatientStore.details.ExternalCauseOfInjury.erig_num" />
+                                    <label for="erig">Amount to be Given</label>
+                                </span>
+                            </div>
+                        </div>
+                    </Transition>
+                </div>
+                <div style="width: 10%">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="PatientStore.details.ExternalCauseOfInjury.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                            <div class="field" style="width: 100%">
+                                <span class="p-float-label">
+                                    <Dropdown
+                                        style="width: 80%"
+                                        v-model="PatientStore.details.ExternalCauseOfInjury.ats_num"
+                                        :options="[
+                                            { label: '1500 ui', value: '1500' },
+                                            { label: '3000 ui', value: '3000' },
+                                            { label: '4500 ui', value: '4500' },
+                                            { label: '6000 ui', value: '6000' }
+                                        ]"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                    />
+                                    <label for="ats">Amount to be Given</label>
+                                </span>
+                            </div>
+                        </div>
+                    </Transition>
+                </div>
+                <div style="width: 8%"></div>
+                <div style="width: 8%"></div>
+                <div
+                    v-if="
+                        (PatientStore.details.ExternalCauseOfInjury.pvrv !== 'Y' &&
+                            PatientStore.details.ExternalCauseOfInjury.pcec !== 'Y' &&
+                            PatientStore.details.ExternalCauseOfInjury.hrig !== 'Y' &&
+                            PatientStore.details.ExternalCauseOfInjury.erig !== 'Y' &&
+                            PatientStore.details.ExternalCauseOfInjury.tt !== 'Y' &&
+                            PatientStore.details.ExternalCauseOfInjury.ats !== 'Y' &&
+                            PatientStore.details.ExternalCauseOfInjury.vaccine_none !== 'Y') ||
+                        (PatientStore.details.ExternalCauseOfInjury.pvrv_site_2 !== 'Y' && PatientStore.details.ExternalCauseOfInjury.pvrv_site_4 !== 'Y' && PatientStore.details.ExternalCauseOfInjury.pvrv === 'Y') ||
+                        (PatientStore.details.ExternalCauseOfInjury.pcec_site_2 !== 'Y' && PatientStore.details.ExternalCauseOfInjury.pcec_site_4 !== 'Y' && PatientStore.details.ExternalCauseOfInjury.pcec === 'Y') ||
+                        (PatientStore.details.ExternalCauseOfInjury.hrig === 'Y' && PatientStore.details.ExternalCauseOfInjury.hrig_num === '') ||
+                        (PatientStore.details.ExternalCauseOfInjury.erig === 'Y' && PatientStore.details.ExternalCauseOfInjury.erig_num === '') ||
+                        (PatientStore.details.ExternalCauseOfInjury.ats === 'Y' && PatientStore.details.ExternalCauseOfInjury.ats_num === '')
+                    "
+                    class="bg-red-200 p-2 absolute bottom-0 left-0 text-center text-gray-700 font-semibold italic"
+                    style="border-radius: 0 0 1rem 1rem; width: 100%; font-size: 1rem; margin: 0 !important"
+                >
+                    Value is Required
+                </div>
             </div>
         </Fieldset>
     </div>

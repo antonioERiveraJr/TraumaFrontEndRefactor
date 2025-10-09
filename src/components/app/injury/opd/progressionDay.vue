@@ -1,9 +1,9 @@
 <script setup>
 import { usePatientStore } from '../../../../store/injury/patientStore';
 import InjuryService from '../../../../service/InjuryService';
-import { onMounted, watch, ref, defineEmits } from 'vue';
+import { onMounted, watch, ref } from 'vue';
 
-const emit = defineEmits('update:loading');
+// const emit = defineEmits('update:loading');
 const injuryService = new InjuryService();
 const patientStore = usePatientStore();
 const vaccineDays = ref([]);
@@ -27,7 +27,7 @@ const setDay = (day) => {
     }
 };
 const dataIsLoaded = async () => {
-    emit('update:loading', true);
+    // emit('update:loading', true);
     console.log('hpercode: ', patientStore.header.hpercode);
     vaccineDays.value = patientStore.patientTSSRecord.data.map((record) => record.vaccineday);
     console.log('Vaccine Days: ', vaccineDays);
@@ -48,21 +48,21 @@ watch(
             if (matchingRecord) {
                 console.log('Matching record for progression day:', matchingRecord.data);
                 await patientStore.loadOPDPatientData(matchingRecord);
-                emit('update:loading', false);
+                // emit('update:loading', false);
             } else {
                 console.log('No matching record found for progression day:', newDay);
                 enccode.value = localStorage.getItem('enccode') || enccode.value;
                 patientData.value = await injuryService.getOPDPatientData(enccode.value);
                 console.log('patientData: ', patientData.value);
                 patientStore.loadOPDPatientData(patientData.value);
-                emit('update:loading', false);
+                // emit('update:loading', false);
             }
         }
     }
 );
 </script>
 <template>
-    <div style="width: 100%; height: 100vh">
+    <div style="width: 100%; height: 100%">
         <div v-if="patientStore.type_prophylaxis === 'PRE-EXPOSURE'" style="background-color: #9bb0bf; width: 100%; height: 100%">
             <div class="flex flex-column justify-content-center" style="height: 100%; width: 100%">
                 <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 30%">
@@ -96,7 +96,7 @@ watch(
         </div>
         <div v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" style="background-color: #9bb0bf; width: 100%; height: 100%">
             <div class="flex flex-column justify-content-center" style="height: 100%; width: 100%">
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%">
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 15%">
                     <Button
                         @click="setDay('0')"
                         label="Day 0"
@@ -105,7 +105,7 @@ watch(
                         style="color: black; background-color: white; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
                     />
                 </div>
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%">
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 15%">
                     <Button
                         :badge="vaccineDays.includes('3') ? '!' : null"
                         @click="setDay('3')"
@@ -113,7 +113,7 @@ watch(
                         style="background-color: #9bb0bf; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
                     />
                 </div>
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%">
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 15%">
                     <Button
                         :badge="vaccineDays.includes('7') ? '!' : null"
                         :badge-class="'bg-gray-300'"
@@ -122,7 +122,7 @@ watch(
                         style="color: black; background-color: white; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
                     />
                 </div>
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%">
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 15%">
                     <Button
                         :badge="vaccineDays.includes('14') ? '!' : null"
                         @click="setDay('14')"
@@ -130,7 +130,7 @@ watch(
                         style="background-color: #9bb0bf; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
                     />
                 </div>
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%">
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 15%">
                     <Button
                         :badge="vaccineDays.includes('21') ? '!' : null"
                         :badge-class="'bg-gray-300'"
@@ -139,7 +139,7 @@ watch(
                         style="color: black; background-color: white; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
                     />
                 </div>
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 16%">
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 15%">
                     <Button
                         :badge="vaccineDays.includes('28') ? '!' : null"
                         @click="setDay('28')"
