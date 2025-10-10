@@ -96,18 +96,18 @@ const updateRequiredFieldCount = () => {
             patientStore.details.ExternalCauseOfInjury.tetanusVaccination === '' ||
             patientStore.details.ExternalCauseOfInjury.allergies === '' ||
             patientStore.details.ExternalCauseOfInjury.adverseReaction === '' ||
-            (patientStore.details.ExternalCauseOfInjury.hrig !== 'Y' &&
-                patientStore.details.ExternalCauseOfInjury.pvrv !== 'Y' &&
-                patientStore.details.ExternalCauseOfInjury.pcec !== 'Y' &&
-                patientStore.details.ExternalCauseOfInjury.erig !== 'Y' &&
-                patientStore.details.ExternalCauseOfInjury.ats !== 'Y' &&
-                patientStore.details.ExternalCauseOfInjury.tt !== 'Y' &&
-                patientStore.details.ExternalCauseOfInjury.vaccine_none !== 'Y') ||
-            (patientStore.details.ExternalCauseOfInjury.hrig === 'Y' && patientStore.details.ExternalCauseOfInjury.hrig_num === '') ||
-            (patientStore.details.ExternalCauseOfInjury.erig === 'Y' && patientStore.details.ExternalCauseOfInjury.erig_num === '') ||
-            (patientStore.details.ExternalCauseOfInjury.ats === 'Y' && patientStore.details.ExternalCauseOfInjury.ats_num === '') ||
-            (patientStore.details.ExternalCauseOfInjury.pvrv === 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv_site_4 !== 'Y') ||
-            (patientStore.details.ExternalCauseOfInjury.pcec === 'Y' && patientStore.details.ExternalCauseOfInjury.pcec_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pcec_site_4 !== 'Y'))
+            (patientStore.details.ABTC.hrig !== 'Y' &&
+                patientStore.details.ABTC.pvrv !== 'Y' &&
+                patientStore.details.ABTC.pcec !== 'Y' &&
+                patientStore.details.ABTC.erig !== 'Y' &&
+                patientStore.details.ABTC.ats !== 'Y' &&
+                patientStore.details.ABTC.tt !== 'Y' &&
+                patientStore.details.ABTC.vaccine_none !== 'Y') ||
+            (patientStore.details.ABTC.hrig === 'Y' && patientStore.details.ABTC.hrig_num === '') ||
+            (patientStore.details.ABTC.erig === 'Y' && patientStore.details.ABTC.erig_num === '') ||
+            (patientStore.details.ABTC.ats === 'Y' && patientStore.details.ABTC.ats_num === '') ||
+            (patientStore.details.ABTC.pvrv === 'Y' && patientStore.details.ABTC.pvrv_site_2 !== 'Y' && patientStore.details.ABTC.pvrv_site_4 !== 'Y') ||
+            (patientStore.details.ABTC.pcec === 'Y' && patientStore.details.ABTC.pcec_site_2 !== 'Y' && patientStore.details.ABTC.pcec_site_4 !== 'Y'))
     )
         requiredCountExternalCauses.value++;
     if (patientStore.details.ExternalCauseOfInjury.ext_burn_r === 'Y' && !patientStore.details.ExternalCauseOfInjury.ref_burn_code) requiredCountExternalCauses.value++;

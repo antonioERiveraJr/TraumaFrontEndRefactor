@@ -435,7 +435,7 @@ onMounted(async () => {
     listOfFinalDiagnosis.value = fetchListOfFinalDiagnosis;
     finalDiagnosisListCounter.value = listOfFinalDiagnosis.value.length;
     // console.log('counter: ', finalDiagnosisListCounter);
-    
+
     if (patientStore.details.ExternalCauseOfInjury.ext_battery === 'Y') {
         patientStore.details.ExternalCauseOfInjury.ext_maul = 'Y';
     }
@@ -930,7 +930,12 @@ onMounted(async () => {
             </div>
 
             <Divider class="w-28rem" />
+        <!-- {{ patientStore.pending }} -->
             <div v-if="patientStore.header.status !== '2'">
+                <div class="hang flex justify-content-center mt-1 mb-5">
+                    <InputSwitch v-model="patientStore.pending" trueValue="Y" falseValue="N" id="inputswitch" />
+                    <label for="inputswitch" class="mx-2 align-self-center font-bold"> Pending </label>
+                </div>
                 <SaveBackRemovePanelButton />
             </div>
         </div>

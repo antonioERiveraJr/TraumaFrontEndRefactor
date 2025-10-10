@@ -327,7 +327,7 @@ onBeforeMount(() => {
     // Check the initial state of patientStore.dataIsLoaded
     if (patientStore.dataIsLoaded) {
         patientDataIsLoaded(); // Handle already loaded data
-        console.log('Doctor pre data is loaded on mount using before mounted: ', patientStore.dataIsLoaded);
+        // console.log('Doctor pre data is loaded on mount using before mounted: ', patientStore.dataIsLoaded);
         dataIsLoaded.value = true;
     }
 });
@@ -336,7 +336,7 @@ watch(
     (newValue) => {
         if (newValue === true) {
             patientDataIsLoaded();
-            console.log('docto pre data is loaded: ', patientStore.dataIsLoaded);
+            // console.log('docto pre data is loaded: ', patientStore.dataIsLoaded);
             dataIsLoaded.value = true;
         }
     }

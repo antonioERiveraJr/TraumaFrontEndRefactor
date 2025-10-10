@@ -48,6 +48,11 @@ const ExternalCauses = defineAsyncComponent(() => import('@/components/app/injur
 
 // Utility Functions
 const conditionStatus = (data) => data.header.status;
+const pendingStatus = (data) => data.details.pending;
+
+const isPendingWarning = (data) => {
+    return data.details.pending  === 'Y';
+}
 
 const isConditionWarning = (data) => {
     const incidentTime = new Date(data.header.injtme);
@@ -292,6 +297,13 @@ watch(
                         <template #body="slotProps">
                             <span>
                                 <i v-if="isConditionWarning(slotProps.data)" class="pi pi-exclamation-circle" style="color: red; animation: zoom 0.5s infinite alternate; font-size: 20px"></i>
+                            </span>
+                        </template>
+                    </Column>
+                     <Column :sortable="true" :sortField="pendingStatus" style="width: 1.5%">
+                        <template #body="slotProps">
+                            <span>
+                                <i v-if="isPendingWarning(slotProps.data)" class="pi pi-question-circle" style="color: green; animation: zoom 0.5s infinite alternate; font-size: 20px"></i>
                             </span>
                         </template>
                     </Column>

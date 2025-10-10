@@ -162,7 +162,7 @@ const loadList = async (hardRefresh) => {
         injuryList.value = null;
         response = await toastWaitingForFetch.fetchData();
         if (response && response.status === 401) {
-            console.log('401 Unauthorized');
+            // console.log('401 Unauthorized');
             localStorage.removeItem('authToken');
             await Swal.fire({
                 icon: 'warning',

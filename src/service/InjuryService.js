@@ -5,6 +5,7 @@ import axios from 'axios';
 // import { LogarithmicScale } from 'chart.js';
 import { useUserStore } from '../store/general/UserStore';
 import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 
 import Swal from 'sweetalert2';
 import { is } from '@vee-validate/rules';
@@ -23,7 +24,7 @@ export default class InjuryService {
     }
     async getOPDPatientData(enccode) {
         try {
-            console.log('enccode: ', enccode);
+            // console.log('enccode: ', enccode);
             const response = await axios.get('/opdPatientData', {
                 params: {
                     enccode: enccode 
@@ -153,7 +154,7 @@ export default class InjuryService {
 
             return response.data;
         } catch (error) {
-            console.log('Patient not locked');
+            // console.log(error);
 
             // throw error;
         }
@@ -596,13 +597,35 @@ export default class InjuryService {
     //     }
     // }
     async checkPatientTSSRecord(hpercode) {
-        const response = await axios.get('checkPatientTSSRecord', {
+        try{  const response = await axios.get('checkPatientTSSRecord', {
             params: { hpercode: hpercode },
             headers: {
                 Authorization: 'Bearer ' + localStorage.getItem('authToken')
             }
         });
-        return response;
+        return response;}catch(err){
+            if(err.response && err.response.status === 401){
+                       const enccode = ref();
+                            const fullUrl = window.location.href;
+                            const match = fullUrl.match(/[?&]enccode=([^&#]*)/);
+                            // const match3 = fullUrl.match(/[?&]access_token=([^&#]*)/);
+                            const match2 = fullUrl.match(/[?&]empID=([^&#]*)/);
+                            enccode.value = match ? match[1] : null;
+                            const empID = match2 ? match2[1] : null;
+                            // const getToken = match3 ? match3[1] : null;
+                            // console.log('getToken:', getToken, 'empID:', empID, 'enccode:', enccode.value);
+                            // console.log('empID', empID);
+                            // console.log('enccode', enccode);
+                            if (empID && enccode) {
+                                // window.location.href = `http://192.168.6.58:8000/api/fromEMR?empID=${empID}&enccode=${enccode.value}`;
+                                window.location.href = `http://192.168.6.58:8010/api/fromOPD?empID=${empID}&enccode=${enccode.value}`;
+                            } else {
+                                console.error('empID or enccode is missing in localStorage');
+                            }
+                            
+            }
+        }
+      
     }
     async fetchEmployeeNames(employeeIds) {
         const uncachedIds = employeeIds?.filter((id) => !employeeCache[id]);
@@ -706,7 +729,7 @@ export default class InjuryService {
         // console.log('diagnosis:', diagnosis);
 
         const user = useUserStore();
-        console.log('user2:', user);
+        // console.log('user2:', user);
 
         const response = await axios
             .put(

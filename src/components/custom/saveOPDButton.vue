@@ -4,7 +4,7 @@ import { inject, ref, computed, watch } from 'vue';
 import { usePatientStore } from '@/store/injury/PatientStore';
 import useToastWaitingForFetch from '@/composables/useToastWaitingForFetch';
 import InjuryService from '../../service/InjuryService';
-import createValidationRules from '../../validation/doctorsInjuryValidation';
+import createValidationRules from '../../validation/ABTCValidation';
 import Swal from 'sweetalert2';
 import { useUserStore } from '../../store/general/UserStore';
 
@@ -28,7 +28,7 @@ const props = defineProps({
         required: false
     },
     objective: {
-        type: String,
+        type: Array,
         required: false
     },
     details: {
@@ -606,6 +606,7 @@ const confirmSaves = async (event) => {
         }
 
         if (missingFields.length > 0) {
+            console.log('Missing fields:', missingFields); // Log the missing fields
             return false;
         }
         return true;

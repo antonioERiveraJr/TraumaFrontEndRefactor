@@ -160,7 +160,7 @@ const checkAdmittedCondition = async () => {
     isLoading.value = true;
     const response = await injuryService.admittedInjuryList('1');
     isLoading.value = false;
-    console.log('admitted List: ', response);
+    // console.log('admitted List: ', response);
     return response;
 };
 
@@ -172,7 +172,7 @@ const checkConditionArchived = async (hardRefresh, hardRefreshStatus) => {
 const checkConditionArchivedAdmission = async () => {
     isLoading.value = true;
     const injuryList = await injuryService.admittedInjuryList('2');
-    console.log('admitted List: ', injuryList);
+    // console.log('admitted List: ', injuryList);
     // const injuryList = await getInjuryListArchived(hardRefresh, hardRefreshStatus, formattedStartDate.value, formattedEndDate.value, props.value);
     isLoading.value = false;
     return injuryList;
@@ -203,7 +203,7 @@ const loadList = async (hardRefresh) => {
         injuryList.value = [];
         response = await toastWaitingForFetch.fetchData();
         if (response && response.status === 401) {
-            console.log('401 Unauthorized');
+            // console.log('401 Unauthorized');
             localStorage.removeItem('authToken');
             await Swal.fire({
                 icon: 'warning',
@@ -567,7 +567,7 @@ const filteredInjuryList = computed(() => {
 // // ***************************************ADMITTED CASES EXPORT***************************************
 
 const filteredExportList = computed(() => {
-    console.log('field: ', forExportList.value);
+    // console.log('field: ', forExportList.value);
     if (forExportList.value) {
         return forExportList.value;
     }
@@ -673,7 +673,7 @@ const exportToExcel = async (isAdmit) => {
         }
         const response = await injuryService.archDate(enccodess, dateNow);
         if (response && response.status === 401) {
-            console.log('401 Unauthorized');
+            // console.log('401 Unauthorized');
             localStorage.removeItem('authToken');
             await Swal.fire({
                 icon: 'warning',

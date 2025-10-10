@@ -12,12 +12,12 @@ const enccode = ref();
 const patientData = ref();
 
 const setDay = (day) => {
-    console.log('Vaccine Days After Hit: ', vaccineDays);
+    // console.log('Vaccine Days After Hit: ', vaccineDays);
     if (day === '0') {
         patientStore.details = patientStore.defaultDetails;
     }
     patientStore.progressionDay = day;
-    console.log(patientStore.progressionDay);
+    // console.log(patientStore.progressionDay);
     if (day === '0') {
         patientStore.details.preAdmissionData.inj_intent_code = '01';
         patientStore.details.preAdmissionData.place_occ_code = '10';
@@ -28,9 +28,9 @@ const setDay = (day) => {
 };
 const dataIsLoaded = async () => {
     // emit('update:loading', true);
-    console.log('hpercode: ', patientStore.header.hpercode);
-    vaccineDays.value = patientStore.patientTSSRecord.data.map((record) => record.vaccineday);
-    console.log('Vaccine Days: ', vaccineDays);
+    // console.log('hpercode: ', patientStore.header.hpercode);
+    vaccineDays.value = patientStore?.patientTSSRecord?.data.map((record) => record.vaccineday);
+    // console.log('Vaccine Days: ', vaccineDays);
 };
 onMounted(() => {
     dataIsLoaded();
@@ -46,14 +46,14 @@ watch(
             // Find the record with the matching vaccineday
             const matchingRecord = patientStore?.patientTSSRecord.data.find((record) => record.vaccineday === newDay);
             if (matchingRecord) {
-                console.log('Matching record for progression day:', matchingRecord.data);
+                // console.log('Matching record for progression day:', matchingRecord.data);
                 await patientStore.loadOPDPatientData(matchingRecord);
                 // emit('update:loading', false);
             } else {
-                console.log('No matching record found for progression day:', newDay);
+                // console.log('No matching record found for progression day:', newDay);
                 enccode.value = localStorage.getItem('enccode') || enccode.value;
                 patientData.value = await injuryService.getOPDPatientData(enccode.value);
-                console.log('patientData: ', patientData.value);
+                // console.log('patientData: ', patientData.value);
                 patientStore.loadOPDPatientData(patientData.value);
                 // emit('update:loading', false);
             }

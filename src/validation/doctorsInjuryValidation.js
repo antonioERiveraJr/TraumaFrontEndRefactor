@@ -1,6 +1,6 @@
 import { required } from '@vee-validate/rules'; // For the rules
 import { defineRule } from 'vee-validate';
-import { usePatientStore } from '../store/injury/patientStore';
+import { usePatientStore } from '../store/injury/PatientStore';
 import { computed } from 'vue';
 // import { requiredIf } from '@vuelidate/validators';
 // import { requiredIf } from '@vuelidate/validators';
@@ -384,72 +384,72 @@ export default function createValidationRules() {
             erig: {
                 requiredIf:
                     patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.hrig !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.pvrv !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.pcec !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.ats !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.tt !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.vaccine_none !== 'Y'
+                    patientStore.details.ABTC.hrig !== 'Y' &&
+                    patientStore.details.ABTC.pvrv !== 'Y' &&
+                    patientStore.details.ABTC.pcec !== 'Y' &&
+                    patientStore.details.ABTC.ats !== 'Y' &&
+                    patientStore.details.ABTC.tt !== 'Y' &&
+                    patientStore.details.ABTC.vaccine_none !== 'Y'
             },
             pvrv: {
                 requiredIf:
                     patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.hrig !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.erig !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.pcec !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.ats !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.tt !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.vaccine_none !== 'Y'
+                    patientStore.details.ABTC.hrig !== 'Y' &&
+                    patientStore.details.ABTC.erig !== 'Y' &&
+                    patientStore.details.ABTC.pcec !== 'Y' &&
+                    patientStore.details.ABTC.ats !== 'Y' &&
+                    patientStore.details.ABTC.tt !== 'Y' &&
+                    patientStore.details.ABTC.vaccine_none !== 'Y'
             },
             pcec: {
                 requiredIf:
                     patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.hrig !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.pvrv !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.erig !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.ats !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.tt !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.vaccine_none !== 'Y'
+                    patientStore.details.ABTC.hrig !== 'Y' &&
+                    patientStore.details.ABTC.pvrv !== 'Y' &&
+                    patientStore.details.ABTC.erig !== 'Y' &&
+                    patientStore.details.ABTC.ats !== 'Y' &&
+                    patientStore.details.ABTC.tt !== 'Y' &&
+                    patientStore.details.ABTC.vaccine_none !== 'Y'
             },
             hrig: {
                 requiredIf:
                     patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.erig !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.pvrv !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.pcec !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.ats !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.tt !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.vaccine_none !== 'Y'
+                    patientStore.details.ABTC.erig !== 'Y' &&
+                    patientStore.details.ABTC.pvrv !== 'Y' &&
+                    patientStore.details.ABTC.pcec !== 'Y' &&
+                    patientStore.details.ABTC.ats !== 'Y' &&
+                    patientStore.details.ABTC.tt !== 'Y' &&
+                    patientStore.details.ABTC.vaccine_none !== 'Y'
             },
             ats: {
                 requiredIf:
                     patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.erig !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.pvrv !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.pcec !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.hrig !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.tt !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.vaccine_none !== 'Y'
+                    patientStore.details.ABTC.erig !== 'Y' &&
+                    patientStore.details.ABTC.pvrv !== 'Y' &&
+                    patientStore.details.ABTC.pcec !== 'Y' &&
+                    patientStore.details.ABTC.hrig !== 'Y' &&
+                    patientStore.details.ABTC.tt !== 'Y' &&
+                    patientStore.details.ABTC.vaccine_none !== 'Y'
             },
             tt: {
                 requiredIf:
                     patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.erig !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.pvrv !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.pcec !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.ats !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.hrig !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.vaccine_none !== 'Y'
+                    patientStore.details.ABTC.erig !== 'Y' &&
+                    patientStore.details.ABTC.pvrv !== 'Y' &&
+                    patientStore.details.ABTC.pcec !== 'Y' &&
+                    patientStore.details.ABTC.ats !== 'Y' &&
+                    patientStore.details.ABTC.hrig !== 'Y' &&
+                    patientStore.details.ABTC.vaccine_none !== 'Y'
             },
             vaccine_none: {
                 requiredIf:
                     patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.erig !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.pvrv !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.pcec !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.ats !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.tt !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.hrig !== 'Y'
+                    patientStore.details.ABTC.erig !== 'Y' &&
+                    patientStore.details.ABTC.pvrv !== 'Y' &&
+                    patientStore.details.ABTC.pcec !== 'Y' &&
+                    patientStore.details.ABTC.ats !== 'Y' &&
+                    patientStore.details.ABTC.tt !== 'Y' &&
+                    patientStore.details.ABTC.hrig !== 'Y'
             },
 
             ext_bite_sp: {

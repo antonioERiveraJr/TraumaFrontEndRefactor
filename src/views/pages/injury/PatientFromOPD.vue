@@ -29,8 +29,8 @@ const panel2Width = ref('95%');
 const handleHover = (panel) => {
     if (patientStore.progressionDay !== '' && patientStore.type_prophylaxis !== '' && patientStore.type_prophylaxis !== undefined && patientStore.type_prophylaxis !== null) {
         if (panel === 'panel1') {
-            panel1Width.value = '20%';
-            panel2Width.value = '78%';
+            panel1Width.value = '10%';
+            panel2Width.value = '88%';
         } else {
             panel1Width.value = '3%';
             panel2Width.value = '95%';
@@ -63,6 +63,10 @@ onMounted(async () => {
             localStorage.setItem('enccode', enccode.value);
         } else if (!localStorage.getItem('authToken')) {
             localStorage.setItem('authToken', getToken);
+        } else {
+            localStorage.setItem('authToken', getToken);
+            localStorage.setItem('empID', empID);
+            localStorage.setItem('enccode', enccode.value);
         }
     } else {
         localStorage.setItem('authToken', getToken);
@@ -70,17 +74,18 @@ onMounted(async () => {
         localStorage.setItem('enccode', enccode.value);
     }
 
-    const userInfo = await user.getUserInfo();
-    console.log('user info: ', userInfo);
+    // const userInfo = await user.getUserInfo();
+    await user.getUserInfo();
+    // console.log('user info: ', userInfo);
 
     if (!patientStore.enccode) {
         enccode.value = localStorage.getItem('enccode') || enccode.value;
         patientData.value = await injuryService.getOPDPatientData(enccode.value);
-        console.log('patientData: ', patientData.value);
+        // console.log('patientData: ', patientData.value);
         await patientStore.loadOPDPatientData(patientData.value);
 
         checkPatientTSSRecord.value = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode);
-        console.log('checkPatientTSSRecord: ', checkPatientTSSRecord.value);
+        // console.log('checkPatientTSSRecord: ', checkPatientTSSRecord.value);
         patientStore.patientTSSRecord = checkPatientTSSRecord;
     }
 
@@ -104,19 +109,19 @@ onMounted(async () => {
     loading.value = false;
 });
 
-watch(
-    () => fetchingPatientData.value,
-    (newValue) => {
-        console.log('fetchingPatientData: ', newValue);
-    }
-);
+// watch(
+//     () => fetchingPatientData.value,
+//     (newValue) => {
+//         console.log('fetchingPatientData: ', newValue);
+//     }
+// );
 
 watch(
     () => patientStore.type_prophylaxis,
     (newValue) => {
         if (newValue !== '' && newValue !== undefined && newValue !== null) {
-            panel1Width.value = '20%';
-            panel2Width.value = '78%';
+            panel1Width.value = '10%';
+            panel2Width.value = '88%';
         } else {
             panel1Width.value = '3%';
             panel2Width.value = '95%';

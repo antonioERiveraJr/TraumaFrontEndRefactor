@@ -164,6 +164,7 @@ watch(
             }"
         />
     </div> -->
+    <!-- {{ patientStore.details }} -->
     <div>
         <div class="flex flex-col md:flex-row">
             <div v-if="patientStore.type_prophylaxis !== 'PRE-EXPOSURE'" class="w-full md:w-1/2 p-4" style="height: 60%">
@@ -507,18 +508,18 @@ watch(
 
         <div
             :class="
-                (patientStore.details.ExternalCauseOfInjury.pvrv !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.pcec !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.hrig !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.erig !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.tt !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.ats !== 'Y' &&
-                    patientStore.details.ExternalCauseOfInjury.vaccine_none !== 'Y') ||
-                (patientStore.details.ExternalCauseOfInjury.pvrv_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv_site_4 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv === 'Y') ||
-                (patientStore.details.ExternalCauseOfInjury.pcec_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pcec_site_4 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pcec === 'Y') ||
-                (patientStore.details.ExternalCauseOfInjury.hrig === 'Y' && patientStore.details.ExternalCauseOfInjury.hrig_num === '') ||
-                (patientStore.details.ExternalCauseOfInjury.erig === 'Y' && patientStore.details.ExternalCauseOfInjury.erig_num === '') ||
-                (patientStore.details.ExternalCauseOfInjury.ats === 'Y' && patientStore.details.ExternalCauseOfInjury.ats_num === '')
+                (patientStore.details.ABTC?.pvrv !== 'Y' &&
+                    patientStore.details.ABTC?.pcec !== 'Y' &&
+                    patientStore.details.ABTC?.hrig !== 'Y' &&
+                    patientStore.details.ABTC?.erig !== 'Y' &&
+                    patientStore.details.ABTC?.tt !== 'Y' &&
+                    patientStore.details.ABTC?.ats !== 'Y' &&
+                    patientStore.details.ABTC?.vaccine_none !== 'Y') ||
+                (patientStore.details.ABTC?.pvrv_site_2 !== 'Y' && patientStore.details.ABTC?.pvrv_site_4 !== 'Y' && patientStore.details.ABTC?.pvrv === 'Y') ||
+                (patientStore.details.ABTC?.pcec_site_2 !== 'Y' && patientStore.details.ABTC?.pcec_site_4 !== 'Y' && patientStore.details.ABTC?.pcec === 'Y') ||
+                (patientStore.details.ABTC?.hrig === 'Y' && patientStore.details.ABTC?.hrig_num === '') ||
+                (patientStore.details.ABTC?.erig === 'Y' && patientStore.details.ABTC?.erig_num === '') ||
+                (patientStore.details.ABTC?.ats === 'Y' && patientStore.details.ABTC?.ats_num === '')
                     ? 'card custom-shadow mt-3 relative'
                     : 'card mt-3'
             "
@@ -527,37 +528,37 @@ watch(
             <h6 class="flex justify-content-center mb-5 font-bold">VACCINE TO BE GIVEN ( {{ patientStore.type_prophylaxis }} )</h6>
 
             <div class="grid grid-cols-4 gap-4 flex justify-content-evenly">
-                <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="patientStore.details.ExternalCauseOfInjury.pvrv" label="PVRV" />
-                <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="patientStore.details.ExternalCauseOfInjury.pcec" label="PCEC" />
-                <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ExternalCauseOfInjury.hrig" label="HRIG" />
-                <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ExternalCauseOfInjury.erig" label="ERIG" />
-                <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ExternalCauseOfInjury.ats" label="ATS" />
-                <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="patientStore.details.ExternalCauseOfInjury.tt" label="TT" />
-                <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="patientStore.details.ExternalCauseOfInjury.vaccine_none" label="NONE" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="patientStore.details.ABTC.pvrv" label="PVRV" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="patientStore.details.ABTC.pcec" label="PCEC" />
+                <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ABTC.hrig" label="HRIG" />
+                <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ABTC.erig" label="ERIG" />
+                <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ABTC.ats" label="ATS" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="patientStore.details.ABTC.tt" label="TT" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="patientStore.details.ABTC.vaccine_none" label="NONE" />
             </div>
             <div class="grid grid-cols-4 gap-4 justify-content-evenly mt-3">
                 <div style="width: 13%">
                     <Transition name="slide-fade" mode="out-in">
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
-                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="patientStore.details.ExternalCauseOfInjury.pvrv_site_2" label="2-sites" />
-                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="patientStore.details.ExternalCauseOfInjury.pvrv_site_4" label="4-sites" />
+                        <div v-if="patientStore.details.ABTC.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="patientStore.details.ABTC.pvrv_site_2" label="2-sites" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="patientStore.details.ABTC.pvrv_site_4" label="4-sites" />
                         </div>
                     </Transition>
                 </div>
                 <div style="width: 13%">
                     <Transition name="slide-fade" mode="out-in">
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
-                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="patientStore.details.ExternalCauseOfInjury.pcec_site_2" label="2-sites" />
-                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="patientStore.details.ExternalCauseOfInjury.pcec_site_4" label="4-sites" />
+                        <div v-if="patientStore.details.ABTC.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="patientStore.details.ABTC.pcec_site_2" label="2-sites" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="patientStore.details.ABTC.pcec_site_4" label="4-sites" />
                         </div>
                     </Transition>
                 </div>
                 <div style="width: 10%">
                     <Transition name="slide-fade" mode="out-in">
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.hrig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                        <div v-if="patientStore.details.ABTC.hrig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
                             <div class="field">
                                 <span class="p-float-label">
-                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="hrig" v-model="patientStore.details.ExternalCauseOfInjury.hrig_num" />
+                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="hrig" v-model="patientStore.details.ABTC.hrig_num" />
                                     <label for="hrig">Amount to be Given</label>
                                 </span>
                             </div>
@@ -566,10 +567,10 @@ watch(
                 </div>
                 <div style="width: 10%">
                     <Transition name="slide-fade" mode="out-in">
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.erig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                        <div v-if="patientStore.details.ABTC.erig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
                             <div class="field">
                                 <span class="p-float-label">
-                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ExternalCauseOfInjury.erig_num" />
+                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ABTC.erig_num" />
                                     <label for="erig">Amount to be Given</label>
                                 </span>
                             </div>
@@ -578,12 +579,12 @@ watch(
                 </div>
                 <div style="width: 10%">
                     <Transition name="slide-fade" mode="out-in">
-                        <div v-if="patientStore.details.ExternalCauseOfInjury.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                        <div v-if="patientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
                             <div class="field" style="width: 100%">
                                 <span class="p-float-label">
                                     <Dropdown
                                         style="width: 80%"
-                                        v-model="patientStore.details.ExternalCauseOfInjury.ats_num"
+                                        v-model="patientStore.details.ABTC.ats_num"
                                         :options="[
                                             { label: '1500 ui', value: '1500' },
                                             { label: '3000 ui', value: '3000' },
@@ -603,18 +604,18 @@ watch(
                 <div style="width: 8%"></div>
                 <div
                     v-if="
-                        (patientStore.details.ExternalCauseOfInjury.pvrv !== 'Y' &&
-                            patientStore.details.ExternalCauseOfInjury.pcec !== 'Y' &&
-                            patientStore.details.ExternalCauseOfInjury.hrig !== 'Y' &&
-                            patientStore.details.ExternalCauseOfInjury.erig !== 'Y' &&
-                            patientStore.details.ExternalCauseOfInjury.tt !== 'Y' &&
-                            patientStore.details.ExternalCauseOfInjury.ats !== 'Y' &&
-                            patientStore.details.ExternalCauseOfInjury.vaccine_none !== 'Y') ||
-                        (patientStore.details.ExternalCauseOfInjury.pvrv_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv_site_4 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv === 'Y') ||
-                        (patientStore.details.ExternalCauseOfInjury.pcec_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pcec_site_4 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pcec === 'Y') ||
-                        (patientStore.details.ExternalCauseOfInjury.hrig === 'Y' && patientStore.details.ExternalCauseOfInjury.hrig_num === '') ||
-                        (patientStore.details.ExternalCauseOfInjury.erig === 'Y' && patientStore.details.ExternalCauseOfInjury.erig_num === '') ||
-                        (patientStore.details.ExternalCauseOfInjury.ats === 'Y' && patientStore.details.ExternalCauseOfInjury.ats_num === '')
+                        (patientStore.details.ABTC.pvrv !== 'Y' &&
+                            patientStore.details.ABTC.pcec !== 'Y' &&
+                            patientStore.details.ABTC.hrig !== 'Y' &&
+                            patientStore.details.ABTC.erig !== 'Y' &&
+                            patientStore.details.ABTC.tt !== 'Y' &&
+                            patientStore.details.ABTC.ats !== 'Y' &&
+                            patientStore.details.ABTC.vaccine_none !== 'Y') ||
+                        (patientStore.details.ABTC.pvrv_site_2 !== 'Y' && patientStore.details.ABTC.pvrv_site_4 !== 'Y' && patientStore.details.ABTC.pvrv === 'Y') ||
+                        (patientStore.details.ABTC.pcec_site_2 !== 'Y' && patientStore.details.ABTC.pcec_site_4 !== 'Y' && patientStore.details.ABTC.pcec === 'Y') ||
+                        (patientStore.details.ABTC.hrig === 'Y' && patientStore.details.ABTC.hrig_num === '') ||
+                        (patientStore.details.ABTC.erig === 'Y' && patientStore.details.ABTC.erig_num === '') ||
+                        (patientStore.details.ABTC.ats === 'Y' && patientStore.details.ABTC.ats_num === '')
                     "
                     class="bg-red-200 p-2 absolute bottom-0 left-0 text-center text-gray-700 font-semibold italic"
                     style="border-radius: 0 0 1rem 1rem; width: 100%; font-size: 1rem; margin: 0 !important"

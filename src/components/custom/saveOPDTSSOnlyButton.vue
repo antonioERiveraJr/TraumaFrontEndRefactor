@@ -4,7 +4,7 @@ import { inject, ref, computed, watch } from 'vue';
 import { usePatientStore } from '@/store/injury/PatientStore';
 import useToastWaitingForFetch from '@/composables/useToastWaitingForFetch';
 // import InjuryService from '../../service/InjuryService';
-import createValidationRules from '../../validation/doctorsInjuryValidation';
+import createValidationRules from '../../validation/ABTCValidation';
 import Swal from 'sweetalert2';
 import { useUserStore } from '../../store/general/UserStore';
 const user = useUserStore();
@@ -22,7 +22,7 @@ const props = defineProps({
         required: false
     },
     objective: {
-        type: String,
+        type: Array,
         required: false
     },
     details: {
@@ -368,6 +368,7 @@ const confirmSaves = async () => {
         }
 
         if (missingFields.length > 0) {
+            console.log('Missing fields:', missingFields); // Log the missing fields
             return false;
         }
         return true;
@@ -544,11 +545,11 @@ watch(det, (newValue) => {
 </script>
 <template>
     <!-- <div v-if="loader" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)"></div> -->
-    <div style="width: 100%;">
-        <span class="flex" style="width: 100%;">
+    <div style="width: 100%">
+        <span class="flex" style="width: 100%">
             <div v-if="isLocked === '1'"><Message :closable="false">Encounter is Locked</Message></div>
-            <div v-else style="width: 100%;">
-                <div v-if="isUpdateForm" style="width: 100%;">
+            <div v-else style="width: 100%">
+                <div v-if="isUpdateForm" style="width: 100%">
                     <Button
                         label="Update (TSS Only)"
                         icon="pi pi-save"
@@ -558,7 +559,7 @@ watch(det, (newValue) => {
                         @click="confirmSaves($event)"
                     />
                 </div>
-                <div v-else style="width: 100%;">
+                <div v-else style="width: 100%">
                     <Button
                         label="Save (TSS Only)"
                         icon="pi pi-save"

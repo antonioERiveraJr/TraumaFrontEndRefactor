@@ -10,7 +10,7 @@ const bitingOptions = ['ALIVE', 'DIED', 'UNKNOWN'];
 const woundDescriptionOptions = ['HEALED', 'DRY', 'OTHERS'];
 const erythDischOption = ['WITH', 'NO'];
 const tendHeptOption = ['+', '-'];
-const findingOption = ['ESSENTIALLY NORMAL, PE FINDING', 'WITH FINDINGS'];
+const findingOption = ['ESSENTIALLY NORMAL PE FINDING', 'WITH FINDINGS'];
 </script>
 <template>
     <h5 style="text-align: center; font-weight: bolder; color: #333">FOLLOW-UP FORM</h5>
@@ -31,7 +31,7 @@ const findingOption = ['ESSENTIALLY NORMAL, PE FINDING', 'WITH FINDINGS'];
             <div>
                 <label for="Adverse" class="text-black text-xs" style="color: #000080"><i>Adverse reaction from previous vaccination </i></label>
                 <div>
-                    <Textarea style="width: 100%" v-model="PatientStore.details.followUp.adverseReaction" rows="1" class="justify-content-center font-bold" autoResize />
+                    <Textarea style="width: 100%" v-model="PatientStore.details.followUp.adverse_reaction" rows="1" class="justify-content-center font-bold" autoResize />
                 </div>
             </div>
 
@@ -69,10 +69,10 @@ const findingOption = ['ESSENTIALLY NORMAL, PE FINDING', 'WITH FINDINGS'];
             <div v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'">
                 <div style="width: 100%">
                     <label for="woundDesc" class="text-black text-xs" style="color: #000080"><i>Wound Description</i></label>
-                    <Dropdown style="width: 98%" id="woundDescription" class="font-bold" v-model="PatientStore.details.followUp.woundDescription" :options="woundDescriptionOptions" />
-                    <div v-if="PatientStore.details.followUp.woundDescription === 'OTHERS'">
+                    <Dropdown style="width: 98%" id="woundDescription" class="font-bold" v-model="PatientStore.details.followUp.wound_description" :options="woundDescriptionOptions" />
+                    <div v-if="PatientStore.details.followUp.wound_description === 'OTHERS'">
                         <label for="woundOthDescription" class="text-black text-xs" style="color: #000080"><i>Others</i></label>
-                        <Textarea style="width: 98%" id="woundOthDescription" v-model="PatientStore.details.followUp.woundDescriptionOthers" rows="1" class="mt-2 justify-content-center font-bold" autoResize />
+                        <Textarea style="width: 98%" id="woundOthDescription" v-model="PatientStore.details.followUp.wound_descriptionOthers" rows="1" class="mt-2 justify-content-center font-bold" autoResize />
                     </div>
                 </div>
 
@@ -96,9 +96,9 @@ const findingOption = ['ESSENTIALLY NORMAL, PE FINDING', 'WITH FINDINGS'];
                 </div>
 
                 <div style="width: 100%">
-                    <label for="Dischare" class="text-black text-xs" style="color: #000080"><i>Discharge </i></label>
+                    <label for="Discharge" class="text-black text-xs" style="color: #000080"><i>Discharge </i></label>
                     <SelectButton
-                        v-model="PatientStore.details.followUp.dischare"
+                        v-model="PatientStore.details.followUp.discharge"
                         :options="erythDischOption"
                         aria-labelledby="basic"
                         :pt="{
@@ -113,7 +113,24 @@ const findingOption = ['ESSENTIALLY NORMAL, PE FINDING', 'WITH FINDINGS'];
                         }"
                     />
                 </div>
-
+                <div style="width: 100%">
+                    <label for="Tenderness" class="text-black text-xs" style="color: #000080"><i>Tenderness </i></label>
+                    <SelectButton
+                        v-model="PatientStore.details.followUp.tenderness"
+                        :options="tendHeptOption"
+                        aria-labelledby="basic"
+                        :pt="{
+                            root: {
+                                style: { width: '100%' }
+                            },
+                            button: {
+                                style: {
+                                    width: '49%'
+                                }
+                            }
+                        }"
+                    />
+                </div>
                 <div style="width: 100%">
                     <label for="Hematoma" class="text-black text-xs" style="color: #000080"><i>Hematoma </i></label>
                     <SelectButton
@@ -135,7 +152,7 @@ const findingOption = ['ESSENTIALLY NORMAL, PE FINDING', 'WITH FINDINGS'];
             </div>
             <div v-else>
                 <div style="width: 100%">
-                    <label for="Tenderness" class="text-black text-xs" style="color: #000080"><i>Finding </i></label>
+                    <label for="Finding" class="text-black text-xs" style="color: #000080"><i>Finding </i></label>
                     <SelectButton
                         v-model="PatientStore.details.followUp.finding"
                         :options="findingOption"
@@ -152,50 +169,50 @@ const findingOption = ['ESSENTIALLY NORMAL, PE FINDING', 'WITH FINDINGS'];
                         }"
                     />
                     <label for="Tenderness" v-if="PatientStore.details.followUp.finding === 'WITH FINDINGS'" class="text-black text-xs" style="color: #000080; width: 100%"><i>Finding </i></label>
-                    <Textarea v-if="PatientStore.details.followUp.finding === 'WITH FINDINGS'" v-model="PatientStore.details.followUp.finding_sp" style="width: 100%" />
+                    <Textarea v-if="PatientStore.details.followUp.finding === 'WITH FINDINGS'" v-model="PatientStore.details.followUp.finding_sp" style="width: 100%; font-weight: bold" />
                 </div>
             </div>
         </Fieldset>
     </div>
 
-    <div class="flex">
+    <div class="flex justify-content-center">
         <Fieldset style="width: 98%" pt:content:class="flex" :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '1rem' } } }">
             <template #legend>
-                <span style="color: #000080" class="flex justify-content-center font-bold white-space-nowrap">VACCINE TO BE GIVEN ( {{ PatientStore.type_prophylaxis }} )</span>
+                <span style="color: #000080" class="flex justify-content-center font-bold white-space-nowrap">Vaccine to be Given ( {{ PatientStore.type_prophylaxis }} )</span>
             </template>
 
             <div class="grid grid-cols-4 gap-4 flex justify-content-evenly">
-                <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="PatientStore.details.ExternalCauseOfInjury.pvrv" label="PVRV" />
-                <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="PatientStore.details.ExternalCauseOfInjury.pcec" label="PCEC" />
-                <CheckBoxMultiple v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="PatientStore.details.ExternalCauseOfInjury.hrig" label="HRIG" />
-                <CheckBoxMultiple v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="PatientStore.details.ExternalCauseOfInjury.erig" label="ERIG" />
-                <CheckBoxMultiple v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="PatientStore.details.ExternalCauseOfInjury.ats" label="ATS" />
-                <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="PatientStore.details.ExternalCauseOfInjury.tt" label="TT" />
-                <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="PatientStore.details.ExternalCauseOfInjury.vaccine_none" label="NONE" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="PatientStore.details.ABTC.pvrv" label="PVRV" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="PatientStore.details.ABTC.pcec" label="PCEC" />
+                <CheckBoxMultiple v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="PatientStore.details.ABTC.hrig" label="HRIG" />
+                <CheckBoxMultiple v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="PatientStore.details.ABTC.erig" label="ERIG" />
+                <CheckBoxMultiple v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="PatientStore.details.ABTC.ats" label="ATS" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="PatientStore.details.ABTC.tt" label="TT" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="PatientStore.details.ABTC.vaccine_none" label="NONE" />
             </div>
             <div class="grid grid-cols-4 gap-4 justify-content-evenly mt-3">
                 <div style="width: 13%">
                     <Transition name="slide-fade" mode="out-in">
-                        <div v-if="PatientStore.details.ExternalCauseOfInjury.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
-                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ExternalCauseOfInjury.pvrv_site_2" label="2-sites" />
-                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ExternalCauseOfInjury.pvrv_site_4" label="4-sites" />
+                        <div v-if="PatientStore.details.ABTC.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ABTC.pvrv_site_2" label="2-sites" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ABTC.pvrv_site_4" label="4-sites" />
                         </div>
                     </Transition>
                 </div>
                 <div style="width: 13%">
                     <Transition name="slide-fade" mode="out-in">
-                        <div v-if="PatientStore.details.ExternalCauseOfInjury.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
-                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ExternalCauseOfInjury.pcec_site_2" label="2-sites" />
-                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ExternalCauseOfInjury.pcec_site_4" label="4-sites" />
+                        <div v-if="PatientStore.details.ABTC.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ABTC.pcec_site_2" label="2-sites" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ABTC.pcec_site_4" label="4-sites" />
                         </div>
                     </Transition>
                 </div>
                 <div style="width: 10%">
                     <Transition name="slide-fade" mode="out-in">
-                        <div v-if="PatientStore.details.ExternalCauseOfInjury.hrig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                        <div v-if="PatientStore.details.ABTC.hrig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
                             <div class="field">
                                 <span class="p-float-label">
-                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="hrig" v-model="PatientStore.details.ExternalCauseOfInjury.hrig_num" />
+                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="hrig" v-model="PatientStore.details.ABTC.hrig_num" />
                                     <label for="hrig">Amount to be Given</label>
                                 </span>
                             </div>
@@ -204,10 +221,10 @@ const findingOption = ['ESSENTIALLY NORMAL, PE FINDING', 'WITH FINDINGS'];
                 </div>
                 <div style="width: 10%">
                     <Transition name="slide-fade" mode="out-in">
-                        <div v-if="PatientStore.details.ExternalCauseOfInjury.erig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                        <div v-if="PatientStore.details.ABTC.erig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
                             <div class="field">
                                 <span class="p-float-label">
-                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="PatientStore.details.ExternalCauseOfInjury.erig_num" />
+                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="PatientStore.details.ABTC.erig_num" />
                                     <label for="erig">Amount to be Given</label>
                                 </span>
                             </div>
@@ -216,12 +233,12 @@ const findingOption = ['ESSENTIALLY NORMAL, PE FINDING', 'WITH FINDINGS'];
                 </div>
                 <div style="width: 10%">
                     <Transition name="slide-fade" mode="out-in">
-                        <div v-if="PatientStore.details.ExternalCauseOfInjury.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                        <div v-if="PatientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
                             <div class="field" style="width: 100%">
                                 <span class="p-float-label">
                                     <Dropdown
                                         style="width: 80%"
-                                        v-model="PatientStore.details.ExternalCauseOfInjury.ats_num"
+                                        v-model="PatientStore.details.ABTC.ats_num"
                                         :options="[
                                             { label: '1500 ui', value: '1500' },
                                             { label: '3000 ui', value: '3000' },
@@ -239,26 +256,26 @@ const findingOption = ['ESSENTIALLY NORMAL, PE FINDING', 'WITH FINDINGS'];
                 </div>
                 <div style="width: 8%"></div>
                 <div style="width: 8%"></div>
-                <div
+                <!-- <div
                     v-if="
-                        (PatientStore.details.ExternalCauseOfInjury.pvrv !== 'Y' &&
-                            PatientStore.details.ExternalCauseOfInjury.pcec !== 'Y' &&
-                            PatientStore.details.ExternalCauseOfInjury.hrig !== 'Y' &&
-                            PatientStore.details.ExternalCauseOfInjury.erig !== 'Y' &&
-                            PatientStore.details.ExternalCauseOfInjury.tt !== 'Y' &&
-                            PatientStore.details.ExternalCauseOfInjury.ats !== 'Y' &&
-                            PatientStore.details.ExternalCauseOfInjury.vaccine_none !== 'Y') ||
-                        (PatientStore.details.ExternalCauseOfInjury.pvrv_site_2 !== 'Y' && PatientStore.details.ExternalCauseOfInjury.pvrv_site_4 !== 'Y' && PatientStore.details.ExternalCauseOfInjury.pvrv === 'Y') ||
-                        (PatientStore.details.ExternalCauseOfInjury.pcec_site_2 !== 'Y' && PatientStore.details.ExternalCauseOfInjury.pcec_site_4 !== 'Y' && PatientStore.details.ExternalCauseOfInjury.pcec === 'Y') ||
-                        (PatientStore.details.ExternalCauseOfInjury.hrig === 'Y' && PatientStore.details.ExternalCauseOfInjury.hrig_num === '') ||
-                        (PatientStore.details.ExternalCauseOfInjury.erig === 'Y' && PatientStore.details.ExternalCauseOfInjury.erig_num === '') ||
-                        (PatientStore.details.ExternalCauseOfInjury.ats === 'Y' && PatientStore.details.ExternalCauseOfInjury.ats_num === '')
+                        (PatientStore.details.ABTC.pvrv !== 'Y' &&
+                            PatientStore.details.ABTC.pcec !== 'Y' &&
+                            PatientStore.details.ABTC.hrig !== 'Y' &&
+                            PatientStore.details.ABTC.erig !== 'Y' &&
+                            PatientStore.details.ABTC.tt !== 'Y' &&
+                            PatientStore.details.ABTC.ats !== 'Y' &&
+                            PatientStore.details.ABTC.vaccine_none !== 'Y') ||
+                        (PatientStore.details.ABTC.pvrv_site_2 !== 'Y' && PatientStore.details.ABTC.pvrv_site_4 !== 'Y' && PatientStore.details.ABTC.pvrv === 'Y') ||
+                        (PatientStore.details.ABTC.pcec_site_2 !== 'Y' && PatientStore.details.ABTC.pcec_site_4 !== 'Y' && PatientStore.details.ABTC.pcec === 'Y') ||
+                        (PatientStore.details.ABTC.hrig === 'Y' && PatientStore.details.ABTC.hrig_num === '') ||
+                        (PatientStore.details.ABTC.erig === 'Y' && PatientStore.details.ABTC.erig_num === '') ||
+                        (PatientStore.details.ABTC.ats === 'Y' && PatientStore.details.ABTC.ats_num === '')
                     "
-                    class="bg-red-200 p-2 absolute bottom-0 left-0 text-center text-gray-700 font-semibold italic"
+                    class="bg-red-200 p-2 bottom-0 left-0 text-center text-gray-700 font-semibold italic"
                     style="border-radius: 0 0 1rem 1rem; width: 100%; font-size: 1rem; margin: 0 !important"
                 >
                     Value is Required
-                </div>
+                </div> -->
             </div>
         </Fieldset>
     </div>

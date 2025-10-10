@@ -36,7 +36,7 @@ const detailsValue = ref(patientStore.finalDiagnosis);
 const latestEntryDoc = ref();
 const saving = ref(false);
 const customizedDetails = ref('');
-const customizedObjective = ref('');
+const customizedObjective = ref([]);
 const customizedDiagnosis = ref('');
 const region = ref();
 const province = ref();
@@ -169,10 +169,10 @@ const updateDetailsValue = () => {
     }
 };
 const patientDataIsLoaded = async () => {
-    console.log('progression Day: ', patientStore.progressionDay);
+    // console.log('progression Day: ', patientStore.progressionDay);
     // patientStore.dataIsLoaded = false;
     // patientStore.dataIsLoaded = true;
-    console.log('data is loaded: ', patientStore.dataIsLoaded);
+    // console.log('data is loaded: ', patientStore.dataIsLoaded);
 
     try {
         latestEntry.value = await injuryService.getLatestEntryOfDoctors(patientStore.enccode);
@@ -336,10 +336,10 @@ const onResize = () => {
     height.value = window.innerHeight;
 };
 window.addEventListener('resize', onResize);
-onMounted(() => {
-    patientDataIsLoaded();
-    console.log('mountedhit');
-    console.log(patientStore.progressionDay);
+onMounted(async () => {
+    await patientDataIsLoaded();
+    // console.log('mountedhit');
+    // console.log(patientStore.progressionDay);
     patientStore.details.ExternalCauseOfInjury.ext_bite = 'Y';
     updateRequiredFieldCountForBite();
     window.addEventListener('resize', onResize);
@@ -350,6 +350,9 @@ onUnmounted(() => {
 });
 </script>
 <template>
+    <!-- {{ patientStore.details.followUp }}
+    {{ patientStore.progressionDay }}
+    {{ patientStore.type_prophylaxis }} -->
     <div v-if="saving" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 98%; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
         <img src="@/assets/images/loader.gif" alt="Loading..." style="height: 10rem; width: 10rem" />
     </div>
@@ -621,7 +624,6 @@ onUnmounted(() => {
     </div>
     <div style="height: 5%; width: 100%" class="flex">
         <SaveOPDButton
-            
             @update:customizedObjectives="updateCustomizedObjective"
             @update:customizedDiagnosis="updateCustomizedDiagnosis"
             @update:customizedDetails="updateCustomizedDetails"
@@ -632,7 +634,6 @@ onUnmounted(() => {
             @update:saving="updateSaving"
         />
         <SaveOPDTSSOnlyButton
-            
             @update:customizedObjectives="updateCustomizedObjective"
             @update:customizedDiagnosis="updateCustomizedDiagnosis"
             @update:customizedDetails="updateCustomizedDetails"
