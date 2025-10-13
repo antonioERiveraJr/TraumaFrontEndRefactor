@@ -131,7 +131,7 @@ onMounted(async () => {
 
 //watch changes on generatedText
 watch(
-    () => [patientStore.details.generalData, patientStore.details.preAdmissionData, patientStore.details.forTransportVehicularAccident, patientStore.details.ExternalCauseOfInjury, patientStore.details.natureOfInjury],
+    () => [patientStore.details.generalData, patientStore.details.ABTC, patientStore.details.preAdmissionData, patientStore.details.forTransportVehicularAccident, patientStore.details.ExternalCauseOfInjury, patientStore.details.natureOfInjury],
     () => {
         generateText();
     },

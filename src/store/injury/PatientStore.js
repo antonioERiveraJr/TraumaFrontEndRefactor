@@ -40,6 +40,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
     const storeProvinces = ref([]);
     const storeCities = ref([]);
     const storeBrgy = ref([]);
+    const doctor_plan =ref('');
     const type_prophylaxis = ref();
 
     // const entryBy = ref('');
@@ -151,7 +152,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         doctor_admdate: '',
         doctor_diagnosis: '',
         doctor_injtme: '',
-        doctor_objective: '',
+        doctor_objective: '', 
         diagnosisbite: '',
         final_doctor_details: '',
         final_doctor_objective: '',
@@ -261,7 +262,25 @@ export const usePatientStore = defineStore('PatientStore', () => {
             noi_incision: 'N',
             noi_incision_sp: ''
         },
-        ABTC: { prophylaxis: '', pvrv: '', pcec: '', pvrv_site_2: '', pcec_site_2: '', pvrv_site_4: '', pcec_site_4: '', hrig: '', erig: '', hrig_num: '', erig_num: '', tt: '', ats: '', tt_num: '', ats_num: '', vaccine_none: '' },
+        ABTC: {
+            prophylaxis: '',
+            pvrv: '',
+            pcec: '',
+            pvrv_site_2: '',
+            pcec_site_2: '',
+            pvrv_site_4: '',
+            pcec_site_4: '',
+            hrig: '',
+            erig: '',
+            hrig_num: '',
+            erig_num: '',
+            tt: '',
+            ats: '',
+            tt_num: '',
+            ats_num: '',
+            vaccine_none: '',
+            immunization_schedule: ''
+        },
 
         ExternalCauseOfInjury: {
             prophylaxis: '',
@@ -559,7 +578,25 @@ export const usePatientStore = defineStore('PatientStore', () => {
             noi_incision: 'N',
             noi_incision_sp: ''
         },
-        ABTC: { prophylaxis: '', pvrv: '', pcec: '', pvrv_site_2: '', pcec_site_2: '', pvrv_site_4: '', pcec_site_4: '', hrig: '', erig: '', hrig_num: '', erig_num: '', tt: '', ats: '', tt_num: '', ats_num: '', vaccine_none: '' },
+        ABTC: {
+            prophylaxis: '',
+            pvrv: '',
+            pcec: '',
+            pvrv_site_2: '',
+            pcec_site_2: '',
+            pvrv_site_4: '',
+            pcec_site_4: '',
+            hrig: '',
+            erig: '',
+            hrig_num: '',
+            erig_num: '',
+            tt: '',
+            ats: '',
+            tt_num: '',
+            ats_num: '',
+            vaccine_none: '',
+            immunization_schedule: ''
+        },
         ExternalCauseOfInjury: {
             prophylaxis: '',
             pvrv: '',
@@ -856,8 +893,9 @@ export const usePatientStore = defineStore('PatientStore', () => {
                 if (progressionDay.value !== patientData.data.progressionDay) {
                     console.log('day not the same : ', progressionDay.value + ': ', patientData.data.progressionDay);
                     details.value.followUp = { ...defaultDetails.value.followUp };
-                    if (progressionDay.value !== 0) {
-                        details.value.BGHMC = { ...defaultDetails.value.BGHMC };
+                    if (progressionDay.value !== '0') {
+                        details.value.ABTC = { ...defaultDetails.value.ABTC };
+                        // alert('hit');
                     }
                 }
 
@@ -960,7 +998,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
                 }
             });
             // console.log('enccodessss:', response.data);
-// console.log('pending: ', response.data.details.pending);
+            // console.log('pending: ', response.data.details.pending);
 
             // console.log('enccode:', response.data.enccode);
             // console.log('admitting enccode:', response.data.header.admEnccode);
@@ -1118,6 +1156,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             // entryBy: entryBy.value,
             entryBy: employeeid,
             status: status.value,
+            ABTC: { ...details.value.ABTC },
             header: { ...header.value },
             generalData: { ...details.value.generalData },
             preAdmissionData: { ...details.value.preAdmissionData },
@@ -1324,7 +1363,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
         // NATURE of INJURY (GeneralDataNOI.vue)
         // alert('hit');
         //folowup
-        pending.value = 'N'
+        pending.value = 'N';
+        doctor_plan.value = '';
         details.value.followUp.complaints = '';
         details.value.followUp.complaints_details = '';
         details.value.followUp.adverse_reaction = '';
@@ -1456,6 +1496,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         details.value.ABTC.hrig = '';
         details.value.ABTC.erig = '';
         details.value.ABTC.hrig_num = '';
+        details.value.ABTC.immunization_schedule = '';
         details.value.ABTC.erig_num = '';
         details.value.ABTC.tt = '';
         details.value.ABTC.ats = '';
@@ -1603,6 +1644,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         progressionDay,
         loadAdmittedPatientData,
         type_prophylaxis,
-        pending
+        pending,
+        doctor_plan
     };
 });

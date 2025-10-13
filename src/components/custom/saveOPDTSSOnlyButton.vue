@@ -42,6 +42,7 @@ const props = defineProps({
 const diag = ref(patientStore.header.doctor_diagnosis);
 const det = ref(patientStore.finalDoctorDetails);
 const obj = ref(patientStore.header.doctor_objective);
+const plan = ref(patientStore.header.doctor_plan);
 const loader = ref(true);
 
 const allowUpdateFormn = async () => {
@@ -453,7 +454,7 @@ const confirmSaves = async () => {
                 text: 'This will only update the TSS; it will not reflect on the EMR.',
                 showDenyButton: true,
                 position: 'bottom',
-                confirmButtonText: 'Save',
+                confirmButtonText: 'Save', 
                 denyButtonText: 'Cancel'
             }).then(async (result) => {
                 if (result.isConfirmed) {
@@ -575,7 +576,7 @@ watch(det, (newValue) => {
     <Dialog
         v-model:visible="confirmEMRDetails"
         header="Verify the details to be saved on the TSS."
-        style="width: 95%; height: 100vh; margin-top: 10vh; margin-bottom: 20vh"
+        style="width: 95%; height: 85%; margin-top: 10vh; margin-bottom: 20vh"
         :closable="false"
         maximize
         :draggable="false"
@@ -675,6 +676,35 @@ watch(det, (newValue) => {
                         <i class="pi pi-copy cursor-pointer text-5xl" v-tooltip.top="'Copy Diagnosis'" @click="diag = patientStore.header.doctor_diagnosis" style="position: absolute; top: -5px; right: -5px; z-index: 1; color: #666" />
                     </div>
                 </div>
+                <label for="details" class="p-float-label text-black text-s ml-5 mt-5" style="color: #000080"><i>Management/Plan </i></label>
+                <div>
+                    <div class="flex align-items-center" style="position: relative">
+                        <Textarea
+                            :pt="{
+                                root: {
+                                    style: {
+                                        width: '100%',
+                                        overflow: 'hidden',
+                                        border: '2px dashed #ccc',
+                                        borderRadius: '4px',
+                                        padding: '5px',
+                                        boxSizing: 'border-box',
+                                        resize: 'none',
+                                        backgroundColor: '#ececec',
+                                        color: '#666',
+                                        fontSize: '13px'
+                                    }
+                                }
+                            }"
+                            style="width: 100%"
+                            v-model="patientStore.doctor_plan"
+                            class="mt-1 justify-content-center mr-2 ml-5"
+                            disabled
+                            autoResize
+                        />
+                        <i class="pi pi-copy cursor-pointer text-5xl" v-tooltip.top="'Copy Plan'" @click="plan = patientStore.doctor_plan" style="position: absolute; top: -5px; right: -5px; z-index: 1; color: #666" />
+                    </div>
+                </div>
             </SplitterPanel>
             <SplitterPanel style="height: 100%" :size="50">
                 <div class="flex justify-content-center">
@@ -692,6 +722,10 @@ watch(det, (newValue) => {
                     <Textarea style="width: 100%" v-model="diag" class="mt-1 flex justify-content-center font-bold" autoResize />
                 </div>
                 <div style="width: 100%" class="flex justify-content-center mb-5"><i v-badge.secondary="'final.Diagnosis'" style="font-size: 2rem" /></div>
+                <div class="flex justify-content-center mx-2">
+                    <Textarea style="width: 100%" v-model="plan" class="mt-1 flex justify-content-center font-bold" autoResize />
+                </div>
+                <div style="width: 100%" class="flex justify-content-center mb-5"><i v-badge.secondary="'final.Plan'" style="font-size: 2rem" /></div>
             </SplitterPanel>
         </Splitter>
     </Dialog>
