@@ -97,7 +97,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         doctor_admdate: '',
         doctor_diagnosis: '',
         doctor_injtme: '',
-        doctor_objective: '',
+        doctor_objective: [],
         diagnosisbite: '',
         final_doctor_details: '',
         final_doctor_objective: '',
@@ -152,7 +152,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         doctor_admdate: '',
         doctor_diagnosis: '',
         doctor_injtme: '',
-        doctor_objective: '', 
+        doctor_objective: [], 
         diagnosisbite: '',
         final_doctor_details: '',
         final_doctor_objective: '',
@@ -488,6 +488,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             wound_description_others: '',
             erythema: '',
             discharge: '',
+            dischare_sp: '',
             tenderness: '',
             hematoma: ''
         }
@@ -802,6 +803,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             wound_description_others: '',
             erythema: '',
             discharge: '',
+            dischare_sp: '',
             tenderness: '',
             hematoma: ''
         }

@@ -393,6 +393,7 @@ const confirmSaves = async () => {
     if (obj.value === '') {
         obj.value = patientStore.header.doctor_objective;
     }
+ 
 
     // return new Promise((resolve, reject) => {
     //     Swal.fire({
@@ -448,13 +449,14 @@ const confirmSaves = async () => {
             diag.value = patientStore.header.doctor_diagnosis;
             det.value = patientStore.finalDoctorDetails;
             obj.value = patientStore.header.doctor_objective;
+            plan.value = patientStore.doctor_plan;
             confirmEMRDetails.value = true;
             Swal.fire({
                 title: 'Do you want to save the changes on TSS Form only?',
                 text: 'This will only update the TSS; it will not reflect on the EMR.',
                 showDenyButton: true,
                 position: 'bottom',
-                confirmButtonText: 'Save', 
+                confirmButtonText: 'Save',
                 denyButtonText: 'Cancel'
             }).then(async (result) => {
                 if (result.isConfirmed) {
@@ -676,6 +678,11 @@ watch(det, (newValue) => {
                         <i class="pi pi-copy cursor-pointer text-5xl" v-tooltip.top="'Copy Diagnosis'" @click="diag = patientStore.header.doctor_diagnosis" style="position: absolute; top: -5px; right: -5px; z-index: 1; color: #666" />
                     </div>
                 </div>
+                <!-- {{ patientStore.doctor_plan }}
+                {{ patientStore.progressionDay }}
+                {{ patientStore.type_prophylaxis }}
+                {{ patientStore.details.ABTC.booster_regimen }}
+                {{ patientStore.details.ABTC.immunization_schedule }} -->
                 <label for="details" class="p-float-label text-black text-s ml-5 mt-5" style="color: #000080"><i>Management/Plan </i></label>
                 <div>
                     <div class="flex align-items-center" style="position: relative">
