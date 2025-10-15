@@ -26,11 +26,18 @@ const setDay = (day) => {
         patientStore.details.hospitalFacilityData.mode_transport_code = '03';
     }
 };
+const getBadge = (day) => {
+    const matchingRecord = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === day);
+    return matchingRecord ? matchingRecord.tStamp : null;
+};
+const newCase = () => {
+    injuryService.newCase(patientStore.header.hpercode);
+};
 const dataIsLoaded = async () => {
     // emit('update:loading', true);
     // console.log('hpercode: ', patientStore.header.hpercode);
     vaccineDays.value = patientStore?.patientTSSRecord?.data.map((record) => record.vaccineday);
-    // console.log('Vaccine Days: ', vaccineDays);
+    // console.log('tsssrecode: ', patientStore);
 };
 onMounted(() => {
     dataIsLoaded();
@@ -42,19 +49,25 @@ watch(
     async (newDay) => {
         await dataIsLoaded();
         if (patientStore?.patientTSSRecord && patientStore?.patientTSSRecord.data) {
+            const checkPatientTSSRecord = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode);
+            // console.log('checkPatientTSSRecord: ', checkPatientTSSRecord.value);
+            patientStore.patientTSSRecord = checkPatientTSSRecord;
+
             // alert('hit');
             // Find the record with the matching vaccineday
-            const matchingRecord = patientStore?.patientTSSRecord.data.find((record) => record.vaccineday === newDay);
+            const matchingRecord = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === newDay);
             if (matchingRecord) {
-                // console.log('Matching record for progression day:', matchingRecord.data);
+                console.log('Matching record for progression day:', matchingRecord.data);
                 await patientStore.loadOPDPatientData(matchingRecord);
                 // emit('update:loading', false);
             } else {
-                // console.log('No matching record found for progression day:', newDay);
+                console.log('No matching record found for progression day:', newDay);
                 enccode.value = localStorage.getItem('enccode') || enccode.value;
                 patientData.value = await injuryService.getOPDPatientData(enccode.value);
-                // console.log('patientData: ', patientData.value);
+                console.log('patientData: ', patientData.value);
                 patientStore.loadOPDPatientData(patientData.value);
+                patientStore.details.followUp = { ...patientStore.defaultDetails.followUp };
+                patientStore.details.ABTC = { ...patientStore.defaultDetails.ABTC };
                 // emit('update:loading', false);
             }
         }
@@ -65,87 +78,231 @@ watch(
     <div style="width: 100%; height: 100%">
         <div v-if="patientStore.type_prophylaxis === 'PRE-EXPOSURE'" style="background-color: #9bb0bf; width: 100%; height: 100%">
             <div class="flex flex-column justify-content-center" style="height: 100%; width: 100%">
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 30%">
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 5%">
+                    <Button
+                        @click="newCase()"
+                        label="NEW CASE"
+                        :badge-class="'bg-gray-300'"
+                        :badge-style="{ fontSize: '0.8em', padding: '2px 4px' }"
+                        style="color: white; background-color: lightslategray; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 100%"
+                    />
+                </div>
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 29%">
                     <Button
                         @click="setDay('0')"
-                        label="Day 0"
-                        :badge="vaccineDays.includes('0') ? '!' : null"
-                        :badge-class="'bg-gray-300'"
-                        style="color: black; background-color: white; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
-                    />
+                        style="
+                            color: black;
+                            background-color: white;
+                            border: 2px solid transparent;
+                            width: 100%;
+                            margin: 5px auto;
+                            height: 100%;
+                            font-weight: bolder;
+                            font-size: 200%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                        "
+                    >
+                        <div style="font-size: 1.2em">Day 0</div>
+                        <div style="font-size: 0.4em; color: black">{{ getBadge('0') }}</div>
+                    </Button>
                 </div>
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 30%">
+
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 29%">
                     <Button
-                        :badge="vaccineDays.includes('7') ? '!' : null"
-                        :badge-class="'bg-gray-300'"
                         @click="setDay('7')"
-                        label="Day 7"
-                        style="background-color: #9bb0bf; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
-                    />
+                        style="
+                            color: white;
+                            background-color: #9bb0bf;
+                            border: 2px solid transparent;
+                            width: 100%;
+                            margin: 5px auto;
+                            height: 100%;
+                            font-weight: bolder;
+                            font-size: 200%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                        "
+                    >
+                        <div style="font-size: 1.2em">Day 7</div>
+                        <div style="font-size: 0.4em; color: white">{{ getBadge('7') }}</div>
+                    </Button>
                 </div>
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 30%">
+
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 29%">
                     <Button
-                        :badge="vaccineDays.includes('21') ? '!' : null"
-                        :badge-class="'bg-gray-300'"
                         @click="setDay('21')"
-                        label="Day 21"
-                        style="color: black; background-color: white; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
-                    />
+                        style="
+                            color: black;
+                            background-color: white;
+                            border: 2px solid transparent;
+                            width: 100%;
+                            margin: 5px auto;
+                            height: 100%;
+                            font-weight: bolder;
+                            font-size: 200%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                        "
+                    >
+                        <div style="font-size: 1.2em">Day 21</div>
+                        <div style="font-size: 0.4em; color: black">{{ getBadge('21') }}</div>
+                    </Button>
                 </div>
             </div>
         </div>
         <div v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" style="background-color: #9bb0bf; width: 100%; height: 100%">
             <div class="flex flex-column justify-content-center" style="height: 100%; width: 100%">
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 15%">
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 5%">
+                    <Button
+                        @click="newCase()"
+                        label="NEW CASE"
+                        :badge-class="'bg-gray-300'"
+                        style="color: white; background-color: lightslategray; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 100%"
+                    />
+                </div>
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 14%">
                     <Button
                         @click="setDay('0')"
-                        label="Day 0"
-                        :badge="vaccineDays.includes('0') ? '!' : null"
-                        :badge-class="'bg-gray-300'"
-                        style="color: black; background-color: white; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
-                    />
+                        style="
+                            color: black;
+                            background-color: white;
+                            border: 2px solid transparent;
+                            width: 100%;
+                            margin: 5px auto;
+                            height: 100%;
+                            font-weight: bolder;
+                            font-size: 200%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                        "
+                    >
+                        <div style="font-size: 1em">Day 0</div>
+                        <div style="font-size: 0.4em; color: black">{{ getBadge('0') }}</div>
+                    </Button>
                 </div>
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 15%">
+
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 14%">
                     <Button
-                        :badge="vaccineDays.includes('3') ? '!' : null"
                         @click="setDay('3')"
-                        label="Day 3"
-                        style="background-color: #9bb0bf; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
-                    />
+                        style="
+                            color: white;
+                            background-color: #9bb0bf;
+                            border: 2px solid transparent;
+                            width: 100%;
+                            margin: 5px auto;
+                            height: 100%;
+                            font-weight: bolder;
+                            font-size: 200%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                        "
+                    >
+                        <div style="font-size: 1em">Day 3</div>
+                        <div style="font-size: 0.4em; color: white">{{ getBadge('3') }}</div>
+                    </Button>
                 </div>
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 15%">
+
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 14%">
                     <Button
-                        :badge="vaccineDays.includes('7') ? '!' : null"
-                        :badge-class="'bg-gray-300'"
                         @click="setDay('7')"
-                        label="Day 7"
-                        style="color: black; background-color: white; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
-                    />
+                        style="
+                            color: black;
+                            background-color: white;
+                            border: 2px solid transparent;
+                            width: 100%;
+                            margin: 5px auto;
+                            height: 100%;
+                            font-weight: bolder;
+                            font-size: 200%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                        "
+                    >
+                        <div style="font-size: 1em">Day 7</div>
+                        <div style="font-size: 0.4em; color: black">{{ getBadge('7') }}</div>
+                    </Button>
                 </div>
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 15%">
+
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 14%">
                     <Button
-                        :badge="vaccineDays.includes('14') ? '!' : null"
                         @click="setDay('14')"
-                        label="Day 14"
-                        style="background-color: #9bb0bf; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
-                    />
+                        style="
+                            color: white;
+                            background-color: #9bb0bf;
+                            border: 2px solid transparent;
+                            width: 100%;
+                            margin: 5px auto;
+                            height: 100%;
+                            font-weight: bolder;
+                            font-size: 200%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                        "
+                    >
+                        <div style="font-size: 1em">Day 14</div>
+                        <div style="font-size: 0.4em; color: white">{{ getBadge('14') }}</div>
+                    </Button>
                 </div>
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 15%">
+
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 14%">
                     <Button
-                        :badge="vaccineDays.includes('21') ? '!' : null"
-                        :badge-class="'bg-gray-300'"
                         @click="setDay('21')"
-                        label="Day 21"
-                        style="color: black; background-color: white; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
-                    />
+                        style="
+                            color: black;
+                            background-color: white;
+                            border: 2px solid transparent;
+                            width: 100%;
+                            margin: 5px auto;
+                            height: 100%;
+                            font-weight: bolder;
+                            font-size: 200%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                        "
+                    >
+                        <div style="font-size: 1em">Day 21</div>
+                        <div style="font-size: 0.4em; color: black">{{ getBadge('21') }}</div>
+                    </Button>
                 </div>
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 15%">
+
+                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 14%">
                     <Button
-                        :badge="vaccineDays.includes('28') ? '!' : null"
                         @click="setDay('28')"
-                        label="Day 28"
-                        style="background-color: #9bb0bf; border: 2px solid transparent; width: 100%; margin: 5px auto; height: 100%; font-weight: bolder; font-size: 200%"
-                    />
+                        style="
+                            color: white;
+                            background-color: #9bb0bf;
+                            border: 2px solid transparent;
+                            width: 100%;
+                            margin: 5px auto;
+                            height: 100%;
+                            font-weight: bolder;
+                            font-size: 200%;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                        "
+                    >
+                        <div style="font-size: 1em">Day 28</div>
+                        <div style="font-size: 0.4em; color: white">{{ getBadge('28') }}</div>
+                    </Button>
                 </div>
             </div>
         </div>

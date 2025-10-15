@@ -374,15 +374,15 @@ onUnmounted(() => {
                         </div>
                         <div v-else style="height: 90%">
                             <Accordion :activeIndex="0">
-                                <AccordionTab :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }"
-                                    ><template #header>
+                                <AccordionTab v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
+                                    <template #header>
                                         <span class="flex align-items-center gap-2 w-full">
-                                            <span style="color: #000080" class="font-bold white-space-nowrap">ABTC FORM</span>
-                                            <i v-if="requiredCountABTCForm" v-badge.danger="requiredCountABTCForm" class="pi pi-file-edit" style="font-size: 2rem" v-tooltip.bottom="`${requiredCountABTCForm} Required Fields`" />
+                                            <span style="color: #000080" class="font-bold white-space-nowrap">GENERAL DATA</span>
+                                            <i v-if="requiredCountGeneralData > 0" v-badge.danger="requiredCountGeneralData" class="pi pi-file-edit" style="font-size: 2rem" v-tooltip.bottom="`${requiredCountGeneralData} Required Fields`" />
                                             <i v-else class="pi pi-file-edit" style="font-size: 2rem" />
                                         </span>
                                     </template>
-                                    <BiteForm />
+                                    <NewGeneralData @update:requiredCountGeneralData="updateRequiredCountGeneralData" />
                                 </AccordionTab>
                                 <AccordionTab v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }"
                                     ><template #header>
@@ -394,15 +394,15 @@ onUnmounted(() => {
                                     </template>
                                     <NewPreAdmission @update:requiredCountPreAdmission="updateRequiredCountPreAdmission"
                                 /></AccordionTab>
-                                <AccordionTab v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
-                                    <template #header>
+                                <AccordionTab v-if="!patientStore.patientTSSRecord?.data?.[0] || patientStore.progressionDay === '0'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }"
+                                    ><template #header>
                                         <span class="flex align-items-center gap-2 w-full">
-                                            <span style="color: #000080" class="font-bold white-space-nowrap">GENERAL DATA</span>
-                                            <i v-if="requiredCountGeneralData > 0" v-badge.danger="requiredCountGeneralData" class="pi pi-file-edit" style="font-size: 2rem" v-tooltip.bottom="`${requiredCountGeneralData} Required Fields`" />
+                                            <span style="color: #000080" class="font-bold white-space-nowrap">ABTC FORM</span>
+                                            <i v-if="requiredCountABTCForm" v-badge.danger="requiredCountABTCForm" class="pi pi-file-edit" style="font-size: 2rem" v-tooltip.bottom="`${requiredCountABTCForm} Required Fields`" />
                                             <i v-else class="pi pi-file-edit" style="font-size: 2rem" />
                                         </span>
                                     </template>
-                                    <NewGeneralData @update:requiredCountGeneralData="updateRequiredCountGeneralData" />
+                                    <BiteForm />
                                 </AccordionTab>
                                 <AccordionTab v-if="patientStore.progressionDay !== '0'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
                                     <template #header>
@@ -622,7 +622,7 @@ onUnmounted(() => {
             </SplitterPanel>
         </Splitter>
     </div>
-    <div style="height: 5%; width: 100%" class="flex">
+    <div style="height: 5%; width: 100%" class="flex" v-if="patientStore.sameDay === false">
         <SaveOPDButton
             @update:customizedObjectives="updateCustomizedObjective"
             @update:customizedDiagnosis="updateCustomizedDiagnosis"

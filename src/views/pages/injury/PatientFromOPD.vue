@@ -79,9 +79,11 @@ onMounted(async () => {
     // console.log('user info: ', userInfo);
 
     if (!patientStore.enccode) {
+        console.log('hehe');
+
         enccode.value = localStorage.getItem('enccode') || enccode.value;
         patientData.value = await injuryService.getOPDPatientData(enccode.value);
-        // console.log('patientData: ', patientData.value);
+        console.log('patientData: ', patientData.value);
         await patientStore.loadOPDPatientData(patientData.value);
 
         checkPatientTSSRecord.value = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode);

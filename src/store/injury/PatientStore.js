@@ -23,6 +23,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
     const pending = ref('N');
     const status = ref('');
     // const resetSelectedPatients = ref(false);
+    const sameDay = ref(false);
     const loadSignal = ref(false);
     const textFactorSafety = ref('');
     const finalDiagnosis = ref('');
@@ -40,7 +41,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
     const storeProvinces = ref([]);
     const storeCities = ref([]);
     const storeBrgy = ref([]);
-    const doctor_plan =ref('');
+    const doctor_plan = ref('');
     const type_prophylaxis = ref();
 
     // const entryBy = ref('');
@@ -152,7 +153,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         doctor_admdate: '',
         doctor_diagnosis: '',
         doctor_injtme: '',
-        doctor_objective: [], 
+        doctor_objective: [],
         diagnosisbite: '',
         final_doctor_details: '',
         final_doctor_objective: '',
@@ -279,7 +280,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
             tt_num: '',
             ats_num: '',
             vaccine_none: '',
-            immunization_schedule: ''
+            immunization_schedule: '',
+            booster_regimen: ''
         },
 
         ExternalCauseOfInjury: {
@@ -596,7 +598,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
             tt_num: '',
             ats_num: '',
             vaccine_none: '',
-            immunization_schedule: ''
+            immunization_schedule: '',
+            booster_regimen: ''
         },
         ExternalCauseOfInjury: {
             prophylaxis: '',
@@ -881,8 +884,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
 
     // Function to set the loadList callback
     async function loadOPDPatientData(patientData) {
-        if (patientData?.data) {
-            console.log('has data: ', patientData.data);
+        if (patientData?.data && patientData?.lockCase !== null) {
+            // console.log('has data: ', patientData);
             header.value = patientData.data.header;
             header.value.hpercode = patientData.data.header.hpercode;
             // ufiveID.value = patientData?.data?.details?.ufiveID;
@@ -890,15 +893,18 @@ export const usePatientStore = defineStore('PatientStore', () => {
             // enccode.value = patientData?.data?.enccode;
             // status.value = patientData?.data?.status;
             if (patientData.data != null) {
-                console.log('Details found, using details from server');
+                console.log('Details found, using details from server: ', patientData.data);
                 details.value = patientData.data;
                 if (progressionDay.value !== patientData.data.progressionDay) {
+                    sameDay.value = false; 
                     console.log('day not the same : ', progressionDay.value + ': ', patientData.data.progressionDay);
                     details.value.followUp = { ...defaultDetails.value.followUp };
                     if (progressionDay.value !== '0') {
-                        details.value.ABTC = { ...defaultDetails.value.ABTC };
-                        // alert('hit');
+                        details.value.ABTC = { ...defaultDetails.value.ABTC }; 
+                        alert('hit');
                     }
+                } else { 
+                    sameDay.value = true;
                 }
 
                 //reset the vaccine given if it's a follow up form
@@ -930,6 +936,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
             details.value.preAdmissionData.activity_code = '99';
             details.value.hospitalFacilityData.status_code = '03';
             details.value.hospitalFacilityData.mode_transport_code = '03';
+
+            sameDay.value = false;
         }
         // console.log('patientData: ', patientData);
         // console.log('header: ', header);
@@ -1647,6 +1655,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         loadAdmittedPatientData,
         type_prophylaxis,
         pending,
-        doctor_plan
+        doctor_plan,
+        sameDay
     };
 });
