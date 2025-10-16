@@ -226,7 +226,7 @@ watch(
                 </div>
             </div>
             <div v-else>
-                <div v-if="PatientStore.details.ABTC.booster_regimen === '' && PatientStore.details.ABTC.immunization_schedule === 'BOOSTER'">
+                <div style="width: 100%" v-if="PatientStore.details.ABTC.booster_regimen === '' && PatientStore.details.ABTC.immunization_schedule === 'BOOSTER'">
                     <div style="width: 100%">
                         <label for="Finding" class="text-black text-xs" style="color: #000080"><i>Booster Regimen </i></label>
                         <SelectButton

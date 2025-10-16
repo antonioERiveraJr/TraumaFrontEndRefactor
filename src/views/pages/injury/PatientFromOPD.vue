@@ -79,16 +79,12 @@ onMounted(async () => {
     // console.log('user info: ', userInfo);
 
     if (!patientStore.enccode) {
-        console.log('hehe');
+        // console.log('hehe');
 
         enccode.value = localStorage.getItem('enccode') || enccode.value;
         patientData.value = await injuryService.getOPDPatientData(enccode.value);
-        console.log('patientData: ', patientData.value);
+        // console.log('patientData: ', patientData.value);
         await patientStore.loadOPDPatientData(patientData.value);
-
-        checkPatientTSSRecord.value = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode);
-        // console.log('checkPatientTSSRecord: ', checkPatientTSSRecord.value);
-        patientStore.patientTSSRecord = checkPatientTSSRecord;
     }
 
     // Set initial values for detailsData
@@ -120,7 +116,10 @@ onMounted(async () => {
 
 watch(
     () => patientStore.type_prophylaxis,
-    (newValue) => {
+    async (newValue) => {
+        checkPatientTSSRecord.value = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode, patientStore.type_prophylaxis);
+        // console.log('checkPatientTSSRecord: ', checkPatientTSSRecord.value);
+        patientStore.patientTSSRecord = checkPatientTSSRecord;
         if (newValue !== '' && newValue !== undefined && newValue !== null) {
             panel1Width.value = '10%';
             panel2Width.value = '88%';
@@ -193,7 +192,7 @@ watch(
             <div style="height: 100%" :style="{ width: panel2Width, transition: 'width 0.3s ease' }" class="flex justify-content-center" @mouseover="handleHover('panel2')" @mouseleave="handleMouseLeave">
                 <div style="height: 100%; width: 100%">
                     <!-- <SplitterPanel v-if="patientStore.progressionDay === '' || fetchingPatientData" style="height: 100%" :size="100"> -->
-                    <SplitterPanel v-if="patientStore.progressionDay === ''" style="height: 100%" :size="100">
+                    <SplitterPanel v-if="patientStore.progressionDay === '' || patientStore.loadSignal === true" style="height: 100%" :size="100">
                         <Splitter layout="vertical">
                             <SplitterPanel style="background-color: #e5e5e5" :size="5" class="flex justify-content-center sticky">
                                 <h1 class="font-bold">{{ patientStore.header.patname }}</h1>

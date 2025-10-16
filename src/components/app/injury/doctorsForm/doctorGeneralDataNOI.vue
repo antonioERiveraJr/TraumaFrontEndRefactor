@@ -285,7 +285,7 @@ onBeforeMount(() => {
     // Check the initial state of patientStore.dataIsLoaded
     if (patientStore.dataIsLoaded) {
         patientDataIsLoaded(); // Handle already loaded data
-        console.log('Doctor pre data is loaded on mount using before mounted: ', patientStore.dataIsLoaded);
+        // console.log('Doctor pre data is loaded on mount using before mounted: ', patientStore.dataIsLoaded);
     }
 });
 watch(

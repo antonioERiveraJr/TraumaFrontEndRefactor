@@ -47,29 +47,34 @@ onMounted(() => {
 watch(
     () => patientStore.progressionDay,
     async (newDay) => {
+        patientStore.loadSignal = true;
         await dataIsLoaded();
         if (patientStore?.patientTSSRecord && patientStore?.patientTSSRecord.data) {
-            const checkPatientTSSRecord = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode);
-            // console.log('checkPatientTSSRecord: ', checkPatientTSSRecord.value);
+            const checkPatientTSSRecord = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode, patientStore.type_prophylaxis);
+            // console.log('checkPatientTSSRecord: ', checkPatientTSSRecord);
             patientStore.patientTSSRecord = checkPatientTSSRecord;
 
             // alert('hit');
             // Find the record with the matching vaccineday
             const matchingRecord = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === newDay);
+
             if (matchingRecord) {
-                console.log('Matching record for progression day:', matchingRecord.data);
+                // console.log('Matching record for progression day:', matchingRecord.data);
                 await patientStore.loadOPDPatientData(matchingRecord);
                 // emit('update:loading', false);
             } else {
-                console.log('No matching record found for progression day:', newDay);
+                // console.log('No matching record found for progression day:', newDay);
                 enccode.value = localStorage.getItem('enccode') || enccode.value;
                 patientData.value = await injuryService.getOPDPatientData(enccode.value);
-                console.log('patientData: ', patientData.value);
+                // console.log('patientData: ', patientData.value);
                 patientStore.loadOPDPatientData(patientData.value);
                 patientStore.details.followUp = { ...patientStore.defaultDetails.followUp };
                 patientStore.details.ABTC = { ...patientStore.defaultDetails.ABTC };
                 // emit('update:loading', false);
             }
+            patientStore.loadSignal = false;    
+        } else {
+            patientStore.loadSignal = false;
         }
     }
 );

@@ -884,6 +884,10 @@ export const usePatientStore = defineStore('PatientStore', () => {
 
     // Function to set the loadList callback
     async function loadOPDPatientData(patientData) {
+        // loadSignal.value = true;
+        // await new Promise(resolve => setTimeout(resolve, 5000));
+        // console.log('loading');
+
         if (patientData?.data && patientData?.lockCase !== null) {
             // console.log('has data: ', patientData);
             header.value = patientData.data.header;
@@ -893,22 +897,24 @@ export const usePatientStore = defineStore('PatientStore', () => {
             // enccode.value = patientData?.data?.enccode;
             // status.value = patientData?.data?.status;
             if (patientData.data != null) {
-                console.log('Details found, using details from server: ', patientData.data);
+                // console.log('Details found, using details from server: ', patientData.data);
                 details.value = patientData.data;
                 if (progressionDay.value !== patientData.data.progressionDay) {
-                    sameDay.value = false; 
-                    console.log('day not the same : ', progressionDay.value + ': ', patientData.data.progressionDay);
+                    sameDay.value = false;
+                    // console.log('day not the same : ', progressionDay.value + ': ', patientData.data.progressionDay);
                     details.value.followUp = { ...defaultDetails.value.followUp };
                     if (progressionDay.value !== '0') {
-                        details.value.ABTC = { ...defaultDetails.value.ABTC }; 
-                        alert('hit');
+                        details.value.ABTC = { ...defaultDetails.value.ABTC };
+                        // alert('hit');
                     }
-                } else { 
+                } else {
                     sameDay.value = true;
                 }
 
                 //reset the vaccine given if it's a follow up form
             }
+            // loadSignal.value = fase;
+            // console.log('done loading');
             // else {
             //     // console.log('No details found, using default details');
             //     details.value = { ...defaultDetails.value };
@@ -938,6 +944,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
             details.value.hospitalFacilityData.mode_transport_code = '03';
 
             sameDay.value = false;
+            // loadSignal.value = false;
+            // console.log('done loading');
         }
         // console.log('patientData: ', patientData);
         // console.log('header: ', header);

@@ -348,14 +348,15 @@ onMounted(async () => {
 onUnmounted(() => {
     window.removeEventListener('resize', onResize);
 });
+ 
 </script>
 <template>
     <!-- {{ patientStore.details.followUp }}
     {{ patientStore.progressionDay }}
     {{ patientStore.type_prophylaxis }} -->
     <div v-if="saving" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 98%; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
-        <img src="@/assets/images/loader.gif" alt="Loading..." style="height: 10rem; width: 10rem" />
-    </div>
+        <img src="../../../../assets/images/ABTCloader.gif" alt="Loading..." style="height: 10rem; width: 10rem" />
+    </div> 
     <div id="form" style="height: 95%; width: 100%; overflow-y: auto">
         <Splitter style="height: 100%">
             <SplitterPanel style="height: 100%" :size="100">
