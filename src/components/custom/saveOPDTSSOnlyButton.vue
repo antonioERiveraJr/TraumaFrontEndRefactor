@@ -488,6 +488,7 @@ const confirmSaves = async () => {
                 } else if (result.isDenied) {
                     Swal.fire('Changes are not saved', '', 'info');
                     confirmEMRDetails.value = false;
+                    window.location.reload();
                 } else {
                     console.log('saving cancelled');
                     confirmEMRDetails.value = false;

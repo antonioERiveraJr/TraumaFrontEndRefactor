@@ -257,7 +257,7 @@ watch(
                         <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="PatientStore.details.ABTC.vaccine_none" label="NONE" />
                     </div>
                     <div class="grid grid-cols-4 gap-4 justify-content-evenly mt-3">
-                        <div style="width: 13%">
+                        <div :style="{ width: PatientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
                             <Transition name="slide-fade" mode="out-in">
                                 <div v-if="PatientStore.details.ABTC.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
                                     <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ABTC.pvrv_site_2" label="2-sites" />
@@ -265,7 +265,7 @@ watch(
                                 </div>
                             </Transition>
                         </div>
-                        <div style="width: 13%">
+                        <div :style="{ width: PatientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
                             <Transition name="slide-fade" mode="out-in">
                                 <div v-if="PatientStore.details.ABTC.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
                                     <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ABTC.pcec_site_2" label="2-sites" />
@@ -351,9 +351,9 @@ watch(
         </Fieldset>
     </div>
 
-    <div class="flex justify-content-center mt-3">
+    <div class="flex justify-content-center mt-3" style="width: 100%;">
         <Fieldset
-            style="width: 96%"
+            style="width: 48%"
             :toggleable="true"
             :collapsed="true"
             :pt="{
@@ -385,6 +385,43 @@ watch(
                 }"
                 style="width: 100%"
                 v-model="PatientStore.header.doctor_diagnosis"
+                class="mt-1 justify-content-center"
+                autoResize
+            />
+        </Fieldset> 
+        <Fieldset
+            style="width: 48%"
+            :toggleable="true"
+            :collapsed="true"
+            :pt="{
+                root: { style: { backgroundColor: 'transparent', border: 'none', padding: 'none' } },
+                legend: { style: { border: 'none', backgroundColor: 'transparent', textAlign: 'center' } },
+                toggler: { style: { padding: '1rem' } }
+            }"
+        >
+            <template #legend>
+                <span style="color: #000080" class="font-bold white-space-nowrap">Antibiotic</span>
+            </template>
+            <Textarea
+                :pt="{
+                    root: {
+                        style: {
+                            width: '100%',
+                            overflow: 'hidden',
+                            border: '2px dashed #ccc',
+                            borderRadius: '4px',
+                            padding: '5px',
+                            boxSizing: 'border-box',
+                            resize: 'none',
+                            backgroundColor: '#ececec',
+                            color: '#666',
+                            fontWeight: 'bold',
+                            fontSize: '13px'
+                        }
+                    }
+                }"
+                style="width: 100%"
+                v-model="PatientStore.details.ABTC.antibiotic"
                 class="mt-1 justify-content-center"
                 autoResize
             />

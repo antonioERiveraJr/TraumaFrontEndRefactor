@@ -83,7 +83,7 @@ onMounted(async () => {
 
         enccode.value = localStorage.getItem('enccode') || enccode.value;
         patientData.value = await injuryService.getOPDPatientData(enccode.value);
-        // console.log('patientData: ', patientData.value);
+        console.log('patientData: ', patientData.value);
         await patientStore.loadOPDPatientData(patientData.value);
     }
 
@@ -117,6 +117,7 @@ onMounted(async () => {
 watch(
     () => patientStore.type_prophylaxis,
     async (newValue) => {
+        patientStore.progressionDay = '';
         checkPatientTSSRecord.value = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode, patientStore.type_prophylaxis);
         // console.log('checkPatientTSSRecord: ', checkPatientTSSRecord.value);
         patientStore.patientTSSRecord = checkPatientTSSRecord;

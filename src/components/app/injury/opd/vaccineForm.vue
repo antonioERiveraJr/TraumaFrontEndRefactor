@@ -95,7 +95,7 @@ function handleClick() {
                         <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="PatientStore.details.ABTC.vaccine_none" label="NONE" />
                     </div>
                     <div class="grid grid-cols-4 gap-4 justify-content-evenly mt-3">
-                        <div style="width: 13%">
+                        <div :style="{ width: PatientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
                             <Transition name="slide-fade" mode="out-in">
                                 <div v-if="PatientStore.details.ABTC.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
                                     <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ABTC.pvrv_site_2" label="2-sites" />
@@ -103,7 +103,7 @@ function handleClick() {
                                 </div>
                             </Transition>
                         </div>
-                        <div style="width: 13%">
+                        <div :style="{ width: PatientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
                             <Transition name="slide-fade" mode="out-in">
                                 <div v-if="PatientStore.details.ABTC.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
                                     <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="PatientStore.details.ABTC.pcec_site_2" label="2-sites" />

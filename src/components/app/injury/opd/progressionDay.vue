@@ -2,7 +2,7 @@
 import { usePatientStore } from '../../../../store/injury/patientStore';
 import InjuryService from '../../../../service/InjuryService';
 import { onMounted, watch, ref } from 'vue';
-
+import Swal from 'sweetalert2';
 // const emit = defineEmits('update:loading');
 const injuryService = new InjuryService();
 const patientStore = usePatientStore();
@@ -31,7 +31,22 @@ const getBadge = (day) => {
     return matchingRecord ? matchingRecord.tStamp : null;
 };
 const newCase = () => {
-    injuryService.newCase(patientStore.header.hpercode);
+    Swal.fire({
+        title: 'Do you want to create a new case for this patient?',
+        // showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        denyButtonText: `No`
+    }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+            injuryService.newCase(patientStore.header.hpercode);
+            Swal.fire('New case created successfully!', '', 'success');
+            window.location.reload();
+        } else if (result.isDenied) {
+            Swal.fire('New case creation canceled.', '', 'info');
+        }
+    });
 };
 const dataIsLoaded = async () => {
     // emit('update:loading', true);
@@ -72,7 +87,7 @@ watch(
                 patientStore.details.ABTC = { ...patientStore.defaultDetails.ABTC };
                 // emit('update:loading', false);
             }
-            patientStore.loadSignal = false;    
+            patientStore.loadSignal = false;
         } else {
             patientStore.loadSignal = false;
         }
@@ -83,7 +98,7 @@ watch(
     <div style="width: 100%; height: 100%">
         <div v-if="patientStore.type_prophylaxis === 'PRE-EXPOSURE'" style="background-color: #9bb0bf; width: 100%; height: 100%">
             <div class="flex flex-column justify-content-center" style="height: 100%; width: 100%">
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 5%">
+                <div v-if="!patientStore?.primetss" style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 5%">
                     <Button
                         @click="newCase()"
                         label="NEW CASE"
@@ -164,7 +179,7 @@ watch(
         </div>
         <div v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" style="background-color: #9bb0bf; width: 100%; height: 100%">
             <div class="flex flex-column justify-content-center" style="height: 100%; width: 100%">
-                <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 5%">
+                <div v-if="!patientStore?.primetss" style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 5%">
                     <Button
                         @click="newCase()"
                         label="NEW CASE"

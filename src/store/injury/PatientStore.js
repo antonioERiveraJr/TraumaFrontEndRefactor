@@ -43,6 +43,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
     const storeBrgy = ref([]);
     const doctor_plan = ref('');
     const type_prophylaxis = ref();
+    const primetss = ref(false);
 
     // const entryBy = ref('');
 
@@ -281,7 +282,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
             ats_num: '',
             vaccine_none: '',
             immunization_schedule: '',
-            booster_regimen: ''
+            booster_regimen: '',
+            antibiotic: ''
         },
 
         ExternalCauseOfInjury: {
@@ -599,7 +601,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
             ats_num: '',
             vaccine_none: '',
             immunization_schedule: '',
-            booster_regimen: ''
+            booster_regimen: '',
+            antibiotic: ''
         },
         ExternalCauseOfInjury: {
             prophylaxis: '',
@@ -887,16 +890,19 @@ export const usePatientStore = defineStore('PatientStore', () => {
         // loadSignal.value = true;
         // await new Promise(resolve => setTimeout(resolve, 5000));
         // console.log('loading');
-
-        if (patientData?.data && patientData?.lockCase !== null) {
-            // console.log('has data: ', patientData);
+        console.log('stored: ', patientData); 
+        if (patientData?.data) {
             header.value = patientData.data.header;
+
+            console.log('fetched data: ', patientData.data);
             header.value.hpercode = patientData.data.header.hpercode;
+            details.value = patientData.data;
+            console.log('updated data: ', details);
             // ufiveID.value = patientData?.data?.details?.ufiveID;
             // header.value = patientData?.data?.header;
             // enccode.value = patientData?.data?.enccode;
             // status.value = patientData?.data?.status;
-            if (patientData.data != null) {
+            if (patientData.data != null && patientData?.lockCase !== null) {
                 // console.log('Details found, using details from server: ', patientData.data);
                 details.value = patientData.data;
                 if (progressionDay.value !== patientData.data.progressionDay) {
@@ -926,6 +932,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             // }
             // admEnccode.value = patientData?.data?.admEnccode;
         } else {
+            primetss.value = true;
             // console.log('doesnt have data: ', patientData);
             header.value.patname = patientData.patientname;
             header.value.hpercode = patientData.hpercode;
@@ -1664,6 +1671,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         type_prophylaxis,
         pending,
         doctor_plan,
-        sameDay
+        sameDay,
+        primetss
     };
 });
