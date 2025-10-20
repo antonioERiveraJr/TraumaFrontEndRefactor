@@ -26,6 +26,7 @@ const loader = ref(true);
 const injuryService = new InjuryService();
 const patientStore = usePatientStore();
 const requiredCountPreAdmission = ref(0);
+const requiredCountFollowUp = ref(8);
 const requiredCountABTCForm = ref(0);
 const requiredCountGeneralData = ref(0);
 const collapsObjective = ref(true);
@@ -126,8 +127,8 @@ const updateRequiredFieldCountForBite = () => {
         if (patientStore.details.ExternalCauseOfInjury.washingDone === '') requiredCountABTCForm.value++;
         if (patientStore.details.ExternalCauseOfInjury.previousARV === '') requiredCountABTCForm.value++;
         if (patientStore.details.ExternalCauseOfInjury.tetanusVaccination === '') requiredCountABTCForm.value++;
-        if (patientStore.details.ExternalCauseOfInjury.allergies === '') requiredCountABTCForm.value++;
-        if (patientStore.details.ExternalCauseOfInjury.adverseReaction === '') requiredCountABTCForm.value++;
+        // if (patientStore.details.ExternalCauseOfInjury.allergies === '') requiredCountABTCForm.value++;
+        // if (patientStore.details.ExternalCauseOfInjury.adverseReaction === '') requiredCountABTCForm.value++;
 
         // Include the additional first aid code check
         if (patientStore.details.preAdmissionData.first_aid_code === '') requiredCountABTCForm.value++;
@@ -325,6 +326,57 @@ watch(
     { deep: true }
 );
 
+// watch(
+//     () => [patientStore.details.ABTC, patientStore.details.followUp],
+//     () => {
+//         const requiredFields = [
+//             { value: patientStore.details.followUp.immunization_schedule, required: true },
+//             { value: patientStore.details.followUp.finding, required: true },
+//             { value: patientStore.details.followUp.tenderness, required: true },
+//             { value: patientStore.details.followUp.discharge, required: true },
+//             { value: patientStore.details.followUp.erythema, required: true },
+//             { value: patientStore.details.followUp.complaints, required: true },
+//             { value: patientStore.details.followUp.adverse_reaction, required: true },
+//             { value: patientStore.details.followUp.biting, required: true },
+//             { value: patientStore.details.followUp.wound_description, required: true },
+//             { value: patientStore.details.followUp.wound_descriptionOthers, required: patientStore.details.followUp.wound_description === 'OTHERS' },
+//             { value: patientStore.details.followUp.discharge_sp, required: patientStore.details.followUp.discharge === 'OTHERS' }
+//             // { value: patientStore.details.followUp.wound_description, required: patientStore.type_prophylaxis === 'POST-EXPOSURE' },
+//             // { value: patientStore.details.followUp.finding, required: patientStore.type_prophylaxis !== 'POST-EXPOSURE' }
+//         ];
+
+//         requiredCountFollowUp.value = requiredFields.filter((field) => field.required && !field.value).length;
+//     },
+//     { deep: true }
+// );
+
+watch(
+    () => [patientStore.details.ABTC, patientStore.details.followUp],
+    () => {
+        const requiredFields = [
+            // { key: 'immunization_schedule', value: patientStore.details.followUp.immunization_schedule, required: true },
+            // { key: 'finding', value: patientStore.details.followUp.finding, required: true },
+            { key: 'tenderness', value: patientStore.details.followUp.tenderness, required: true },
+            { key: 'discharge', value: patientStore.details.followUp.discharge, required: true },
+            { key: 'erythema', value: patientStore.details.followUp.erythema, required: true },
+            { key: 'hematoma', value: patientStore.details.followUp.hematoma, required: true },
+            { key: 'complaints', value: patientStore.details.followUp.complaints, required: true },
+            { key: 'adverse_reaction', value: patientStore.details.followUp.adverse_reaction, required: true },
+            { key: 'biting', value: patientStore.details.followUp.biting, required: true },
+            { key: 'wound_description', value: patientStore.details.followUp.wound_description, required: true },
+            { key: 'wound_descriptionOthers', value: patientStore.details.followUp.wound_descriptionOthers, required: patientStore.details.followUp.wound_description === 'OTHERS' },
+            { key: 'discharge_sp', value: patientStore.details.followUp.discharge_sp, required: patientStore.details.followUp.discharge === 'OTHERS' }
+        ];
+
+        const missingFields = requiredFields.filter((field) => field.required && !field.value).map((field) => field.key);
+
+        requiredCountFollowUp.value = missingFields.length;
+
+        console.log('Missing required follow-up fields:', missingFields);
+    },
+    { deep: true }
+);
+
 const width = ref(window.innerWidth);
 const height = ref(window.innerHeight);
 const size = ref(35);
@@ -409,7 +461,7 @@ onUnmounted(() => {
                                     <template #header>
                                         <span class="flex align-items-center gap-2 w-full">
                                             <span style="color: #000080" class="font-bold white-space-nowrap">FOLLOW-UP FORM</span>
-                                            <i v-if="requiredCountGeneralData > 0" v-badge.danger="requiredCountGeneralData" class="pi pi-file-edit" style="font-size: 2rem" v-tooltip.bottom="`${requiredCountGeneralData} Required Fields`" />
+                                            <i v-if="requiredCountFollowUp > 0" v-badge.danger="requiredCountFollowUp" class="pi pi-file-edit" style="font-size: 2rem" v-tooltip.bottom="`${requiredCountFollowUp} Required Fields`" />
                                             <i v-else class="pi pi-file-edit" style="font-size: 2rem" />
                                         </span>
                                     </template>

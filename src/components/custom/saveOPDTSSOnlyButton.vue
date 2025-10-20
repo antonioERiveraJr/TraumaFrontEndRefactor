@@ -349,6 +349,14 @@ const confirmSaves = async () => {
         patientStore.details.ExternalCauseOfInjury.ext_expo_nature_sp = '';
     }
     const isFormValid = () => {
+        if (patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y') {
+            if (patientStore.details.ExternalCauseOfInjury.allergies === '') {
+                patientStore.details.ExternalCauseOfInjury.allergies = 'NONE';
+            }
+            if (patientStore.details.ExternalCauseOfInjury.adverseReaction === '') {
+                patientStore.detail.ExternalCauseOfInjury.adverseReaction = 'NONE';
+            }
+        }
         const validationRules = createValidationRules();
         removeUnusedString();
         const missingFields = [];
@@ -393,7 +401,6 @@ const confirmSaves = async () => {
     if (obj.value === '') {
         obj.value = patientStore.header.doctor_objective;
     }
- 
 
     // return new Promise((resolve, reject) => {
     //     Swal.fire({
@@ -488,7 +495,6 @@ const confirmSaves = async () => {
                 } else if (result.isDenied) {
                     Swal.fire('Changes are not saved', '', 'info');
                     confirmEMRDetails.value = false;
-                    window.location.reload();
                 } else {
                     console.log('saving cancelled');
                     confirmEMRDetails.value = false;

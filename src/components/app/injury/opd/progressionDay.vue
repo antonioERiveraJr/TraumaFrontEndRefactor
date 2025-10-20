@@ -30,17 +30,17 @@ const getBadge = (day) => {
     const matchingRecord = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === day);
     return matchingRecord ? matchingRecord.tStamp : null;
 };
-const newCase = () => {
+const newCase = async () => {
     Swal.fire({
         title: 'Do you want to create a new case for this patient?',
         // showDenyButton: true,
         showCancelButton: true,
         confirmButtonText: 'Yes',
         denyButtonText: `No`
-    }).then((result) => {
+    }).then(async (result) => {
         /* Read more about isConfirmed, isDenied below */
         if (result.isConfirmed) {
-            injuryService.newCase(patientStore.header.hpercode);
+            await injuryService.newCase(patientStore.header.hpercode);
             Swal.fire('New case created successfully!', '', 'success');
             window.location.reload();
         } else if (result.isDenied) {
@@ -83,8 +83,9 @@ watch(
                 patientData.value = await injuryService.getOPDPatientData(enccode.value);
                 // console.log('patientData: ', patientData.value);
                 patientStore.loadOPDPatientData(patientData.value);
-                patientStore.details.followUp = { ...patientStore.defaultDetails.followUp };
-                patientStore.details.ABTC = { ...patientStore.defaultDetails.ABTC };
+                // patientStore.details.followUp = { ...patientStore.defaultDetails.followUp };
+                // patientStore.details.ABTC = { ...patientStore.defaultDetails.ABTC };
+
                 // emit('update:loading', false);
             }
             patientStore.loadSignal = false;

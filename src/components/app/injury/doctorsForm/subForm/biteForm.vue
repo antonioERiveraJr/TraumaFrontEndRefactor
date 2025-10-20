@@ -466,28 +466,14 @@ watch(
                         <div class="flex justify-content-between w-1/2 md:w-1/2">
                             <strong style="color: #000080; font-size: 11px">ALLERGIES</strong>
                         </div>
-                        <InputText
-                            v-model="patientStore.details.ExternalCauseOfInjury.allergies"
-                            placeholder="Enter Allergies"
-                            :class="{
-                                'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
-                                'bg-green-100': patientStore.details.ExternalCauseOfInjury.allergies === ''
-                            }"
-                        />
+                        <InputText style="font-weight: bold" v-model="patientStore.details.ExternalCauseOfInjury.allergies" placeholder="Enter Allergies" />
                     </div>
 
                     <div class="flex flex-column">
                         <div class="flex justify-content-between w-1/2 md:w-1/2">
                             <strong style="color: #000080; font-size: 11px">ADVERSE REACTION FROM PREVIOUS VACCINATION</strong>
                         </div>
-                        <InputText
-                            v-model="patientStore.details.ExternalCauseOfInjury.adverseReaction"
-                            placeholder="Enter Adverse Reactions"
-                            :class="{
-                                'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
-                                'bg-green-100': patientStore.details.ExternalCauseOfInjury.adverseReaction === ''
-                            }"
-                        />
+                        <InputText style="font-weight: bold" v-model="patientStore.details.ExternalCauseOfInjury.adverseReaction" placeholder="Enter Adverse Reactions" />
                     </div>
                     <div class="flex flex-column">
                         <div class="flex justify-content-between w-1/2 md:w-1/2">
@@ -542,16 +528,16 @@ watch(
                 <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
                     <Transition name="slide-fade" mode="out-in">
                         <div v-if="patientStore.details.ABTC.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
-                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="patientStore.details.ABTC.pvrv_site_2" label="2-sites" />
-                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="patientStore.details.ABTC.pvrv_site_4" label="4-sites" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_1_id" label="1-site ID" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_1_im" label="1-site IM" />
                         </div>
                     </Transition>
                 </div>
                 <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
                     <Transition name="slide-fade" mode="out-in">
                         <div v-if="patientStore.details.ABTC.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
-                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="patientStore.details.ABTC.pcec_site_2" label="2-sites" />
-                            <CheckBoxMultiple class="flex justify-content-center" style="width: 35%" v-model="patientStore.details.ABTC.pcec_site_4" label="4-sites" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_1_id" label="1-site ID" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_1_im" label="1-site IM" />
                         </div>
                     </Transition>
                 </div>
@@ -561,7 +547,7 @@ watch(
                             <div class="field">
                                 <span class="p-float-label">
                                     <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="hrig" v-model="patientStore.details.ABTC.hrig_num" />
-                                    <label for="hrig">Amount to be Given</label>
+                                    <!-- <label for="hrig">Amount to be Given</label> -->
                                 </span>
                             </div>
                         </div>
@@ -573,13 +559,13 @@ watch(
                             <div class="field">
                                 <span class="p-float-label">
                                     <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ABTC.erig_num" />
-                                    <label for="erig">Amount to be Given</label>
+                                    <!-- <label for="erig">Amount to be Given</label> -->
                                 </span>
                             </div>
                         </div>
                     </Transition>
                 </div>
-                <div v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" style="width: 10%">
+                <div v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" style="width: 15%">
                     <Transition name="slide-fade" mode="out-in">
                         <div v-if="patientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
                             <div class="field" style="width: 100%">
@@ -625,7 +611,29 @@ watch(
                     Value is Required
                 </div>
             </div>
-           
+            <div class="grid grid-cols-4 gap-4 justify-content-evenly mt-3">
+                <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="patientStore.details.ABTC.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_2" label="2-sites" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_4" label="4-sites" />
+                        </div>
+                    </Transition>
+                </div>
+                <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="PatientStore.details.ABTC.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_2" label="2-sites" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_4" label="4-sites" />
+                        </div>
+                    </Transition>
+                </div>
+                <div style="width: 10%"></div>
+                <div style="width: 10%"></div>
+                <div style="width: 10%"></div>
+                <div style="width: 8%"></div>
+                <div style="width: 8%"></div>
+            </div>
         </div>
         <div v-else><VaccineForm /></div>
     </div>

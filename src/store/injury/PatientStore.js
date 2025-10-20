@@ -268,12 +268,17 @@ export const usePatientStore = defineStore('PatientStore', () => {
             prophylaxis: '',
             pvrv: '',
             pcec: '',
+            pvrv_site_1_im: '',
+            pvrv_site_1_id: '',
+            pcec_site_1_im: '',
+            pcec_site_1_id: '',
             pvrv_site_2: '',
             pcec_site_2: '',
             pvrv_site_4: '',
             pcec_site_4: '',
             hrig: '',
             erig: '',
+            skintest: '',
             hrig_num: '',
             erig_num: '',
             tt: '',
@@ -283,7 +288,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             vaccine_none: '',
             immunization_schedule: '',
             booster_regimen: '',
-            antibiotic: ''
+            medication: ''
         },
 
         ExternalCauseOfInjury: {
@@ -296,6 +301,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             pcec_site_4: '',
             hrig: '',
             erig: '',
+            skintest: '',
             hrig_num: '',
             erig_num: '',
             tt: '',
@@ -587,6 +593,10 @@ export const usePatientStore = defineStore('PatientStore', () => {
             prophylaxis: '',
             pvrv: '',
             pcec: '',
+            pvrv_site_1_im: '',
+            pvrv_site_1_id: '',
+            pcec_site_1_im: '',
+            pcec_site_1_id: '',
             pvrv_site_2: '',
             pcec_site_2: '',
             pvrv_site_4: '',
@@ -602,7 +612,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             vaccine_none: '',
             immunization_schedule: '',
             booster_regimen: '',
-            antibiotic: ''
+            medication: ''
         },
         ExternalCauseOfInjury: {
             prophylaxis: '',
@@ -890,7 +900,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         // loadSignal.value = true;
         // await new Promise(resolve => setTimeout(resolve, 5000));
         // console.log('loading');
-        console.log('stored: ', patientData); 
+        console.log('stored: ', patientData);
         if (patientData?.data) {
             header.value = patientData.data.header;
 
@@ -898,20 +908,25 @@ export const usePatientStore = defineStore('PatientStore', () => {
             header.value.hpercode = patientData.data.header.hpercode;
             details.value = patientData.data;
             console.log('updated data: ', details);
+
             // ufiveID.value = patientData?.data?.details?.ufiveID;
             // header.value = patientData?.data?.header;
             // enccode.value = patientData?.data?.enccode;
             // status.value = patientData?.data?.status;
-            if (patientData.data != null && patientData?.lockCase !== null) {
+            if (patientData.data != null && patientData?.lockCase === null) {
                 // console.log('Details found, using details from server: ', patientData.data);
                 details.value = patientData.data;
+
                 if (progressionDay.value !== patientData.data.progressionDay) {
                     sameDay.value = false;
                     // console.log('day not the same : ', progressionDay.value + ': ', patientData.data.progressionDay);
                     details.value.followUp = { ...defaultDetails.value.followUp };
+
                     if (progressionDay.value !== '0') {
                         details.value.ABTC = { ...defaultDetails.value.ABTC };
                         // alert('hit');
+                        details.value.followUp.complaints = 'NO SUBJECTIVE COMPLAINTS';
+                        console.log('complaints: ', details.value.followUp.complaints);
                     }
                 } else {
                     sameDay.value = true;
@@ -950,6 +965,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             details.value.hospitalFacilityData.status_code = '03';
             details.value.hospitalFacilityData.mode_transport_code = '03';
 
+            details.value.followUp.complaints = 'NO SUBJECTIVE COMPLAINTS';
             sameDay.value = false;
             // loadSignal.value = false;
             // console.log('done loading');
@@ -1511,6 +1527,10 @@ export const usePatientStore = defineStore('PatientStore', () => {
         details.value.ExternalCauseOfInjury.ext_vape = '';
         details.value.ExternalCauseOfInjury.ext_bite = '';
         details.value.ExternalCauseOfInjury.ext_bite_sp = '';
+        details.value.ABTC.pvrv_site_1_id = '';
+        details.value.ABTC.pcec_site_1_id = '';
+        details.value.ABTC.pvrv_site_1_im = '';
+        details.value.ABTC.pcec_site_1_im = '';
         details.value.ABTC.pvrv_site_2 = '';
         details.value.ABTC.pcec_site_2 = '';
         details.value.ABTC.pvrv_site_4 = '';
@@ -1520,6 +1540,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         details.value.ABTC.pcec = '';
         details.value.ABTC.hrig = '';
         details.value.ABTC.erig = '';
+        details.value.ABTC.skintest = '';
         details.value.ABTC.hrig_num = '';
         details.value.ABTC.immunization_schedule = '';
         details.value.ABTC.erig_num = '';
