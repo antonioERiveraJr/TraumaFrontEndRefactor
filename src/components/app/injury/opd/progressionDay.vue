@@ -127,7 +127,7 @@ watch(
                         "
                     >
                         <div style="font-size: 1.2em">Day 0</div>
-                        <div style="font-size: 0.4em; color: black">{{ getBadge('0') }}</div>
+                        <div style="font-size: 0.4em; color: gray">{{ getBadge('0') }}</div>
                     </Button>
                 </div>
 
@@ -150,7 +150,7 @@ watch(
                         "
                     >
                         <div style="font-size: 1.2em">Day 7</div>
-                        <div style="font-size: 0.4em; color: white">{{ getBadge('7') }}</div>
+                        <div style="font-size: 0.4em; color: lightgoldenrodyellow">{{ getBadge('7') }}</div>
                     </Button>
                 </div>
 
@@ -173,7 +173,7 @@ watch(
                         "
                     >
                         <div style="font-size: 1.2em">Day 21</div>
-                        <div style="font-size: 0.4em; color: black">{{ getBadge('21') }}</div>
+                        <div style="font-size: 0.4em; color: gray">{{ getBadge('21') }}</div>
                     </Button>
                 </div>
             </div>
@@ -207,7 +207,7 @@ watch(
                         "
                     >
                         <div style="font-size: 1em">Day 0</div>
-                        <div style="font-size: 0.4em; color: black">{{ getBadge('0') }}</div>
+                        <div style="font-size: 0.4em; color: gray">{{ getBadge('0') }}</div>
                     </Button>
                 </div>
 
@@ -230,7 +230,7 @@ watch(
                         "
                     >
                         <div style="font-size: 1em">Day 3</div>
-                        <div style="font-size: 0.4em; color: white">{{ getBadge('3') }}</div>
+                        <div style="font-size: 0.4em; color: lightgoldenrodyellow">{{ getBadge('3') }}</div>
                     </Button>
                 </div>
 
@@ -253,7 +253,7 @@ watch(
                         "
                     >
                         <div style="font-size: 1em">Day 7</div>
-                        <div style="font-size: 0.4em; color: black">{{ getBadge('7') }}</div>
+                        <div style="font-size: 0.4em; color: gray">{{ getBadge('7') }}</div>
                     </Button>
                 </div>
 
@@ -276,7 +276,7 @@ watch(
                         "
                     >
                         <div style="font-size: 1em">Day 14</div>
-                        <div style="font-size: 0.4em; color: white">{{ getBadge('14') }}</div>
+                        <div style="font-size: 0.4em; color: lightgoldenrodyellow">{{ getBadge('14') }}</div>
                     </Button>
                 </div>
 
@@ -299,7 +299,7 @@ watch(
                         "
                     >
                         <div style="font-size: 1em">Day 21</div>
-                        <div style="font-size: 0.4em; color: black">{{ getBadge('21') }}</div>
+                        <div style="font-size: 0.4em; color: gray">{{ getBadge('21') }}</div>
                     </Button>
                 </div>
 
@@ -322,7 +322,7 @@ watch(
                         "
                     >
                         <div style="font-size: 1em">Day 28</div>
-                        <div style="font-size: 0.4em; color: white">{{ getBadge('28') }}</div>
+                        <div style="font-size: 0.4em; color: lightgoldenrodyellow">{{ getBadge('28') }}</div>
                     </Button>
                 </div>
             </div>

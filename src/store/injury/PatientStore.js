@@ -603,6 +603,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             pcec_site_4: '',
             hrig: '',
             erig: '',
+            skintest: '',
             hrig_num: '',
             erig_num: '',
             tt: '',
@@ -901,7 +902,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         // await new Promise(resolve => setTimeout(resolve, 5000));
         // console.log('loading');
         console.log('stored: ', patientData);
-        if (patientData?.data) {
+        if (patientData?.data && type_prophylaxis.value === patientData.data.type_prophylaxis) {
             header.value = patientData.data.header;
 
             console.log('fetched data: ', patientData.data);
@@ -917,6 +918,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
                 // console.log('Details found, using details from server: ', patientData.data);
                 details.value = patientData.data;
 
+                // console.log(type_prophylaxis.value + '\n' + patientData.data.type_prophylaxis);
                 if (progressionDay.value !== patientData.data.progressionDay) {
                     sameDay.value = false;
                     // console.log('day not the same : ', progressionDay.value + ': ', patientData.data.progressionDay);
@@ -947,7 +949,10 @@ export const usePatientStore = defineStore('PatientStore', () => {
             // }
             // admEnccode.value = patientData?.data?.admEnccode;
         } else {
-            primetss.value = true;
+            if (!patientData?.data) {
+                primetss.value = true;
+            }
+
             // console.log('doesnt have data: ', patientData);
             header.value.patname = patientData.patientname;
             header.value.hpercode = patientData.hpercode;

@@ -28,7 +28,7 @@ const patientStore = usePatientStore();
 const requiredCountPreAdmission = ref(0);
 const requiredCountFollowUp = ref(8);
 const requiredCountABTCForm = ref(0);
-const requiredCountGeneralData = ref(0);
+const requiredCountGeneralData = ref(2);
 const collapsObjective = ref(true);
 const collapsSubjective = ref(true);
 const collapsDiagnosis = ref(true);
@@ -74,9 +74,6 @@ const updateRequiredCountPreAdmission = (value) => {
 // const updateRequiredCountABTCForm = (value) => {
 //     requiredCountABTCForm.value = value;
 // };
-const updateRequiredCountGeneralData = (value) => {
-    requiredCountGeneralData.value = value;
-};
 const loadLocations = async () => {
     region.value = patientStore?.storeRegions?.find((reg) => reg.regcode === patientStore.details.generalData.plc_regcode)?.regname || 'Unknown Region';
     province.value = patientStore?.storeProvinces?.find((prov) => prov.provcode === patientStore.details.generalData.plc_provcode)?.provname || 'Unknown Province';
@@ -114,33 +111,69 @@ const generateSafetyAndFactorText = () => {
 };
 const updateRequiredFieldCountForBite = () => {
     requiredCountABTCForm.value = 0;
+    const missingFields = [];
+    console.log('test');
 
     // Check if the bite injury is marked as 'Y'
-    if (patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y') {
+    if (patientStore.type_prophylaxis === 'PRE-EXPOSURE') {
+        console.log('1');
+        requiredCountABTCForm.value = 4;
+        if (patientStore.details.ExternalCauseOfInjury.previousARV) requiredCountABTCForm.value--;
+        if (patientStore.details.ExternalCauseOfInjury.tetanusVaccination) requiredCountABTCForm.value--;
+        if (patientStore.details.followUp.finding) requiredCountABTCForm.value--;
+        if (patientStore.details.ABTC.immunization_schedule) requiredCountABTCForm.value--;
+    } else if (patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y') {
         // Increment the count for each missing field
-        if (patientStore.details.ExternalCauseOfInjury.ext_bite_sp === '') requiredCountABTCForm.value++;
-        if (patientStore.details.ExternalCauseOfInjury.dogbiteDegree === '') requiredCountABTCForm.value++;
-        if (patientStore.details.ExternalCauseOfInjury.bleeding === '') requiredCountABTCForm.value++;
-        if (patientStore.details.ExternalCauseOfInjury.bitingAnimal === '') requiredCountABTCForm.value++;
-        if (patientStore.details.ExternalCauseOfInjury.observation === '') requiredCountABTCForm.value++;
-        if (patientStore.details.ExternalCauseOfInjury.first_aid_code === '') requiredCountABTCForm.value++;
-        if (patientStore.details.ExternalCauseOfInjury.washingDone === '') requiredCountABTCForm.value++;
-        if (patientStore.details.ExternalCauseOfInjury.previousARV === '') requiredCountABTCForm.value++;
-        if (patientStore.details.ExternalCauseOfInjury.tetanusVaccination === '') requiredCountABTCForm.value++;
-        // if (patientStore.details.ExternalCauseOfInjury.allergies === '') requiredCountABTCForm.value++;
-        // if (patientStore.details.ExternalCauseOfInjury.adverseReaction === '') requiredCountABTCForm.value++;
+        console.log('2');
+        const fieldsToCheck = ['ext_bite_sp', 'dogbiteDegree', 'bleeding', 'bitingAnimal', 'observation', 'first_aid_code', 'washingDone', 'previousARV', 'tetanusVaccination', 'preAdmissionData.first_aid_code'];
 
-        // Include the additional first aid code check
-        if (patientStore.details.preAdmissionData.first_aid_code === '') requiredCountABTCForm.value++;
+        fieldsToCheck.forEach((field) => {
+            const value = field.includes('.') ? eval(`patientStore.details.${field}`) : patientStore.details.ExternalCauseOfInjury[field];
+
+            if (value === '') {
+                requiredCountABTCForm.value++;
+                missingFields.push(field);
+            }
+        });
 
         // Check vaccinations
-        if (patientStore.details.ExternalCauseOfInjury.hrig === 'Y' && patientStore.details.ExternalCauseOfInjury.hrig_num === '') requiredCountABTCForm.value++;
-        if (patientStore.details.ExternalCauseOfInjury.erig === 'Y' && patientStore.details.ExternalCauseOfInjury.erig_num === '') requiredCountABTCForm.value++;
-        if (patientStore.details.ExternalCauseOfInjury.ats === 'Y' && patientStore.details.ExternalCauseOfInjury.ats_num === '') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.hrig === 'Y' && patientStore.details.ExternalCauseOfInjury.hrig_num === '') {
+            requiredCountABTCForm.value++;
+            missingFields.push('hrig_num');
+        }
+        if (patientStore.details.ExternalCauseOfInjury.erig === 'Y' && patientStore.details.ExternalCauseOfInjury.erig_num === '') {
+            requiredCountABTCForm.value++;
+            missingFields.push('erig_num');
+        }
+        if (patientStore.details.ExternalCauseOfInjury.ats === 'Y' && patientStore.details.ExternalCauseOfInjury.ats_num === '') {
+            requiredCountABTCForm.value++;
+            missingFields.push('ats_num');
+        }
 
         // Check sites for vaccinations
-        if (patientStore.details.ExternalCauseOfInjury.pvrv === 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv_site_4 !== 'Y') requiredCountABTCForm.value++;
-        if (patientStore.details.ExternalCauseOfInjury.pcec === 'Y' && patientStore.details.ExternalCauseOfInjury.pcec_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pcec_site_4 !== 'Y') requiredCountABTCForm.value++;
+        if (patientStore.details.ExternalCauseOfInjury.pvrv === 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pvrv_site_4 !== 'Y') {
+            requiredCountABTCForm.value++;
+            missingFields.push('pvrv_site');
+        }
+        if (patientStore.details.ExternalCauseOfInjury.pcec === 'Y' && patientStore.details.ExternalCauseOfInjury.pcec_site_2 !== 'Y' && patientStore.details.ExternalCauseOfInjury.pcec_site_4 !== 'Y') {
+            requiredCountABTCForm.value++;
+            missingFields.push('pcec_site');
+        }
+
+        //check finding and schedule
+        if (patientStore.details.followUp.finding === '') {
+            requiredCountABTCForm.value++;
+            missingFields.push('finding');
+        }
+        if (patientStore.details.ABTC.immunization_schedule === '') {
+            requiredCountABTCForm.value++;
+            missingFields.push('immunization schedule');
+        }
+    }
+
+    // Log missing fields
+    if (missingFields.length > 0) {
+        console.log('Missing fields:', missingFields);
     }
 };
 
@@ -319,7 +352,7 @@ watch(customizedDetails, (newValue) => {
     patientStore.header.final_doctor_details = newValue;
 });
 watch(
-    () => [patientStore.details.ExternalCauseOfInjury],
+    () => [patientStore.details.ExternalCauseOfInjury, patientStore.details.followUp, patientStore.details.ABTC.immunization_schedule],
     () => {
         updateRequiredFieldCountForBite();
     },
@@ -353,26 +386,65 @@ watch(
 watch(
     () => [patientStore.details.ABTC, patientStore.details.followUp],
     () => {
+        if (patientStore.progressionDay !== '0') {
+            if (patientStore.type_prophylaxis === 'PRE-EXPOSURE') {
+                requiredCountFollowUp.value = 3;
+                const requiredFields = [
+                    { key: 'complaints', value: patientStore.details.followUp.complaints, required: true },
+                    { key: 'adverse_reaction', value: patientStore.details.followUp.adverse_reaction, required: true },
+                    { key: 'findings', value: patientStore.details.followUp.finding, required: true },
+                    { key: 'immunization schedule', value: patientStore.details.ABTC.immunization_schedule, required: true }
+                ];
+
+                const missingFields = requiredFields.filter((field) => field.required && !field.value).map((field) => field.key);
+
+                requiredCountFollowUp.value = missingFields.length;
+
+                console.log('Missing required follow-up fields:', missingFields);
+            } else {
+                const requiredFields = [
+                    // { key: 'immunization_schedule', value: patientStore.details.followUp.immunization_schedule, required: true },
+                    // { key: 'finding', value: patientStore.details.followUp.finding, required: true },
+                    { key: 'tenderness', value: patientStore.details.followUp.tenderness, required: true },
+                    { key: 'discharge', value: patientStore.details.followUp.discharge, required: true },
+                    { key: 'erythema', value: patientStore.details.followUp.erythema, required: true },
+                    { key: 'hematoma', value: patientStore.details.followUp.hematoma, required: true },
+                    { key: 'complaints', value: patientStore.details.followUp.complaints, required: true },
+                    { key: 'adverse_reaction', value: patientStore.details.followUp.adverse_reaction, required: true },
+                    { key: 'biting', value: patientStore.details.followUp.biting, required: true },
+                    { key: 'wound_description', value: patientStore.details.followUp.wound_description, required: true },
+                    { key: 'wound_descriptionOthers', value: patientStore.details.followUp.wound_descriptionOthers, required: patientStore.details.followUp.wound_description === 'OTHERS' },
+                    { key: 'discharge_sp', value: patientStore.details.followUp.discharge_sp, required: patientStore.details.followUp.discharge === 'OTHERS' }
+                ];
+
+                const missingFields = requiredFields.filter((field) => field.required && !field.value).map((field) => field.key);
+
+                requiredCountFollowUp.value = missingFields.length;
+
+                console.log('Missing required follow-up fields:', missingFields);
+            }
+        }
+    },
+    { deep: true }
+);
+
+watch(
+    () => [patientStore.details.preAdmissionData, patientStore.details.generalData, patientStore.details.hospitalFacilityData],
+    () => {
         const requiredFields = [
-            // { key: 'immunization_schedule', value: patientStore.details.followUp.immunization_schedule, required: true },
-            // { key: 'finding', value: patientStore.details.followUp.finding, required: true },
-            { key: 'tenderness', value: patientStore.details.followUp.tenderness, required: true },
-            { key: 'discharge', value: patientStore.details.followUp.discharge, required: true },
-            { key: 'erythema', value: patientStore.details.followUp.erythema, required: true },
-            { key: 'hematoma', value: patientStore.details.followUp.hematoma, required: true },
-            { key: 'complaints', value: patientStore.details.followUp.complaints, required: true },
-            { key: 'adverse_reaction', value: patientStore.details.followUp.adverse_reaction, required: true },
-            { key: 'biting', value: patientStore.details.followUp.biting, required: true },
-            { key: 'wound_description', value: patientStore.details.followUp.wound_description, required: true },
-            { key: 'wound_descriptionOthers', value: patientStore.details.followUp.wound_descriptionOthers, required: patientStore.details.followUp.wound_description === 'OTHERS' },
-            { key: 'discharge_sp', value: patientStore.details.followUp.discharge_sp, required: patientStore.details.followUp.discharge === 'OTHERS' }
+            { value: patientStore.details.preAdmissionData.inj_intent_code, required: true },
+            { value: patientStore.details.generalData.doctor_injtme, required: true },
+            // { value: patientStore.details.generalData.plc_regcode, required: true },
+            // { value: patientStore.details.generalData.plc_provcode, required: true },
+            { value: patientStore.details.generalData.plc_ctycode, required: true },
+            { value: patientStore.details.hospitalFacilityData.status_code, required: true },
+            { value: patientStore.details.hospitalFacilityData.mode_transport_code, required: true },
+            { value: patientStore.details.hospitalFacilityData.coord_uncoord, required: true },
+            { value: patientStore.details.hospitalFacilityData.trans_ref || patientStore.details.hospitalFacilityData.trans_ref, required: patientStore.details.hospitalFacilityData.coord_uncoord === 'COORDINATED' },
+            { value: patientStore.details.hospitalFacilityData.ref_physician, required: patientStore.details.hospitalFacilityData.trans_ref || patientStore.details.hospitalFacilityData.trans_ref !== '' },
+            { value: patientStore.details.hospitalFacilityData.ref_hosp_code_sp, required: patientStore.details.hospitalFacilityData.trans_ref || patientStore.details.hospitalFacilityData.trans_ref !== '' }
         ];
-
-        const missingFields = requiredFields.filter((field) => field.required && !field.value).map((field) => field.key);
-
-        requiredCountFollowUp.value = missingFields.length;
-
-        console.log('Missing required follow-up fields:', missingFields);
+        requiredCountGeneralData.value = requiredFields.filter((field) => field.required && !field.value).length;
     },
     { deep: true }
 );
@@ -380,6 +452,7 @@ watch(
 const width = ref(window.innerWidth);
 const height = ref(window.innerHeight);
 const size = ref(35);
+
 watch(width, (newWidth) => {
     size.value = newWidth < 1900 ? 0 : 35;
 });
@@ -390,6 +463,10 @@ const onResize = () => {
 window.addEventListener('resize', onResize);
 onMounted(async () => {
     await patientDataIsLoaded();
+
+    if (patientStore.type_prophylaxis === 'PRE-EXPOSURE') {
+        requiredCountFollowUp.value = 3;
+    }
     // console.log('mountedhit');
     // console.log(patientStore.progressionDay);
     patientStore.details.ExternalCauseOfInjury.ext_bite = 'Y';
@@ -434,7 +511,7 @@ onUnmounted(() => {
                                             <i v-else class="pi pi-file-edit" style="font-size: 2rem" />
                                         </span>
                                     </template>
-                                    <NewGeneralData @update:requiredCountGeneralData="updateRequiredCountGeneralData" />
+                                    <NewGeneralData />
                                 </AccordionTab>
                                 <AccordionTab v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }"
                                     ><template #header>
@@ -457,7 +534,7 @@ onUnmounted(() => {
                                     <BiteForm />
                                 </AccordionTab>
 
-                                <AccordionTab v-if="patientStore.progressionDay !== '0'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
+                                <!-- <AccordionTab v-if="patientStore.progressionDay !== '0'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
                                     <template #header>
                                         <span class="flex align-items-center gap-2 w-full">
                                             <span style="color: #000080" class="font-bold white-space-nowrap">FOLLOW-UP FORM</span>
@@ -466,8 +543,8 @@ onUnmounted(() => {
                                         </span>
                                     </template>
                                     <FollowUpForm />
-                                    <!-- <NewGeneralData @update:requiredCountGeneralData="updateRequiredCountGeneralData" /> -->
-                                </AccordionTab>
+                                    
+                                </AccordionTab> -->
                             </Accordion>
                         </div>
 

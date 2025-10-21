@@ -354,7 +354,7 @@ const confirmSaves = async () => {
                 patientStore.details.ExternalCauseOfInjury.allergies = 'NONE';
             }
             if (patientStore.details.ExternalCauseOfInjury.adverseReaction === '') {
-                patientStore.detail.ExternalCauseOfInjury.adverseReaction = 'NONE';
+                patientStore.details.ExternalCauseOfInjury.adverseReaction = 'NONE';
             }
         }
         const validationRules = createValidationRules();
