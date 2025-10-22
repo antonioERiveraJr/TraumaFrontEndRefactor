@@ -17,6 +17,7 @@ const monthYear = ref(null);
 const completeDate = ref(null);
 const lastTetanusDoseYear = ref(null);
 const lastTetanusDoseMonthYear = ref(null);
+const boosterRegimenOption = ['1-DAY REGIMEN', '2-DAY REGIMEN'];
 const immunizationOption = ['PRIMARY REGIMEN', 'BOOSTER'];
 const lastTetanusDoseCompleteDate = ref(null);
 const patientStore = usePatientStore();
@@ -520,7 +521,7 @@ watch(
                     ? 'card custom-shadow mt-3 relative'
                     : 'card mt-3'
             "
-            style="width: 100%"
+            style="width: 100%;"
         >
             <h6 class="flex justify-content-center mb-5 font-bold">VACCINE TO BE GIVEN ( {{ patientStore.type_prophylaxis }} )</h6>
 
@@ -770,7 +771,7 @@ watch(
                             <div style="width: 8%"></div>
                             <div style="width: 8%"></div>
                         </div>
-                        <div class="grid grid-cols-4 gap-4 justify-content-evenly mt-3">
+                        <div class="grid grid-cols-4 gap-4 justify-content-evenly">
                             <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
                                 <Transition name="slide-fade" mode="out-in">
                                     <div v-if="patientStore.details.ABTC.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">

@@ -46,10 +46,10 @@ import InputTextCheckBox from './components/custom/InputTextCheckBox.vue';
 import InputTextCheckBoxNew from './components/custom/InputTextCheckBoxNew.vue';
 import SaveBackRemovePanelButton from './components/custom/SaveBackRemovePanelButton.vue';
 import NOIPOIDOITOI from './components/app/injury/details/NOIPOIDOITOI.vue';
-
+// import { DotLottieVue } from '@lottiefiles/dotlottie-vue'
 import PrimeVue from 'primevue/config';
 import AutoComplete from 'primevue/autocomplete';
-import Accordion from 'primevue/accordion';
+import Accordion from 'primevue/accordion';  
 import AccordionTab from 'primevue/accordiontab';
 import Avatar from 'primevue/avatar';
 // import AvatarGroup from 'primevue/avatargroup';
@@ -153,6 +153,7 @@ import resetStore from './store/plugins/reset-store';
 
 import '@/assets/styles.scss';
 import '@/assets/myCSS.css';
+import Vue3Lottie from 'vue3-lottie';
 
 // import Vuelidate from 'vuelidate';
 
@@ -166,6 +167,7 @@ const pinia = createPinia();
 pinia.use(resetStore);
 
 app.use(pinia);
+app.use(Vue3Lottie);
 app.use(router);
 app.use(PrimeVue, { ripple: true });
 app.use(ToastService);
@@ -173,14 +175,14 @@ app.use(DialogService);
 app.use(ConfirmationService);
 // app.use(Vuelidate);
 
+
 app.directive('tooltip', Tooltip);
 app.directive('badge', BadgeDirective);
 app.directive('ripple', Ripple);
 app.directive('styleclass', StyleClass);
 
 app.component('CodeHighlight', CodeHighlight);
-app.component('BlockViewer', BlockViewer);
-
+app.component('BlockViewer', BlockViewer); 
 app.component('InjuryList', InjuryList);
 // app.component('InjuryPatient', InjuryPatient);
 app.component('LoadingAnim', LoadingAnim);
@@ -194,7 +196,7 @@ app.component('LoadingAnim', LoadingAnim);
 app.component('InputTextCheckBox', InputTextCheckBox);
 
 app.component('SaveBackRemovePanelButton', SaveBackRemovePanelButton);
-
+// app.component('DotLottieVue', DotLottieVue);
 app.component('InputTextCheckBoxNew', InputTextCheckBoxNew);
 app.component('NOIPOIDOITOI', NOIPOIDOITOI);
 // app.component('DatePicker', DatePicker); 

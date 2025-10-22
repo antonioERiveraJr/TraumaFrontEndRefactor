@@ -40,6 +40,23 @@ export default class InjuryService {
         }
     }
 
+    async getPatientABTCLog(hpercode) {
+        try {
+            const response = await axios.get('/getPatientABTCLog', {
+                params: {
+                    hpercode: hpercode
+                },
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                }
+            });
+            return response.data;
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    }
+
     async getUnfinishedTSSForms() {
         try {
             const response = await axios.get('/getUnfinishedTSSForms', {

@@ -7,6 +7,8 @@ import { useUserStore } from '../../../store/general/UserStore';
 import InjuryService from '../../../service/InjuryService';
 import ABTCForm from '../../../components/app/injury/opd/ABTCForm.vue';
 import ProgressionDay from '../../../components/app/injury/opd/progressionDay.vue';
+import { Vue3Lottie } from 'vue3-lottie';
+import test from '../../../assets/images/ABTCloading.json';
 
 const patientStore = usePatientStore();
 const validations = createValidationRules();
@@ -17,7 +19,10 @@ const typesOfProphylaxis = ['PRE-EXPOSURE', 'POST-EXPOSURE'];
 const enccode = ref();
 const user = useUserStore();
 const checkPatientTSSRecord = ref();
+const caseLogDialog = ref(false);
+const activeAccordionIndex = ref(0);
 const patientData = ref(null);
+const groupedCases = ref([]);
 const injuryService = new InjuryService();
 provide('v$', v$);
 
@@ -37,12 +42,63 @@ const handleHover = (panel) => {
         }
     }
 };
+// Date formatting function
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return date.toLocaleDateString(undefined, options).replace(/\//g, '-'); // Replace '/' with '-' for MM-DD-YYYY format
+};
 
 const handleMouseLeave = () => {
     if (patientStore.progressionDay !== '' && patientStore.type_prophylaxis !== '' && patientStore.type_prophylaxis !== undefined && patientStore.type_prophylaxis !== null) {
         panel1Width.value = '3%';
         panel2Width.value = '95%';
     }
+};
+
+const openCaseDialogLog = async () => {
+    caseLogDialog.value = true;
+    console.log('hpercode; ', patientStore.header.hpercode);
+    const patientsABTCLog = await injuryService.getPatientABTCLog(patientStore.header.hpercode);
+    console.log('patientsABTCLog: ', patientsABTCLog);
+    groupPatientData(patientsABTCLog);
+};
+
+const groupPatientData = (patientsABTCLog) => {
+    const grouped = patientsABTCLog.reduce((acc, curr) => {
+        const lockCase = curr.lockCase.trim();
+        const caseData = {
+            vaccineday: curr.vaccineday,
+            prophylaxis: curr.prophylaxis,
+            tStamp: curr.tStamp,
+            status: curr.status // Capture the status
+        };
+
+        if (!acc[lockCase]) {
+            acc[lockCase] = { lockCase, items: [caseData] }; // Store case data
+        } else {
+            acc[lockCase].items.push(caseData); // Add to existing lockCase
+        }
+        return acc;
+    }, {});
+
+    // Update the status based on the conditions
+    for (const key in grouped) {
+        const caseGroup = grouped[key];
+        const itemCount = caseGroup.items.length;
+        const latestProphylaxis = caseGroup.items[itemCount - 1].prophylaxis;
+
+        if (latestProphylaxis === 'POST-EXPOSURE' && itemCount >= 3) {
+            caseGroup.status = 'Finished';
+        } else if (latestProphylaxis === 'PRE-EXPOSURE' && itemCount >= 2) {
+            caseGroup.status = 'Finished';
+        } else {
+            caseGroup.status = 'Unfinished';
+        }
+    }
+
+    groupedCases.value = Object.values(grouped); // Set the grouped cases
 };
 
 onMounted(async () => {
@@ -195,14 +251,20 @@ watch(
                     <!-- <SplitterPanel v-if="patientStore.progressionDay === '' || fetchingPatientData" style="height: 100%" :size="100"> -->
                     <SplitterPanel v-if="patientStore.progressionDay === '' || patientStore.loadSignal === true" style="height: 100%" :size="100">
                         <Splitter layout="vertical">
-                            <SplitterPanel style="background-color: #e5e5e5" :size="5" class="flex justify-content-center sticky">
-                                <h1 class="font-bold">{{ patientStore.header.patname }}</h1>
-                                <h5 class="text-blue-800">
-                                    <strong>{{ patientStore.header.hpercode }}</strong>
-                                </h5>
+                            <SplitterPanel :size="5" class="flex sticky">
+                                <div class="flex justify-content-center" style="width: 95%">
+                                    <h1 class="font-bold">{{ patientStore.header.patname }}</h1>
+                                    <h5 class="text-blue-800">
+                                        <strong>{{ patientStore.header.hpercode }}</strong>
+                                    </h5>
+                                </div>
+
+                                <i class="flex justify-content-center pi pi-bars" @click="openCaseDialogLog()" style="width: 5%; cursor: pointer"></i>
                             </SplitterPanel>
                             <SplitterPanel class="flex" :size="95">
-                                <img class="flex justify-content-center" src="@/assets/images/ABTCloader.gif" alt="Loading..." />
+                                <!-- {{ test }} -->
+                                <!-- <img class="flex justify-content-center" src="@/assets/images/ABTCloader.gif" alt="Loading..." /> -->
+                                <Vue3Lottie :animationData="test" :height="200" :width="200" />
                             </SplitterPanel>
                         </Splitter>
                     </SplitterPanel>
@@ -210,8 +272,24 @@ watch(
                 </div>
             </div>
         </div>
+        <Dialog v-model:visible="caseLogDialog" header="PATIENT's ABTC LOG" :style="{ width: '25rem' }" position="topright" :modal="true" :draggable="false">
+            <Accordion v-model:activeIndex="activeAccordionIndex">
+                <AccordionTab v-for="(caseGroup, index) in groupedCases" :key="index" :header="`${formatDate(caseGroup.lockCase)} - ${caseGroup.status}`">
+                    <div v-for="(caseItem, itemIndex) in caseGroup.items" :key="itemIndex">
+                        <p class="m-0">
+                            <strong>Vaccination Day:</strong> {{ caseItem.vaccineday }}<br />
+                            <strong>Prophylaxis:</strong> {{ caseItem.prophylaxis }}<br />
+                            <strong>Date:</strong> {{ formatDate(caseItem.tStamp) }}<br />
+                        </p>
+                        <!-- Add separator -->
+                        <hr v-if="itemIndex < caseGroup.items.length - 1" style="margin: 10px 0; border: 1px solid #ccc" />
+                    </div>
+                </AccordionTab>
+            </Accordion>
+        </Dialog>
     </div>
 </template>
+1
 
 <style scoped>
 .flex {

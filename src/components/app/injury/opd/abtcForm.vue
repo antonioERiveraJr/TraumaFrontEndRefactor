@@ -44,6 +44,8 @@ const province = ref();
 const city = ref();
 const latestEntry = ref();
 const barangay = ref();
+const caseLogDialog = ref(false);
+const groupedCases = ref([]);
 ref();
 const gcsScoreDetail = () => {
     if (patientStore.details.hospitalFacilityData.gcs_score > 12) {
@@ -56,6 +58,56 @@ const gcsScoreDetail = () => {
         return 'Severe';
     }
 };
+const openCaseDialogLog = async () => {
+    caseLogDialog.value = true;
+    console.log('hpercode; ', patientStore.header.hpercode);
+    const patientsABTCLog = await injuryService.getPatientABTCLog(patientStore.header.hpercode);
+    console.log('patientsABTCLog: ', patientsABTCLog);
+    groupPatientData(patientsABTCLog);
+};
+// Date formatting function
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return date.toLocaleDateString(undefined, options).replace(/\//g, '-'); // Replace '/' with '-' for MM-DD-YYYY format
+};
+const groupPatientData = (patientsABTCLog) => {
+    const grouped = patientsABTCLog.reduce((acc, curr) => {
+        const lockCase = curr.lockCase.trim();
+        const caseData = {
+            vaccineday: curr.vaccineday,
+            prophylaxis: curr.prophylaxis,
+            tStamp: curr.tStamp,
+            status: curr.status // Capture the status
+        };
+
+        if (!acc[lockCase]) {
+            acc[lockCase] = { lockCase, items: [caseData] }; // Store case data
+        } else {
+            acc[lockCase].items.push(caseData); // Add to existing lockCase
+        }
+        return acc;
+    }, {});
+
+    // Update the status based on the conditions
+    for (const key in grouped) {
+        const caseGroup = grouped[key];
+        const itemCount = caseGroup.items.length;
+        const latestProphylaxis = caseGroup.items[itemCount - 1].prophylaxis;
+
+        if (latestProphylaxis === 'POST-EXPOSURE' && itemCount >= 3) {
+            caseGroup.status = 'Finished';
+        } else if (latestProphylaxis === 'PRE-EXPOSURE' && itemCount >= 2) {
+            caseGroup.status = 'Finished';
+        } else {
+            caseGroup.status = 'Unfinished';
+        }
+    }
+
+    groupedCases.value = Object.values(grouped); // Set the grouped cases
+};
+
 const updateCustomizedDetails = (value) => {
     customizedDetails.value = value;
 };
@@ -489,11 +541,15 @@ onUnmounted(() => {
         <Splitter style="height: 100%">
             <SplitterPanel style="height: 100%" :size="100">
                 <Splitter layout="vertical" style="height: 100%">
-                    <SplitterPanel style="background-color: #e5e5e5" :size="5" class="flex justify-content-center sticky">
-                        <h1 class="font-bold">{{ patientStore.header.patname }}</h1>
-                        <h5 class="text-blue-800">
-                            <strong>{{ patientStore.header.hpercode }}</strong>
-                        </h5>
+                    <SplitterPanel :size="5" class="flex sticky">
+                        <div class="flex justify-content-center" style="width: 95%">
+                            <h1 class="font-bold">{{ patientStore.header.patname }}</h1>
+                            <h5 class="text-blue-800">
+                                <strong>{{ patientStore.header.hpercode }}</strong>
+                            </h5>
+                        </div>
+
+                        <i class="flex justify-content-center mt-4 pi pi-bars" @click="openCaseDialogLog()" style="width: 5%; cursor: pointer"></i>
                     </SplitterPanel>
                     <SplitterPanel :size="95">
                         <!-- <div v-if="patientStore.patientTSSRecord?.data?.[0] && patientStore.progressionDay !== '0'"> -->
@@ -774,6 +830,22 @@ onUnmounted(() => {
             @update:saving="updateSaving"
         />
     </div>
+    <Dialog v-model:visible="caseLogDialog" header="PATIENT's ABTC LOG" :style="{ width: '25rem' }" position="topright" :modal="true" :draggable="false">
+        <Accordion :activeIndex="0">
+            <!-- <h1 v-if="!groupedCases">no data</h1> -->
+            <AccordionTab v-for="(caseGroup, index) in groupedCases" :key="index" :header="`${formatDate(caseGroup.lockCase)} - ${caseGroup.status}`">
+                <div v-for="(caseItem, itemIndex) in caseGroup.items" :key="itemIndex">
+                    <p class="m-0">
+                        <strong>Vaccination Day:</strong> {{ caseItem.vaccineday }}<br />
+                        <strong>Prophylaxis:</strong> {{ caseItem.prophylaxis }}<br />
+                        <strong>Date:</strong> {{ formatDate(caseItem.tStamp) }}<br />
+                    </p>
+                    <!-- Add separator -->
+                    <hr v-if="itemIndex < caseGroup.items.length - 1" style="margin: 10px 0; border: 1px solid #ccc" />
+                </div>
+            </AccordionTab>
+        </Accordion>
+    </Dialog>
 </template>
 <style>
 .bg {
