@@ -20,6 +20,7 @@ const lastTetanusDoseMonthYear = ref(null);
 const boosterRegimenOption = ['1-DAY REGIMEN', '2-DAY REGIMEN'];
 const immunizationOption = ['PRIMARY REGIMEN', 'BOOSTER'];
 const lastTetanusDoseCompleteDate = ref(null);
+const positive_negative_option = ['+', '-'];
 const patientStore = usePatientStore();
 // const typesOfProphylaxis = ['PRE-EXPOSURE', 'POST-EXPOSURE'];
 
@@ -69,7 +70,6 @@ const biteDegreeOptions = [
     { label: 'Category level II', value: 'II' },
     { label: 'Category level III', value: 'III' }
 ];
-
 
 function handleClick() {
     patientStore.details.ABTC.immunization_schedule = '';
@@ -154,6 +154,17 @@ watch(
         generateText();
     },
     { deep: true }
+);
+
+watch(
+    () => patientStore.details.ABTC.skintest,
+    (newValue) => {
+        if (newValue === '+') {
+            patientStore.details.ABTC.hrig = 'Y';
+        } else {
+            patientStore.details.ABTC.hrig = 'N';
+        }
+    }
 );
 </script>
 <template>
@@ -497,6 +508,7 @@ watch(
                             style="text-transform: uppercase; width: 100%"
                             placeholder="Details....."
                         />
+                        {{ patientStore.details.ABTC.ats }}
                     </div>
                 </div>
             </div>
@@ -521,11 +533,11 @@ watch(
                     ? 'card custom-shadow mt-3 relative'
                     : 'card mt-3'
             "
-            style="width: 100%;"
+            style="width: 100%"
         >
             <h6 class="flex justify-content-center mb-5 font-bold">VACCINE TO BE GIVEN ( {{ patientStore.type_prophylaxis }} )</h6>
 
-            <div class="grid grid-cols-4 gap-4 flex justify-content-evenly">
+            <!-- <div class="grid grid-cols-4 gap-4 flex justify-content-evenly">
                 <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="patientStore.details.ABTC.pvrv" label="PVRV" />
                 <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="patientStore.details.ABTC.pcec" label="PCEC" />
                 <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ABTC.hrig" label="HRIG" />
@@ -556,8 +568,7 @@ watch(
                         <div v-if="patientStore.details.ABTC.hrig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
                             <div class="field">
                                 <span class="p-float-label">
-                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="hrig" v-model="patientStore.details.ABTC.hrig_num" />
-                                    <!-- <label for="hrig">Amount to be Given</label> -->
+                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="hrig" v-model="patientStore.details.ABTC.hrig_num" />          
                                 </span>
                             </div>
                         </div>
@@ -569,7 +580,6 @@ watch(
                             <div class="field">
                                 <span class="p-float-label">
                                     <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ABTC.erig_num" />
-                                    <!-- <label for="erig">Amount to be Given</label> -->
                                 </span>
                             </div>
                         </div>
@@ -632,7 +642,190 @@ watch(
                 </div>
                 <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
                     <Transition name="slide-fade" mode="out-in">
-                        <div v-if="PatientStore.details.ABTC.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                        <div v-if="patientStore.details.ABTC.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_2" label="2-sites" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_4" label="4-sites" />
+                        </div>
+                    </Transition>
+                </div>
+                <div style="width: 10%"></div>
+                <div style="width: 10%"></div>
+                <div style="width: 10%"></div>
+                <div style="width: 8%"></div>
+                <div style="width: 8%"></div>
+            </div> -->
+
+            <div class="grid grid-cols-4 gap-4 flex justify-content-evenly">
+                <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="patientStore.details.ABTC.pvrv" label="PVRV" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="patientStore.details.ABTC.pcec" label="PCEC" />
+                <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ABTC.hrig" label="HRIG" />
+                <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ABTC.erig" label="ERIG" />
+                <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ABTC.ats" label="ATS" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="patientStore.details.ABTC.tt" label="TT" />
+                <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="patientStore.details.ABTC.vaccine_none" label="NONE" />
+            </div>
+            <div class="grid grid-cols-4 gap-4 justify-content-evenly mt-3">
+                <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="patientStore.details.ABTC.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_1_id" label="1-site ID" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_1_im" label="1-site IM" />
+                        </div>
+                    </Transition>
+                </div>
+                <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="patientStore.details.ABTC.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_1_id" label="1-site ID" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_1_im" label="1-site IM" />
+                        </div>
+                    </Transition>
+                </div>
+                <div style="width: 10%">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="patientStore.details.ABTC.hrig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                            <div class="field">
+                                <span class="p-float-label">
+                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="hrig" v-model="patientStore.details.ABTC.hrig_num" />
+                                </span>
+                            </div>
+                        </div>
+                    </Transition>
+                </div>
+                <div style="width: 10%">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="patientStore.details.ABTC.erig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                            <div style="width: 100%">
+                                <label for="Skintest" class="text-black text-xs" style="color: #000080"><i>Skin Test </i></label>
+                                <SelectButton
+                                    v-model="patientStore.details.ABTC.skintest"
+                                    :options="positive_negative_option"
+                                    aria-labelledby="basic"
+                                    :pt="{
+                                        root: {
+                                            style: { width: '100%' }
+                                        },
+                                        button: {
+                                            style: {
+                                                width: '49%'
+                                            }
+                                        }
+                                    }"
+                                />
+                            </div>
+                        </div>
+                    </Transition>
+                </div>
+                <div style="width: 10%">
+                    <Transition name="slide-fade" mode="out-in">
+                        <!-- <div v-if="patientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                            <div class="field" style="width: 100%">
+                                <span class="p-float-label">
+                                    <Dropdown
+                                        style="width: 100%"
+                                        v-model="patientStore.details.ABTC.ats_num"
+                                        :options="[
+                                            { label: '1500 ui', value: '1500' },
+                                            { label: '3000 ui', value: '3000' },
+                                            { label: '4500 ui', value: '4500' },
+                                            { label: '6000 ui', value: '6000' }
+                                        ]"
+                                        optionLabel="label"
+                                        optionValue="value"
+                                    />
+                                    <label for="ats">Amount to be Given</label>
+                                </span>
+                            </div>
+                        </div> -->
+                        <div v-if="patientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                            <div style="width: 100%">
+                                <label for="Skintest" class="text-black text-xs" style="color: #000080"><i>Skin Test </i></label>
+                                <SelectButton
+                                    v-model="patientStore.details.ABTC.skintest"
+                                    :options="positive_negative_option"
+                                    aria-labelledby="basic"
+                                    :pt="{
+                                        root: {
+                                            style: { width: '100%' }
+                                        },
+                                        button: {
+                                            style: {
+                                                width: '49%'
+                                            }
+                                        }
+                                    }"
+                                />
+                            </div>
+                        </div>
+                    </Transition>
+                </div>
+                <div style="width: 8%"></div>
+                <div style="width: 8%"></div>
+            </div>
+            <div class="grid grid-cols-4 gap-4 justify-content-evenly mt-3">
+                <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }"></div>
+                <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }"></div>
+                <div style="width: 10%"></div>
+                <div style="width: 10%">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="patientStore.details.ABTC.erig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                            <Transition name="slide-fade" mode="out-in">
+                                <div class="field" v-if="patientStore.details.ABTC.skintest === '-'">
+                                    <span class="p-float-label">
+                                        <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ABTC.erig_num" />
+                                    </span>
+                                </div>
+                            </Transition>
+                        </div>
+                    </Transition>
+                </div>
+                <div style="width: 10%">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="patientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                            <Transition name="slide-fade" mode="out-in">
+                                <div class="field" v-if="patientStore.details.ABTC.skintest === '-'">
+                                    <!-- <span class="p-float-label">
+                                        <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ABTC.ats_num" />
+                                    </span> -->
+                                    <div v-if="patientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                                        <div class="field" style="width: 100%">
+                                            <span class="p-float-label">
+                                                <Dropdown
+                                                    style="width: 100%"
+                                                    v-model="patientStore.details.ABTC.ats_num"
+                                                    :options="[
+                                                        { label: '1500 ui', value: '1500' },
+                                                        { label: '3000 ui', value: '3000' },
+                                                        { label: '4500 ui', value: '4500' },
+                                                        { label: '6000 ui', value: '6000' }
+                                                    ]"
+                                                    optionLabel="label"
+                                                    optionValue="value"
+                                                />
+                                                <label for="ats">Amount to be Given</label>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Transition>
+                        </div>
+                    </Transition>
+                </div>
+                <div style="width: 8%"></div>
+                <div style="width: 8%"></div>
+            </div>
+            <div class="grid grid-cols-4 gap-4 justify-content-evenly mt-3">
+                <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="patientStore.details.ABTC.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_2" label="2-sites" />
+                            <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_4" label="4-sites" />
+                        </div>
+                    </Transition>
+                </div>
+                <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
+                    <Transition name="slide-fade" mode="out-in">
+                        <div v-if="patientStore.details.ABTC.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
                             <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_2" label="2-sites" />
                             <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_4" label="4-sites" />
                         </div>
@@ -727,7 +920,177 @@ watch(
                                         <div class="field">
                                             <span class="p-float-label">
                                                 <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="hrig" v-model="patientStore.details.ABTC.hrig_num" />
-                                                <!-- <label for="hrig">Amount to be Given</label> -->
+                                            </span>
+                                        </div>
+                                    </div>
+                                </Transition>
+                            </div>
+                            <div style="width: 10%">
+                                <Transition name="slide-fade" mode="out-in">
+                                    <div v-if="patientStore.details.ABTC.erig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                                        <div style="width: 100%">
+                                            <label for="Skintest" class="text-black text-xs" style="color: #000080"><i>Skin Test </i></label>
+                                            <SelectButton
+                                                v-model="patientStore.details.ABTC.skintest"
+                                                :options="positive_negative_option"
+                                                aria-labelledby="basic"
+                                                :pt="{
+                                                    root: {
+                                                        style: { width: '100%' }
+                                                    },
+                                                    button: {
+                                                        style: {
+                                                            width: '49%'
+                                                        }
+                                                    }
+                                                }"
+                                            />
+                                        </div>
+                                    </div>
+                                </Transition>
+                            </div>
+                            <div style="width: 10%">
+                                <Transition name="slide-fade" mode="out-in">
+                                    <!-- <div v-if="patientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                                        <div class="field" style="width: 100%">
+                                            <span class="p-float-label">
+                                                <Dropdown
+                                                    style="width: 100%"
+                                                    v-model="patientStore.details.ABTC.ats_num"
+                                                    :options="[
+                                                        { label: '1500 ui', value: '1500' },
+                                                        { label: '3000 ui', value: '3000' },
+                                                        { label: '4500 ui', value: '4500' },
+                                                        { label: '6000 ui', value: '6000' }
+                                                    ]"
+                                                    optionLabel="label"
+                                                    optionValue="value"
+                                                />
+                                                <label for="ats">Amount to be Given</label>
+                                            </span>
+                                        </div>
+                                    </div> -->
+                                    <div v-if="patientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                                        <div style="width: 100%">
+                                            <label for="Skintest" class="text-black text-xs" style="color: #000080"><i>Skin Test </i></label>
+                                            <SelectButton
+                                                v-model="patientStore.details.ABTC.skintest"
+                                                :options="positive_negative_option"
+                                                aria-labelledby="basic"
+                                                :pt="{
+                                                    root: {
+                                                        style: { width: '100%' }
+                                                    },
+                                                    button: {
+                                                        style: {
+                                                            width: '49%'
+                                                        }
+                                                    }
+                                                }"
+                                            />
+                                        </div>
+                                    </div>
+                                </Transition>
+                            </div>
+                            <div style="width: 8%"></div>
+                            <div style="width: 8%"></div>
+                        </div>
+                        <div class="grid grid-cols-4 gap-4 justify-content-evenly mt-3">
+                            <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }"></div>
+                            <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }"></div>
+                            <div style="width: 10%"></div>
+                            <div style="width: 10%">
+                                <Transition name="slide-fade" mode="out-in">
+                                    <div v-if="patientStore.details.ABTC.erig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                                        <Transition name="slide-fade" mode="out-in">
+                                            <div class="field" v-if="patientStore.details.ABTC.skintest === '-'">
+                                                <span class="p-float-label">
+                                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ABTC.erig_num" />
+                                                </span>
+                                            </div>
+                                        </Transition>
+                                    </div>
+                                </Transition>
+                            </div>
+                            <div style="width: 10%">
+                                <div v-if="patientStore.details.ABTC.ats === 'Y' && patientStore.details.ABTC.skintest === '-'" style="width: 100%" class="flex justify-content-evenly">
+                                    <div class="field" style="width: 100%">
+                                        <span class="p-float-label">
+                                            <Dropdown
+                                                style="width: 100%"
+                                                v-model="patientStore.details.ABTC.ats_num"
+                                                :options="[
+                                                    { label: '1500 ui', value: '1500' },
+                                                    { label: '3000 ui', value: '3000' },
+                                                    { label: '4500 ui', value: '4500' },
+                                                    { label: '6000 ui', value: '6000' }
+                                                ]"
+                                                optionLabel="label"
+                                                optionValue="value"
+                                            />
+                                            <label for="ats">Amount to be Given</label>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="width: 8%"></div>
+                            <div style="width: 8%"></div>
+                        </div>
+                        <div class="grid grid-cols-4 gap-4 justify-content-evenly mt-3">
+                            <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
+                                <Transition name="slide-fade" mode="out-in">
+                                    <div v-if="patientStore.details.ABTC.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                                        <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_2" label="2-sites" />
+                                        <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_4" label="4-sites" />
+                                    </div>
+                                </Transition>
+                            </div>
+                            <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
+                                <Transition name="slide-fade" mode="out-in">
+                                    <div v-if="patientStore.details.ABTC.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                                        <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_2" label="2-sites" />
+                                        <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_4" label="4-sites" />
+                                    </div>
+                                </Transition>
+                            </div>
+                            <div style="width: 10%"></div>
+                            <div style="width: 10%"></div>
+                            <div style="width: 10%"></div>
+                            <div style="width: 8%"></div>
+                            <div style="width: 8%"></div>
+                        </div>
+                        <!-- <div class="grid grid-cols-4 gap-4 flex justify-content-evenly">
+                            <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="patientStore.details.ABTC.pvrv" label="PVRV" />
+                            <CheckBoxMultiple class="justify-content-center" style="width: 13%" v-model="patientStore.details.ABTC.pcec" label="PCEC" />
+                            <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ABTC.hrig" label="HRIG" />
+                            <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ABTC.erig" label="ERIG" />
+                            <CheckBoxMultiple v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" style="width: 10%" v-model="patientStore.details.ABTC.ats" label="ATS" />
+                            <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="patientStore.details.ABTC.tt" label="TT" />
+                            <CheckBoxMultiple class="justify-content-center" style="width: 8%" v-model="patientStore.details.ABTC.vaccine_none" label="NONE" />
+                        </div>
+                        <div class="grid grid-cols-4 gap-4 justify-content-evenly mt-3">
+                            <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
+                                <Transition name="slide-fade" mode="out-in">
+                                    <div v-if="patientStore.details.ABTC.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                                        <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_1_id" label="1-site ID" />
+                                        <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_1_im" label="1-site IM" />
+                                    </div>
+                                </Transition>
+                            </div>
+                            <div :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '25%' : '13%' }">
+                                <Transition name="slide-fade" mode="out-in">
+                                    <div v-if="patientStore.details.ABTC.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mb-2">
+                                        <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_1_id" label="1-site ID" />
+                                        <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_1_im" label="1-site IM" />
+                                    </div>
+                                </Transition>
+                            </div>
+                            <div style="width: 10%">
+                                <Transition name="slide-fade" mode="out-in">
+                                    <div v-if="patientStore.details.ABTC.hrig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                                        <div class="field">
+                                            <span class="p-float-label">
+                                                <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="hrig" v-model="patientStore.details.ABTC.hrig_num" />
                                             </span>
                                         </div>
                                     </div>
@@ -739,7 +1102,6 @@ watch(
                                         <div class="field">
                                             <span class="p-float-label">
                                                 <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ABTC.erig_num" />
-                                                <!-- <label for="erig">Amount to be Given</label> -->
                                             </span>
                                         </div>
                                     </div>
@@ -793,8 +1155,7 @@ watch(
                             <div style="width: 10%"></div>
                             <div style="width: 8%"></div>
                             <div style="width: 8%"></div>
-                        </div>
-                        <p></p>
+                        </div> -->
                     </div>
                 </div>
             </Fieldset>

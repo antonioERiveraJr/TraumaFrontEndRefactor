@@ -431,7 +431,7 @@ watch(
                         </div>
                         <div style="width: 10%">
                             <Transition name="slide-fade" mode="out-in">
-                                <div v-if="PatientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                                <!-- <div v-if="PatientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
                                     <div class="field" style="width: 100%">
                                         <span class="p-float-label">
                                             <Dropdown
@@ -448,6 +448,26 @@ watch(
                                             />
                                             <label for="ats">Amount to be Given</label>
                                         </span>
+                                    </div>
+                                </div> -->
+                                <div v-if="PatientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                                    <div style="width: 100%">
+                                        <label for="Skintest" class="text-black text-xs" style="color: #000080"><i>Skin Test </i></label>
+                                        <SelectButton
+                                            v-model="PatientStore.details.ABTC.skintest"
+                                            :options="positive_negative_option"
+                                            aria-labelledby="basic"
+                                            :pt="{
+                                                root: {
+                                                    style: { width: '100%' }
+                                                },
+                                                button: {
+                                                    style: {
+                                                        width: '49%'
+                                                    }
+                                                }
+                                            }"
+                                        />
                                     </div>
                                 </div>
                             </Transition>
@@ -511,7 +531,38 @@ watch(
                                 </div>
                             </Transition>
                         </div>
-                        <div style="width: 10%"></div>
+                        <div style="width: 10%">
+                            <Transition name="slide-fade" mode="out-in">
+                                <div v-if="PatientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                                    <Transition name="slide-fade" mode="out-in">
+                                        <div class="field" v-if="PatientStore.details.ABTC.skintest === '-'">
+                                            <!-- <span class="p-float-label">
+                                                <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="PatientStore.details.ABTC.ats_num" />
+                                            </span> -->
+                                            <div v-if="PatientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                                                <div class="field" style="width: 100%">
+                                                    <span class="p-float-label">
+                                                        <Dropdown
+                                                            style="width: 100%"
+                                                            v-model="PatientStore.details.ABTC.ats_num"
+                                                            :options="[
+                                                                { label: '1500 ui', value: '1500' },
+                                                                { label: '3000 ui', value: '3000' },
+                                                                { label: '4500 ui', value: '4500' },
+                                                                { label: '6000 ui', value: '6000' }
+                                                            ]"
+                                                            optionLabel="label"
+                                                            optionValue="value"
+                                                        />
+                                                        <label for="ats">Amount to be Given</label>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Transition>
+                                </div>
+                            </Transition>
+                        </div>
                         <div style="width: 8%"></div>
                         <div style="width: 8%"></div>
                     </div>

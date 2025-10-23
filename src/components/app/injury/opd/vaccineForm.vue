@@ -1,20 +1,20 @@
 <script setup>
 import { usePatientStore } from '../../../../store/injury/PatientStore';
 
-import CheckBoxMultiple from '../../../custom/checkBoxMultiple.vue';
+// import CheckBoxMultiple from '../../../custom/checkBoxMultiple.vue';
 const PatientStore = usePatientStore();
 
-const immunizationOption = ['PRIMARY REGIMEN', 'BOOSTER'];
-const boosterRegimenOption = ['1-DAY REGIMEN', '2-DAY REGIMEN'];
+// const immunizationOption = ['PRIMARY REGIMEN', 'BOOSTER'];
+// const boosterRegimenOption = ['1-DAY REGIMEN', '2-DAY REGIMEN'];
 const findingOption = ['ESSENTIALLY NORMAL PE FINDING', 'WITH FINDINGS'];
 const woundDescriptionOptions = ['HEALED', 'DRY', 'OTHERS'];
 const positive_negative_option = ['+', '-'];
-const hovering = '';
+// const hovering = '';
 
-function handleClick() {
-    PatientStore.details.ABTC.immunization_schedule = '';
-    PatientStore.details.ABTC.booster_regimen = '';
-}
+// function handleClick() {
+//     PatientStore.details.ABTC.immunization_schedule = '';
+//     PatientStore.details.ABTC.booster_regimen = '';
+// }
 </script>
 <template>
     <div style="width: 98%" class="ml-4">

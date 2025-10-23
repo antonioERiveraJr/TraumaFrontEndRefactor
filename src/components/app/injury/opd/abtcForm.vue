@@ -831,8 +831,7 @@ onUnmounted(() => {
         />
     </div>
     <Dialog v-model:visible="caseLogDialog" header="PATIENT's ABTC LOG" :style="{ width: '25rem' }" position="topright" :modal="true" :draggable="false">
-        <Accordion :activeIndex="0">
-            <!-- <h1 v-if="!groupedCases">no data</h1> -->
+        <Accordion :activeIndex="0"> 
             <AccordionTab v-for="(caseGroup, index) in groupedCases" :key="index" :header="`${formatDate(caseGroup.lockCase)} - ${caseGroup.status}`">
                 <div v-for="(caseItem, itemIndex) in caseGroup.items" :key="itemIndex">
                     <p class="m-0">

@@ -498,7 +498,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             wound_description_others: '',
             erythema: '',
             discharge: '',
-            dischare_sp: '',
+            discharge_sp: '',
             tenderness: '',
             hematoma: ''
         }
@@ -820,7 +820,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             wound_description_others: '',
             erythema: '',
             discharge: '',
-            dischare_sp: '',
+            discharge_sp: '',
             tenderness: '',
             hematoma: ''
         }
@@ -1422,7 +1422,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         details.value.followUp.wound_description = '';
         details.value.followUp.wound_description_others = '';
         details.value.followUp.erythema = '';
-        details.value.followUp.dischare = '';
+        details.value.followUp.discharge = '';
         details.value.followUp.tenderness = '';
         details.value.followUp.hematoma = '';
 
