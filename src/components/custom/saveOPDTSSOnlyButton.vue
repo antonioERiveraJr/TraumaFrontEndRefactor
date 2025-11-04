@@ -7,6 +7,7 @@ import useToastWaitingForFetch from '@/composables/useToastWaitingForFetch';
 import createValidationRules from '../../validation/ABTCValidation';
 import Swal from 'sweetalert2';
 import { useUserStore } from '../../store/general/UserStore';
+import { size } from 'lodash';
 const user = useUserStore();
 const toast = useToast();
 const emit = defineEmits(['update:saving', 'update:customizedObjectives', 'update:customizedDiagnosis', 'update:customizedDetails']);
@@ -391,6 +392,12 @@ const confirmSaves = async () => {
             showConfirmButton: false
         });
         return;
+    } else {
+        diag.value = patientStore.header.doctor_diagnosis;
+        det.value = patientStore.finalDoctorDetails;
+        obj.value = patientStore.header.doctor_objective;
+        plan.value = patientStore.doctor_plan;
+        confirmEMRDetails.value = true;
     }
     if (diag.value === '') {
         diag.value = patientStore.header.doctor_diagnosis;
@@ -445,63 +452,92 @@ const confirmSaves = async () => {
     //         }
     //     });
     // });
-    return new Promise((resolve, reject) => {
-        Swal.fire({
-            title: 'Important Information',
-            text: 'This will only change/update the TSS form and will not affect the data in the EMR.',
-            icon: 'info',
-            confirmButtonText: 'OK'
-        }).then(() => {
-            //set the values of det, obj, and diag to generated text
-            diag.value = patientStore.header.doctor_diagnosis;
-            det.value = patientStore.finalDoctorDetails;
-            obj.value = patientStore.header.doctor_objective;
-            plan.value = patientStore.doctor_plan;
-            confirmEMRDetails.value = true;
-            Swal.fire({
-                title: 'Do you want to save the changes on TSS Form only?',
-                text: 'This will only update the TSS; it will not reflect on the EMR.',
-                showDenyButton: true,
-                position: 'bottom',
-                confirmButtonText: 'Save',
-                denyButtonText: 'Cancel'
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    // Inform the user about the TSS change
-                    loader.value = true;
-                    emit('update:saving', true);
-                    try {
-                        if (patientStore.header.doctor_injtme) {
-                            patientStore.header.injtme = patientStore.header.doctor_injtme;
-                        }
-                        if (patientStore.finalDiagnosis) {
-                            patientStore.header.doctor_details = patientStore.finalDiagnosis;
-                        }
-                        await submitForm();
-                        await toOthers();
-                        patientStore.header.doctor_details += '\n' + patientStore.textFactorSafety;
 
-                        confirmEMRDetails.value = false;
-                        loader.value = false;
-                        emit('update:saving', false);
-                        patientStore.loadSignal = true;
-                        Swal.fire('Saved!', '', 'success');
-                        resolve();
-                        await new Promise((resolve) => setTimeout(resolve, 3000)); // Add delay of 3 seconds
-                        window.close();
-                    } catch (error) {
-                        reject(error);
-                    }
-                } else if (result.isDenied) {
-                    Swal.fire('Changes are not saved', '', 'info');
-                    confirmEMRDetails.value = false;
-                } else {
-                    console.log('saving cancelled');
-                    confirmEMRDetails.value = false;
-                }
-            });
-        });
-    });
+    //swal alert confirmation for save
+
+    // return new Promise((resolve, reject) => {
+    //     Swal.fire({
+    //         title: 'Important Information',
+    //         text: 'This will only change/update the TSS form and will not affect the data in the EMR.',
+    //         icon: 'info',
+    //         confirmButtonText: 'OK'
+    //     }).then(() => {
+    //         //set the values of det, obj, and diag to generated text
+    //         diag.value = patientStore.header.doctor_diagnosis;
+    //         det.value = patientStore.finalDoctorDetails;
+    //         obj.value = patientStore.header.doctor_objective;
+    //         plan.value = patientStore.doctor_plan;
+    //         confirmEMRDetails.value = true;
+    //         Swal.fire({
+    //             title: 'Do you want to save the changes on TSS Form only?',
+    //             text: 'This will only update the TSS; it will not reflect on the EMR.',
+    //             showDenyButton: true,
+    //             position: 'bottom',
+    //             confirmButtonText: 'Save',
+    //             denyButtonText: 'Cancel'
+    //         }).then(async (result) => {
+    //             if (result.isConfirmed) {
+    //                 // Inform the user about the TSS change
+    //                 loader.value = true;
+    //                 emit('update:saving', true);
+    //                 try {
+    //                     if (patientStore.header.doctor_injtme) {
+    //                         patientStore.header.injtme = patientStore.header.doctor_injtme;
+    //                     }
+    //                     if (patientStore.finalDiagnosis) {
+    //                         patientStore.header.doctor_details = patientStore.finalDiagnosis;
+    //                     }
+    //                     await submitForm();
+    //                     await toOthers();
+    //                     patientStore.header.doctor_details += '\n' + patientStore.textFactorSafety;
+
+    //                     confirmEMRDetails.value = false;
+    //                     loader.value = false;
+    //                     emit('update:saving', false);
+    //                     patientStore.loadSignal = true;
+    //                     Swal.fire('Saved!', '', 'success');
+    //                     resolve();
+    //                     await new Promise((resolve) => setTimeout(resolve, 3000)); // Add delay of 3 seconds
+    //                     window.close();
+    //                 } catch (error) {
+    //                     reject(error);
+    //                 }
+    //             } else if (result.isDenied) {
+    //                 Swal.fire('Changes are not saved', '', 'info');
+    //                 confirmEMRDetails.value = false;
+    //             } else {
+    //                 console.log('saving cancelled');
+    //                 confirmEMRDetails.value = false;
+    //             }
+    //         });
+    //     });
+    // });
+};
+const saveForm = async () => {
+    loader.value = true;
+    emit('update:saving', true);
+    if (patientStore.header.doctor_injtme) {
+        patientStore.header.injtme = patientStore.header.doctor_injtme;
+    }
+    if (patientStore.finalDiagnosis) {
+        patientStore.header.doctor_details = patientStore.finalDiagnosis;
+    }
+    await submitForm();
+    await toOthers();
+    patientStore.header.doctor_details += '\n' + patientStore.textFactorSafety;
+
+    confirmEMRDetails.value = false;
+    loader.value = false;
+    emit('update:saving', false);
+    patientStore.loadSignal = true;
+    Swal.fire('Saved!', '', 'success');
+    await new Promise((resolve) => setTimeout(resolve, 3000)); // Add delay of 3 seconds
+    window.close();
+};
+
+const cancelForm = async () => {
+    confirmEMRDetails.value = false;
+    Swal.fire('Changes are not saved', '', 'info');
 };
 const patientDataIsLoaded = async () => {
     // await user.getUserInfo();
@@ -555,25 +591,25 @@ watch(det, (newValue) => {
 </script>
 <template>
     <!-- <div v-if="loader" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)"></div> -->
-    <div style="width: 100%">
-        <span class="flex" style="width: 100%">
+    <div style="width: 100%; height: 100%">
+        <span class="flex" style="width: 100%; height: 100%">
             <div v-if="isLocked === '1'"><Message :closable="false">Encounter is Locked</Message></div>
-            <div v-else style="width: 100%">
-                <div v-if="isUpdateForm" style="width: 100%">
+            <div v-else style="width: 100%; height: 100%">
+                <div v-if="isUpdateForm" style="width: 100%; height: 100%">
                     <Button
                         label="Update (TSS Only)"
                         icon="pi pi-save"
-                        style="background-color: darkolivegreen; width: 100%"
+                        style="background-color: darkolivegreen; width: 100%; height: 100%"
                         class="border border-gray-400 rounded-lg text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
                         v-tooltip.top="{ value: 'Click to update your latest form', class: 'text-center' }"
                         @click="confirmSaves($event)"
                     />
                 </div>
-                <div v-else style="width: 100%">
+                <div v-else style="width: 100%; height: 100%">
                     <Button
                         label="Save (TSS Only)"
                         icon="pi pi-save"
-                        style="background-color: darkolivegreen; width: 100%"
+                        style="background-color: darkolivegreen; width: 100%; height: 100%"
                         class="border border-gray-300 rounded-lg text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
                         v-tooltip.top="{ value: 'This will only update the TSS; it will not reflect on the EMR.', class: 'text-center' }"
                         @click="confirmSaves($event)"
@@ -582,167 +618,201 @@ watch(det, (newValue) => {
             </div>
         </span>
     </div>
-    <Dialog
-        v-model:visible="confirmEMRDetails"
-        header="Verify the details to be saved on the TSS."
-        style="width: 95%; height: 85%; margin-top: 10vh; margin-bottom: 20vh"
-        :closable="false"
-        maximize
-        :draggable="false"
-        :resizable="false"
-        :showHeader="true"
-    >
-        <Splitter style="height: 75vh" class="mb-5">
-            <SplitterPanel style="height: 100%" :size="50">
-                <div class="flex justify-content-center">
-                    <h5 style="color: #000080" class="font-bold">GENERATED TEXT</h5>
-                </div>
-                <label for="details" class="p-float-label text-black text-s ml-5" style="color: #000080"><i>Details </i></label>
-                <div>
-                    <div class="flex align-items-center" style="position: relative">
-                        <Textarea
-                            :pt="{
-                                root: {
-                                    style: {
-                                        width: '100%',
-                                        overflow: 'hidden',
-                                        border: '2px dashed #ccc',
-                                        borderRadius: '4px',
-                                        padding: '5px',
-                                        boxSizing: 'border-box',
-                                        resize: 'none',
-                                        backgroundColor: '#ececec',
-                                        color: '#666',
-                                        fontSize: '13px'
-                                    }
-                                }
-                            }"
-                            style="width: 100%"
-                            v-model="patientStore.finalDoctorDetails"
-                            class="mt-1 justify-content-center mr-2 ml-5"
-                            disabled
-                            autoResize
-                        />
-                        <i class="pi pi-copy cursor-pointer text-5xl" v-tooltip.top="'Copy Details'" @click="det = patientStore.finalDoctorDetails" style="position: absolute; top: -5px; right: -5px; z-index: 1; color: #666" />
-                    </div>
-                </div>
+    <div v-if="confirmEMRDetails" style="width: 100vw; height: 100vh; position: fixed; z-index: 1000">
+        <Dialog
+            v-model:visible="confirmEMRDetails"
+            header="Verify the details to be saved on the TSS."
+            style="width: 100%; height: 100vh; margin-left: 5%; margin-top: 5%"
+            :closable="false"
+            maximize
+            :draggable="false"
+            :resizable="false"
+            :showHeader="true"
+        >
+            <Splitter layout="vertical" style="height: 100%">
+                <SplitterPanel :size="75">
+                    <Splitter style="height: 100%; overflow: auto">
+                        <SplitterPanel style="height: 100%" :size="50">
+                            <div class="flex justify-content-center">
+                                <h5 style="color: #000080" class="font-bold">GENERATED TEXT</h5>
+                            </div>
+                            <label for="details" class="p-float-label text-black text-s ml-5" style="color: #000080"><i>Details </i></label>
+                            <div>
+                                <div class="flex align-items-center" style="position: relative">
+                                    <Textarea
+                                        :pt="{
+                                            root: {
+                                                style: {
+                                                    width: '100%',
+                                                    overflow: 'hidden',
+                                                    border: '2px dashed #ccc',
+                                                    borderRadius: '4px',
+                                                    padding: '5px',
+                                                    boxSizing: 'border-box',
+                                                    resize: 'none',
+                                                    backgroundColor: '#ececec',
+                                                    color: '#666',
+                                                    fontSize: '13px'
+                                                }
+                                            }
+                                        }"
+                                        style="width: 100%"
+                                        v-model="patientStore.finalDoctorDetails"
+                                        class="mt-1 justify-content-center mr-2 ml-5"
+                                        disabled
+                                        autoResize
+                                    />
+                                    <i class="pi pi-copy cursor-pointer text-5xl" v-tooltip.top="'Copy Details'" @click="det = patientStore.finalDoctorDetails" style="position: absolute; top: -5px; right: -5px; z-index: 1; color: #666" />
+                                </div>
+                            </div>
 
-                <label for="details" class="p-float-label text-black text-s ml-5 mt-5" style="color: #000080"><i>Objective </i></label>
-                <div>
-                    <div class="flex align-items-center" style="position: relative">
-                        <Textarea
-                            :pt="{
-                                root: {
-                                    style: {
-                                        width: '100%',
-                                        overflow: 'hidden',
-                                        border: '2px dashed #ccc',
-                                        borderRadius: '4px',
-                                        padding: '5px',
-                                        boxSizing: 'border-box',
-                                        resize: 'none',
-                                        backgroundColor: '#ececec',
-                                        color: '#666',
-                                        fontSize: '13px'
-                                    }
-                                }
-                            }"
-                            style="width: 100%"
-                            v-model="patientStore.header.doctor_objective"
-                            class="mt-1 justify-content-center mr-2 ml-5"
-                            disabled
-                            autoResize
-                        />
-                        <i class="pi pi-copy cursor-pointer text-5xl" v-tooltip.top="'Copy Objectives'" @click="obj = patientStore.header.doctor_objective" style="position: absolute; top: -5px; right: -5px; z-index: 1; color: #666" />
-                    </div>
-                </div>
-                <label for="details" class="p-float-label text-black text-s ml-5 mt-5" style="color: #000080"><i>Diagnosis </i></label>
-                <div>
-                    <div class="flex align-items-center" style="position: relative">
-                        <Textarea
-                            :pt="{
-                                root: {
-                                    style: {
-                                        width: '100%',
-                                        overflow: 'hidden',
-                                        border: '2px dashed #ccc',
-                                        borderRadius: '4px',
-                                        padding: '5px',
-                                        boxSizing: 'border-box',
-                                        resize: 'none',
-                                        backgroundColor: '#ececec',
-                                        color: '#666',
-                                        fontSize: '13px'
-                                    }
-                                }
-                            }"
-                            style="width: 100%"
-                            v-model="patientStore.header.doctor_diagnosis"
-                            class="mt-1 justify-content-center mr-2 ml-5"
-                            disabled
-                            autoResize
-                        />
-                        <i class="pi pi-copy cursor-pointer text-5xl" v-tooltip.top="'Copy Diagnosis'" @click="diag = patientStore.header.doctor_diagnosis" style="position: absolute; top: -5px; right: -5px; z-index: 1; color: #666" />
-                    </div>
-                </div>
-                <!-- {{ patientStore.doctor_plan }}
+                            <label for="details" class="p-float-label text-black text-s ml-5 mt-5" style="color: #000080"><i>Objective </i></label>
+                            <div>
+                                <div class="flex align-items-center" style="position: relative">
+                                    <Textarea
+                                        :pt="{
+                                            root: {
+                                                style: {
+                                                    width: '100%',
+                                                    overflow: 'hidden',
+                                                    border: '2px dashed #ccc',
+                                                    borderRadius: '4px',
+                                                    padding: '5px',
+                                                    boxSizing: 'border-box',
+                                                    resize: 'none',
+                                                    backgroundColor: '#ececec',
+                                                    color: '#666',
+                                                    fontSize: '13px'
+                                                }
+                                            }
+                                        }"
+                                        style="width: 100%"
+                                        v-model="patientStore.header.doctor_objective"
+                                        class="mt-1 justify-content-center mr-2 ml-5"
+                                        disabled
+                                        autoResize
+                                    />
+                                    <i class="pi pi-copy cursor-pointer text-5xl" v-tooltip.top="'Copy Objectives'" @click="obj = patientStore.header.doctor_objective" style="position: absolute; top: -5px; right: -5px; z-index: 1; color: #666" />
+                                </div>
+                            </div>
+                            <label for="details" class="p-float-label text-black text-s ml-5 mt-5" style="color: #000080"><i>Diagnosis </i></label>
+                            <div>
+                                <div class="flex align-items-center" style="position: relative">
+                                    <Textarea
+                                        :pt="{
+                                            root: {
+                                                style: {
+                                                    width: '100%',
+                                                    overflow: 'hidden',
+                                                    border: '2px dashed #ccc',
+                                                    borderRadius: '4px',
+                                                    padding: '5px',
+                                                    boxSizing: 'border-box',
+                                                    resize: 'none',
+                                                    backgroundColor: '#ececec',
+                                                    color: '#666',
+                                                    fontSize: '13px'
+                                                }
+                                            }
+                                        }"
+                                        style="width: 100%"
+                                        v-model="patientStore.header.doctor_diagnosis"
+                                        class="mt-1 justify-content-center mr-2 ml-5"
+                                        disabled
+                                        autoResize
+                                    />
+                                    <i class="pi pi-copy cursor-pointer text-5xl" v-tooltip.top="'Copy Diagnosis'" @click="diag = patientStore.header.doctor_diagnosis" style="position: absolute; top: -5px; right: -5px; z-index: 1; color: #666" />
+                                </div>
+                            </div>
+                            <!-- {{ patientStore.doctor_plan }}
                 {{ patientStore.progressionDay }}
                 {{ patientStore.type_prophylaxis }}
                 {{ patientStore.details.ABTC.booster_regimen }}
                 {{ patientStore.details.ABTC.immunization_schedule }} -->
-                <label for="details" class="p-float-label text-black text-s ml-5 mt-5" style="color: #000080"><i>Management/Plan </i></label>
-                <div>
-                    <div class="flex align-items-center" style="position: relative">
-                        <Textarea
-                            :pt="{
-                                root: {
-                                    style: {
-                                        width: '100%',
-                                        overflow: 'hidden',
-                                        border: '2px dashed #ccc',
-                                        borderRadius: '4px',
-                                        padding: '5px',
-                                        boxSizing: 'border-box',
-                                        resize: 'none',
-                                        backgroundColor: '#ececec',
-                                        color: '#666',
-                                        fontSize: '13px'
-                                    }
-                                }
-                            }"
-                            style="width: 100%"
-                            v-model="patientStore.doctor_plan"
-                            class="mt-1 justify-content-center mr-2 ml-5"
-                            disabled
-                            autoResize
+                            <label for="details" class="p-float-label text-black text-s ml-5 mt-5" style="color: #000080"><i>Management/Plan </i></label>
+                            <div>
+                                <div class="flex align-items-center" style="position: relative">
+                                    <Textarea
+                                        :pt="{
+                                            root: {
+                                                style: {
+                                                    width: '100%',
+                                                    overflow: 'hidden',
+                                                    border: '2px dashed #ccc',
+                                                    borderRadius: '4px',
+                                                    padding: '5px',
+                                                    boxSizing: 'border-box',
+                                                    resize: 'none',
+                                                    backgroundColor: '#ececec',
+                                                    color: '#666',
+                                                    fontSize: '13px'
+                                                }
+                                            }
+                                        }"
+                                        style="width: 100%"
+                                        v-model="patientStore.doctor_plan"
+                                        class="mt-1 justify-content-center mr-2 ml-5"
+                                        disabled
+                                        autoResize
+                                    />
+                                    <i class="pi pi-copy cursor-pointer text-5xl" v-tooltip.top="'Copy Plan'" @click="plan = patientStore.doctor_plan" style="position: absolute; top: -5px; right: -5px; z-index: 1; color: #666" />
+                                </div>
+                            </div>
+                        </SplitterPanel>
+                        <SplitterPanel style="height: 100%" :size="50">
+                            <div class="flex justify-content-center">
+                                <h5 style="color: #000080" class="font-bold">FINAL DETAILS TO BE SAVED ON THE TSS</h5>
+                            </div>
+                            <div class="flex justify-content-center mx-2">
+                                <Textarea style="width: 100%" v-model="det" class="mt-1 flex justify-content-center font-bold" autoResize />
+                            </div>
+                            <div style="width: 100%" class="flex justify-content-center mb-5"><i v-badge.secondary="'final.Detail'" style="font-size: 2rem" /></div>
+                            <div class="flex justify-content-center mx-2">
+                                <Textarea style="width: 100%" v-model="obj" class="mt-1 flex justify-content-center font-bold" autoResize />
+                            </div>
+                            <div style="width: 100%" class="flex justify-content-center mb-5"><i v-badge.secondary="'final.Objective'" style="font-size: 2rem" /></div>
+                            <div class="flex justify-content-center mx-2">
+                                <Textarea style="width: 100%" v-model="diag" class="mt-1 flex justify-content-center font-bold" autoResize />
+                            </div>
+                            <div style="width: 100%" class="flex justify-content-center mb-5"><i v-badge.secondary="'final.Diagnosis'" style="font-size: 2rem" /></div>
+                            <div class="flex justify-content-center mx-2">
+                                <Textarea style="width: 100%" v-model="plan" class="mt-1 flex justify-content-center font-bold" autoResize />
+                            </div>
+                            <div style="width: 100%" class="flex justify-content-center mb-5"><i v-badge.secondary="'final.Plan'" style="font-size: 2rem" /></div>
+                        </SplitterPanel>
+                    </Splitter>
+                </SplitterPanel>
+                <SplitterPanel style="background-color: #e5e5e5" :size="5" maxSize="5" class="flex justify-content-center sticky">
+                    <div style="width: 50%; height: 100%">
+                        <Button
+                            label="Confirm"
+                            icon="pi pi-save"
+                            @click="saveForm"
+                            style="background-color: darkolivegreen; width: 100%; height: 100%"
+                            class="border border-gray-400 rounded-lg text-white font-semibold hover:bg-green-400 transition duration-200 ease-in-out shadow-lg"
                         />
-                        <i class="pi pi-copy cursor-pointer text-5xl" v-tooltip.top="'Copy Plan'" @click="plan = patientStore.doctor_plan" style="position: absolute; top: -5px; right: -5px; z-index: 1; color: #666" />
                     </div>
-                </div>
-            </SplitterPanel>
-            <SplitterPanel style="height: 100%" :size="50">
-                <div class="flex justify-content-center">
-                    <h5 style="color: #000080" class="font-bold">FINAL DETAILS TO BE SAVED ON THE TSS</h5>
-                </div>
-                <div class="flex justify-content-center mx-2">
-                    <Textarea style="width: 100%" v-model="det" class="mt-1 flex justify-content-center font-bold" autoResize />
-                </div>
-                <div style="width: 100%" class="flex justify-content-center mb-5"><i v-badge.secondary="'final.Detail'" style="font-size: 2rem" /></div>
-                <div class="flex justify-content-center mx-2">
-                    <Textarea style="width: 100%" v-model="obj" class="mt-1 flex justify-content-center font-bold" autoResize />
-                </div>
-                <div style="width: 100%" class="flex justify-content-center mb-5"><i v-badge.secondary="'final.Objective'" style="font-size: 2rem" /></div>
-                <div class="flex justify-content-center mx-2">
-                    <Textarea style="width: 100%" v-model="diag" class="mt-1 flex justify-content-center font-bold" autoResize />
-                </div>
-                <div style="width: 100%" class="flex justify-content-center mb-5"><i v-badge.secondary="'final.Diagnosis'" style="font-size: 2rem" /></div>
-                <div class="flex justify-content-center mx-2">
-                    <Textarea style="width: 100%" v-model="plan" class="mt-1 flex justify-content-center font-bold" autoResize />
-                </div>
-                <div style="width: 100%" class="flex justify-content-center mb-5"><i v-badge.secondary="'final.Plan'" style="font-size: 2rem" /></div>
-            </SplitterPanel>
-        </Splitter>
-    </Dialog>
+                    <div style="width: 50%; height: 100%">
+                        <Button
+                            label="Cancel"
+                            icon="pi pi-times"
+                            @click="cancelForm"
+                            style="background-color: darkorchid; width: 100%; height: 100%"
+                            class="border border-gray-300 rounded-lg text-white font-semibold hover:bg-red-400 transition duration-200 ease-in-out shadow-lg"
+                        />
+                    </div>
+                </SplitterPanel>
+            </Splitter>
+        </Dialog>
+    </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.sticky {
+    position: sticky;
+    top: 0;
+    border-bottom: 2px solid #475d74;
+    background-color: white;
+    z-index: 10;
+}
+</style>

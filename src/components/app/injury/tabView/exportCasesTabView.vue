@@ -8,7 +8,7 @@ import LibraryService from '@/service/LibraryService';
 // Props and Emits
 const props = defineProps({
     isAdmit: { type: Boolean, required: true, default: false },
-    list: { type: Array, required: true },
+    list: { type: Object, required: true },
     filterValue: { type: String, required: false },
     loading: { type: Boolean, required: true },
     exportDone: { type: Boolean, required: false }
@@ -18,8 +18,7 @@ const emit = defineEmits(['update:selectedPatients']);
 // Refs
 const libraryService = new LibraryService();
 const selectedPatient = ref(null);
-const selectedPatients = ref([]);
-const filteredExportList = ref([]);
+const selectedPatients = ref([]); 
 const showPatientModal = ref(false);
 const showGeneralData = ref(false);
 const showGeneralDataNOI = ref(false);
@@ -52,8 +51,7 @@ const pendingStatus = (data) => data.details.pending;
 
 const isPendingWarning = (data) => {
     return data.details.pending  === 'Y';
-}
-
+} 
 const isConditionWarning = (data) => {
     const incidentTime = new Date(data.header.injtme);
     const admissionTime = new Date(data.header.admdate);
@@ -67,15 +65,19 @@ const rowStyle = (data) => (data.header.status === 'Warning' ? { backgroundColor
 
 // Event Handlers
 const onSelectionChange = (e) => {
-    selectedPatients.value = e.value;
+    selectedPatients.value = e.value;  
 };
+
+// const onRowUnselect = (event) => {
+//     selectedPatients.value = selectedPatients.value.filter((patient) => patient.enccode !== event.data.enccode);
+//     // console.log('Selected Patients:', selectedPatients.value);
+//     emit('update:selectedPatients', selectedPatients.value);
+// };
 
 const onRowUnselect = (event) => {
     selectedPatients.value = selectedPatients.value.filter((patient) => patient.enccode !== event.data.enccode);
-    // console.log('Selected Patients:', selectedPatients.value);
     emit('update:selectedPatients', selectedPatients.value);
 };
-
 async function onRowSelect(e) {
     try {
         if (!e || !e.data) return console.error('Row data is undefined or null');
@@ -286,7 +288,7 @@ watch(
                     style="min-height: 90%; font-weight: bold"
                     :globalFilterFields="['header.patname', 'header.hpercode', 'header.status', 'header.injtme', 'header.injrem']"
                     stripedRows
-                    :loading="!filteredExportList"
+                    :loading="!props.list"
                     :rowClass="rowClass"
                     :rowStyle="rowStyle"
                     :virtualScrollerOptions="{ itemSize: 43 }"
@@ -364,7 +366,7 @@ watch(
                         style="min-height: 90%; font-weight: bold; font-size: 10px; width: 100%"
                         :globalFilterFields="['header.patname', 'header.hpercode', 'header.status', 'header.injtme', 'header.injrem']"
                         stripedRows
-                        :loading="!filteredExportList"
+                        :loading="!props.list"
                         :rowClass="rowClass"
                         :rowStyle="rowStyle"
                         :virtualScrollerOptions="{ itemSize: 43 }"

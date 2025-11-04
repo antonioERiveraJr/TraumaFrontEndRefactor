@@ -629,10 +629,11 @@ export default class InjuryService {
             console.error('New Case Error');
         }
     }
-    async checkPatientTSSRecord(hpercode, prophylaxis) {
+    async checkPatientTSSRecord(hpercode) {
         try {
             const response = await axios.get('checkPatientTSSRecord', {
-                params: { hpercode: hpercode, prophylaxis: prophylaxis },
+                // params: { hpercode: hpercode, prophylaxis: prophylaxis },
+                params: { hpercode: hpercode},
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('authToken')
                 }

@@ -126,17 +126,69 @@ export default function createValidationRules() {
                     patientStore.details.ABTC.tt !== 'Y' &&
                     patientStore.details.ABTC.hrig !== 'Y'
             },
+            pvrv_site_1_id: {
+                requiredIf:
+                    patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
+                    patientStore.details.ABTC.pvrv === 'Y' &&
+                    patientStore.details.ABTC.pvrv_site_4 !== 'Y' &&
+                    patientStore.details.ABTC.pvrv_site_2 !== 'Y' &&
+                    patientStore.details.ABTC.pvrv_site_1_im !== 'Y'
+            },
+            pvrv_site_1_im: {
+                requiredIf:
+                    patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
+                    patientStore.details.ABTC.pvrv === 'Y' &&
+                    patientStore.details.ABTC.pvrv_site_4 !== 'Y' &&
+                    patientStore.details.ABTC.pvrv_site_2 !== 'Y' &&
+                    patientStore.details.ABTC.pvrv_site_1_id !== 'Y'
+            },
+            pcec_site_1_im: {
+                requiredIf:
+                    patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
+                    patientStore.details.ABTC.pcec === 'Y' &&
+                    patientStore.details.ABTC.pcec_site_4 !== 'Y' &&
+                    patientStore.details.ABTC.pcec_site_2 !== 'Y' &&
+                    patientStore.details.ABTC.pcec_site_1_id !== 'Y'
+            },
+            pcec_site_1_id: {
+                requiredIf:
+                    patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
+                    patientStore.details.ABTC.pcec === 'Y' &&
+                    patientStore.details.ABTC.pcec_site_4 !== 'Y' &&
+                    patientStore.details.ABTC.pcec_site_2 !== 'Y' &&
+                    patientStore.details.ABTC.pcec_site_1_im !== 'Y'
+            },
             pvrv_site_2: {
-                requiredIf: patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ABTC.pvrv === 'Y' && patientStore.details.ABTC.pvrv_site_4 !== 'Y'
+                requiredIf:
+                    patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
+                    patientStore.details.ABTC.pvrv === 'Y' &&
+                    patientStore.details.ABTC.pvrv_site_4 !== 'Y' &&
+                    patientStore.details.ABTC.pvrv_site_1_im !== 'Y' &&
+                    patientStore.details.ABTC.pvrv_site_1_id !== 'Y'
             },
             pvrv_site_4: {
-                requiredIf: patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ABTC.pvrv === 'Y' && patientStore.details.ABTC.pvrv_site_2 !== 'Y'
+                requiredIf:
+                    patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
+                    patientStore.details.ABTC.pvrv === 'Y' &&
+                    patientStore.details.ABTC.pvrv_site_2 !== 'Y' &&
+                    patientStore.details.ABTC.pvrv_site_1_im !== 'Y' &&
+                    patientStore.details.ABTC.pvrv_site_1_id !== 'Y'
             },
             pcec_site_2: {
-                requiredIf: patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ABTC.pcec === 'Y' && patientStore.details.ABTC.pcec_site_4 !== 'Y'
+                requiredIf:
+                    patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
+                    patientStore.details.ABTC.pcec === 'Y' &&
+                    patientStore.details.ABTC.pcec_site_4 !== 'Y' &&
+                    patientStore.details.ABTC.pcec_site_1_im !== 'Y' &&
+                    patientStore.details.ABTC.pcec_site_1_id !== 'Y'
             },
             pcec_site_4: {
-                requiredIf: patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ABTC.pcec === 'Y' && patientStore.details.ABTC.pcec_site_2 !== 'Y'
+                requiredIf:
+                    patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
+                    patientStore.details.ABTC.pcec === 'Y' &&
+                    patientStore.details.ABTC.pcec_site_2 !== 'Y' &&
+                    patientStore.details.ABTC.pcec_site_1_im !== 'Y' &&
+                    patientStore.details.ABTC.pcec_site_1_id !== 'Y'
             },
             hrig_num: {
                 requiredIf: patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ABTC.hrig === 'Y'

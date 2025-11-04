@@ -22,6 +22,7 @@ const props = defineProps({
     //     required: true
     // }
 });
+const savingDialog = ref(false);
 const loader = ref(true);
 const injuryService = new InjuryService();
 const patientStore = usePatientStore();
@@ -60,9 +61,9 @@ const gcsScoreDetail = () => {
 };
 const openCaseDialogLog = async () => {
     caseLogDialog.value = true;
-    console.log('hpercode; ', patientStore.header.hpercode);
+    // console.log('hpercode; ', patientStore.header.hpercode);
     const patientsABTCLog = await injuryService.getPatientABTCLog(patientStore.header.hpercode);
-    console.log('patientsABTCLog: ', patientsABTCLog);
+    // console.log('patientsABTCLog: ', patientsABTCLog);
     groupPatientData(patientsABTCLog);
 };
 // Date formatting function
@@ -72,6 +73,42 @@ const formatDate = (dateString) => {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
     return date.toLocaleDateString(undefined, options).replace(/\//g, '-'); // Replace '/' with '-' for MM-DD-YYYY format
 };
+// const groupPatientData = (patientsABTCLog) => {
+//     const grouped = patientsABTCLog.reduce((acc, curr) => {
+//         const lockCase = curr.lockCase.trim();
+//         const caseData = {
+//             vaccineday: curr.vaccineday,
+//             prophylaxis: curr.prophylaxis,
+//             tStamp: curr.tStamp,
+//             status: curr.status // Capture the status
+//         };
+
+//         if (!acc[lockCase]) {
+//             acc[lockCase] = { lockCase, items: [caseData] }; // Store case data
+//         } else {
+//             acc[lockCase].items.push(caseData); // Add to existing lockCase
+//         }
+//         return acc;
+//     }, {});
+
+//     // Update the status based on the conditions
+//     for (const key in grouped) {
+//         const caseGroup = grouped[key];
+//         const itemCount = caseGroup.items.length;
+//         const latestProphylaxis = caseGroup.items[itemCount - 1].prophylaxis;
+
+//         if (latestProphylaxis === 'POST-EXPOSURE' && itemCount >= 3) {
+//             caseGroup.status = 'Finished';
+//         } else if (latestProphylaxis === 'PRE-EXPOSURE' && itemCount >= 2) {
+//             caseGroup.status = 'Finished';
+//         } else {
+//             caseGroup.status = 'Unfinished';
+//         }
+//     }
+
+//     groupedCases.value = Object.values(grouped); // Set the grouped cases
+// };
+
 const groupPatientData = (patientsABTCLog) => {
     const grouped = patientsABTCLog.reduce((acc, curr) => {
         const lockCase = curr.lockCase.trim();
@@ -93,12 +130,10 @@ const groupPatientData = (patientsABTCLog) => {
     // Update the status based on the conditions
     for (const key in grouped) {
         const caseGroup = grouped[key];
-        const itemCount = caseGroup.items.length;
-        const latestProphylaxis = caseGroup.items[itemCount - 1].prophylaxis;
+        const hasDay7 = caseGroup.items.some((item) => item.vaccineday === 7);
 
-        if (latestProphylaxis === 'POST-EXPOSURE' && itemCount >= 3) {
-            caseGroup.status = 'Finished';
-        } else if (latestProphylaxis === 'PRE-EXPOSURE' && itemCount >= 2) {
+        // Set the status based on the presence of day 7
+        if (hasDay7) {
             caseGroup.status = 'Finished';
         } else {
             caseGroup.status = 'Unfinished';
@@ -164,11 +199,11 @@ const generateSafetyAndFactorText = () => {
 const updateRequiredFieldCountForBite = () => {
     requiredCountABTCForm.value = 0;
     const missingFields = [];
-    console.log('test');
+    // console.log('test');
 
     // Check if the bite injury is marked as 'Y'
     if (patientStore.type_prophylaxis === 'PRE-EXPOSURE') {
-        console.log('1');
+        // console.log('1');
         requiredCountABTCForm.value = 4;
         if (patientStore.details.ExternalCauseOfInjury.previousARV) requiredCountABTCForm.value--;
         if (patientStore.details.ExternalCauseOfInjury.tetanusVaccination) requiredCountABTCForm.value--;
@@ -176,7 +211,7 @@ const updateRequiredFieldCountForBite = () => {
         if (patientStore.details.ABTC.immunization_schedule) requiredCountABTCForm.value--;
     } else if (patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y') {
         // Increment the count for each missing field
-        console.log('2');
+        // console.log('2');
         const fieldsToCheck = ['ext_bite_sp', 'dogbiteDegree', 'bleeding', 'bitingAnimal', 'observation', 'first_aid_code', 'washingDone', 'previousARV', 'tetanusVaccination', 'preAdmissionData.first_aid_code'];
 
         fieldsToCheck.forEach((field) => {
@@ -224,9 +259,9 @@ const updateRequiredFieldCountForBite = () => {
     }
 
     // Log missing fields
-    if (missingFields.length > 0) {
-        console.log('Missing fields:', missingFields);
-    }
+    // if (missingFields.length > 0) {
+    //     console.log('Missing fields:', missingFields);
+    // }
 };
 
 const updateDetailsValue = () => {
@@ -809,6 +844,17 @@ onUnmounted(() => {
         </Splitter>
     </div>
     <div style="height: 5%; width: 100%" class="flex" v-if="patientStore.sameDay === false">
+        <!-- <SaveOPDButton
+            style="height: 100%"
+            @update:customizedObjectives="updateCustomizedObjective"
+            @update:customizedDiagnosis="updateCustomizedDiagnosis"
+            @update:customizedDetails="updateCustomizedDetails"
+            :objective="customizedObjective"
+            :details="customizedDetails"
+            :diagnosis="customizedDiagnosis"
+            :latestEntry="latestEntryDoc"
+            @update:saving="updateSaving"
+        /> -->
         <SaveOPDButton
             @update:customizedObjectives="updateCustomizedObjective"
             @update:customizedDiagnosis="updateCustomizedDiagnosis"
@@ -831,7 +877,7 @@ onUnmounted(() => {
         />
     </div>
     <Dialog v-model:visible="caseLogDialog" header="PATIENT's ABTC LOG" :style="{ width: '25rem' }" position="topright" :modal="true" :draggable="false">
-        <Accordion :activeIndex="0"> 
+        <Accordion :activeIndex="0">
             <AccordionTab v-for="(caseGroup, index) in groupedCases" :key="index" :header="`${formatDate(caseGroup.lockCase)} - ${caseGroup.status}`">
                 <div v-for="(caseItem, itemIndex) in caseGroup.items" :key="itemIndex">
                     <p class="m-0">
@@ -892,7 +938,7 @@ onUnmounted(() => {
 }
 .sticky {
     position: sticky;
-    top: 0;
+    bottom: 0;
     border-bottom: 2px solid #475d74;
     background-color: white;
     z-index: 10;

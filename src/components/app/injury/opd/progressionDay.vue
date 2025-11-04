@@ -14,7 +14,7 @@ const patientData = ref();
 const setDay = (day) => {
     // console.log('Vaccine Days After Hit: ', vaccineDays);
     if (day === '0') {
-        patientStore.details = patientStore.defaultDetails;
+        patientStore.details = patientStore?.defaultDetails;
     }
     patientStore.progressionDay = day;
     // console.log(patientStore.progressionDay);
@@ -26,9 +26,93 @@ const setDay = (day) => {
         patientStore.details.hospitalFacilityData.mode_transport_code = '03';
     }
 };
+// const getBadge = (day) => {
+//     const matchingRecord = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === day && record.prophylaxis === patientStore.type_prophylaxis);
+//     const disableButton = ref(false);
+//     if (matchingRecord) {
+//         return matchingRecord.tStamp;
+//     } else {
+//         const checkUnmatched = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === day);
+//         if (!checkUnmatched || day === '0') {
+//             if (patientStore.type_prophylaxis === 'PRE-EXPOSURE') {
+//                 if (day === '0') {
+//                     const checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'POST-EXPOSURE');
+//                     if (checkProphylaxis) {
+//                         if (checkProphylaxis.vaccineday === '0') {
+//                             disableButton.value = true;
+//                             return `${checkProphylaxis.tStamp}\n${checkProphylaxis.prophylaxis}`;
+//                         }
+//                     }
+//                 } else if (day === '7') {
+//                     const checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'POST-EXPOSURE');
+//                     if (checkProphylaxis) {
+//                         if (checkProphylaxis.vaccineday === '3') {
+//                             disableButton.value = true;
+//                             return `${checkProphylaxis.tStamp}\n${checkProphylaxis.prophylaxis}`;
+//                         }
+//                     }
+//                 } else if (day === '21') {
+//                     const checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'POST-EXPOSURE');
+//                     if (checkProphylaxis) {
+//                         if (checkProphylaxis.vaccineday === '7') {
+//                             disableButton.value = true;
+//                             return `${checkProphylaxis.tStamp}\n${checkProphylaxis.prophylaxis}`;
+//                         }
+//                     }
+//                 }
+//             } else {
+//                 return matchingRecord ? matchingRecord.tStamp : null;
+//             }
+//         }
+//     }
+// };
 const getBadge = (day) => {
-    const matchingRecord = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === day);
-    return matchingRecord ? matchingRecord.tStamp : null;
+    const matchingRecord = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === day && record.prophylaxis === patientStore.type_prophylaxis);
+    const disableButton = ref(false);
+
+    if (matchingRecord) {
+        return matchingRecord.tStamp === null ? '' : { tStamp: matchingRecord.tStamp, disableButton: disableButton.value };
+    } else {
+        const checkUnmatched = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === day);
+        if (!checkUnmatched || day === '0') {
+            if (patientStore.type_prophylaxis === 'PRE-EXPOSURE') {
+                let checkProphylaxis;
+
+                if (day === '0') {
+                    checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'POST-EXPOSURE' && record.vaccineday === '0');
+                } else if (day === '7') {
+                    checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'POST-EXPOSURE' && record.vaccineday === '3');
+                } else if (day === '21') {
+                    checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'POST-EXPOSURE' && record.vaccineday === '7');
+                }
+
+                if (checkProphylaxis) {
+                    disableButton.value = true;
+                    return checkProphylaxis.tStamp === null ? '' : { tStamp: `${checkProphylaxis.tStamp}\n${checkProphylaxis.prophylaxis}(day ${checkProphylaxis.vaccineday})`, disableButton: disableButton.value };
+                }
+            } else if (patientStore.type_prophylaxis === 'POST-EXPOSURE') {
+                let checkProphylaxis;
+
+                if (day === '0') {
+                    checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'PRE-EXPOSURE' && record.vaccineday === '0');
+                } else if (day === '3') {
+                    checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'PRE-EXPOSURE' && record.vaccineday === '7');
+                } else if (day === '7') {
+                    checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'PRE-EXPOSURE' && record.vaccineday === '21');
+                }
+
+                if (checkProphylaxis) {
+                    disableButton.value = true;
+                    return checkProphylaxis.tStamp === null ? '' : { tStamp: `${checkProphylaxis.tStamp}<\n{checkProphylaxis.prophylaxis}(day ${checkProphylaxis.vaccineday})`, disableButton: disableButton.value };
+                }
+            } else {
+                return matchingRecord ? (matchingRecord.tStamp === null ? '' : { tStamp: matchingRecord.tStamp, disableButton: disableButton.value }) : null;
+            }
+        }
+    }
+
+    // Default return if no conditions are met
+    return null; // Return null if no matching record found
 };
 const newCase = async () => {
     Swal.fire({
@@ -111,6 +195,7 @@ watch(
                 <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 29%">
                     <Button
                         @click="setDay('0')"
+                        :disabled="getBadge('0')?.disableButton"
                         style="
                             color: black;
                             background-color: white;
@@ -127,13 +212,14 @@ watch(
                         "
                     >
                         <div style="font-size: 1.2em">Day 0</div>
-                        <div style="font-size: 0.4em; color: gray">{{ getBadge('0') }}</div>
+                        <div style="font-size: 0.4em; color: gray">{{ getBadge('0')?.tStamp }}</div>
                     </Button>
                 </div>
 
                 <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 29%">
                     <Button
                         @click="setDay('7')"
+                        :disabled="getBadge('7')?.disableButton"
                         style="
                             color: white;
                             background-color: #9bb0bf;
@@ -150,13 +236,14 @@ watch(
                         "
                     >
                         <div style="font-size: 1.2em">Day 7</div>
-                        <div style="font-size: 0.4em; color: lightgoldenrodyellow">{{ getBadge('7') }}</div>
+                        <div style="font-size: 0.4em; color: lightgoldenrodyellow">{{ getBadge('7')?.tStamp }}</div>
                     </Button>
                 </div>
 
                 <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 29%">
                     <Button
                         @click="setDay('21')"
+                        :disabled="getBadge('21')?.disableButton"
                         style="
                             color: black;
                             background-color: white;
@@ -173,7 +260,7 @@ watch(
                         "
                     >
                         <div style="font-size: 1.2em">Day 21</div>
-                        <div style="font-size: 0.4em; color: gray">{{ getBadge('21') }}</div>
+                        <div style="font-size: 0.4em; color: gray">{{ getBadge('21')?.tStamp }}</div>
                     </Button>
                 </div>
             </div>
@@ -191,6 +278,7 @@ watch(
                 <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 14%">
                     <Button
                         @click="setDay('0')"
+                        :disabled="getBadge('0')?.disableButton"
                         style="
                             color: black;
                             background-color: white;
@@ -207,13 +295,14 @@ watch(
                         "
                     >
                         <div style="font-size: 1em">Day 0</div>
-                        <div style="font-size: 0.4em; color: gray">{{ getBadge('0') }}</div>
+                        <div style="font-size: 0.4em; color: gray">{{ getBadge('0')?.tStamp }}</div>
                     </Button>
                 </div>
 
                 <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 14%">
                     <Button
                         @click="setDay('3')"
+                        :disabled="getBadge('3')?.disableButton"
                         style="
                             color: white;
                             background-color: #9bb0bf;
@@ -230,13 +319,14 @@ watch(
                         "
                     >
                         <div style="font-size: 1em">Day 3</div>
-                        <div style="font-size: 0.4em; color: lightgoldenrodyellow">{{ getBadge('3') }}</div>
+                        <div style="font-size: 0.4em; color: lightgoldenrodyellow">{{ getBadge('3')?.tStamp }}</div>
                     </Button>
                 </div>
 
                 <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 14%">
                     <Button
                         @click="setDay('7')"
+                        :disabled="getBadge('7')?.disableButton"
                         style="
                             color: black;
                             background-color: white;
@@ -253,13 +343,14 @@ watch(
                         "
                     >
                         <div style="font-size: 1em">Day 7</div>
-                        <div style="font-size: 0.4em; color: gray">{{ getBadge('7') }}</div>
+                        <div style="font-size: 0.4em; color: gray">{{ getBadge('7')?.tStamp }}</div>
                     </Button>
                 </div>
 
                 <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 14%">
                     <Button
                         @click="setDay('14')"
+                        :disabled="getBadge('14')?.disableButton"
                         style="
                             color: white;
                             background-color: #9bb0bf;
@@ -276,13 +367,14 @@ watch(
                         "
                     >
                         <div style="font-size: 1em">Day 14</div>
-                        <div style="font-size: 0.4em; color: lightgoldenrodyellow">{{ getBadge('14') }}</div>
+                        <div style="font-size: 0.4em; color: lightgoldenrodyellow">{{ getBadge('14')?.tStamp }}</div>
                     </Button>
                 </div>
 
                 <div style="color: black; background-color: #9bb0bf; border: 2px solid transparent; width: 80%; margin: 5px auto; height: 14%">
                     <Button
                         @click="setDay('21')"
+                        :disabled="getBadge('21')?.disableButton"
                         style="
                             color: black;
                             background-color: white;
@@ -299,7 +391,7 @@ watch(
                         "
                     >
                         <div style="font-size: 1em">Day 21</div>
-                        <div style="font-size: 0.4em; color: gray">{{ getBadge('21') }}</div>
+                        <div style="font-size: 0.4em; color: gray">{{ getBadge('21')?.tStamp }}</div>
                     </Button>
                 </div>
 
@@ -322,7 +414,7 @@ watch(
                         "
                     >
                         <div style="font-size: 1em">Day 28</div>
-                        <div style="font-size: 0.4em; color: lightgoldenrodyellow">{{ getBadge('28') }}</div>
+                        <div style="font-size: 0.4em; color: lightgoldenrodyellow">{{ getBadge('28')?.tStamp }}</div>
                     </Button>
                 </div>
             </div>

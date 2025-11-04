@@ -131,7 +131,7 @@ const positive_negative_option = ['+', '-'];
                             }"
                         />
                         <div v-if="PatientStore.details.followUp.discharge === '+'">
-                            <label for="Discharge" class="text-black text-xs" style="color: #000080"><i>Discharge Description </i></label>
+                            <label for="Discharge" class="text-black text-xs" style="color: #000080"><i>Discharge/Bleeding Description </i></label>
                             <Textarea v-model="PatientStore.details.followUp.discharge_sp" style="width: 100%; font-weight: bold" />
                         </div>
                     </div>

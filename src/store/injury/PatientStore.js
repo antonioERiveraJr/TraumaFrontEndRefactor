@@ -901,14 +901,14 @@ export const usePatientStore = defineStore('PatientStore', () => {
         // loadSignal.value = true;
         // await new Promise(resolve => setTimeout(resolve, 5000));
         // console.log('loading');
-        console.log('stored: ', patientData);
+        // console.log('stored: ', patientData);
         if (patientData?.data && type_prophylaxis.value === patientData.data.type_prophylaxis) {
             header.value = patientData.data.header;
 
-            console.log('fetched data: ', patientData.data);
+            // console.log('fetched data: ', patientData.data);
             header.value.hpercode = patientData.data.header.hpercode;
             details.value = patientData.data;
-            console.log('updated data: ', details);
+            // console.log('updated data: ', details);
 
             // ufiveID.value = patientData?.data?.details?.ufiveID;
             // header.value = patientData?.data?.header;
@@ -928,7 +928,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
                         details.value.ABTC = { ...defaultDetails.value.ABTC };
                         // alert('hit');
                         details.value.followUp.complaints = 'NO SUBJECTIVE COMPLAINTS';
-                        console.log('complaints: ', details.value.followUp.complaints);
+                        // console.log('complaints: ', details.value.followUp.complaints);
                     }
                 } else {
                     sameDay.value = true;

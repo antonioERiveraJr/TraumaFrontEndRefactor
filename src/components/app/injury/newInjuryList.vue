@@ -201,7 +201,6 @@ const loadList = async (hardRefresh) => {
         selectedPatient.value = '';
         patientStore.resets();
         forExportList.value = null;
-        // console.log('here:', forExportList.value);
         response = await toastWaitingForExport.fetchData();
         if (response && response.status === 401) {
             console.warn('401 Unauthorized');
@@ -217,7 +216,9 @@ const loadList = async (hardRefresh) => {
             });
             return;
         }
+
         forExportList.value = response.data;
+
     }
     if (activePanel.value == 3) {
         selectedPatient.value = '';
@@ -240,6 +241,7 @@ const loadList = async (hardRefresh) => {
             return;
         }
         forExportList.value = response?.data;
+        console.log('here:', forExportList.value);
     }
     if (activePanel.value == 4) {
         selectedPatient.value = '';

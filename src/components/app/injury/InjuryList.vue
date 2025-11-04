@@ -216,7 +216,7 @@ const loadList = async (hardRefresh) => {
             });
             return;
         }
-        // console.log('admitted List: ', response.data);
+        console.log('admitted List: ', response.data);
         injuryList.value = response?.data;
     }
     if (activePanel.value == 1) {
@@ -240,7 +240,7 @@ const loadList = async (hardRefresh) => {
         injuryList.value = response.data;
     }
     if (activePanel.value == 2) {
-        selectedPatient.value = '';
+        selectedPatient.value = [];
         patientStore.resets();
 
         forExportList.value = null;
@@ -269,6 +269,7 @@ const loadList = async (hardRefresh) => {
 
         forExportList.value = null;
         response = await toastWaitingForExport.fetchData();
+
         if (response && response.status === 401) {
             console.warn('401 Unauthorized');
             localStorage.removeItem('authToken');
@@ -284,8 +285,9 @@ const loadList = async (hardRefresh) => {
             return;
         }
 
-        // console.log('admitted List: ', response.data);
-        forExportList.value = response.data;
+        console.log('Admitted List: ', response?.data);
+        forExportList.value = Array.isArray(response.data) ? response.data : []; // Ensure it's an array
+        console.log('Is Array:', Array.isArray(response.data));
     }
     if (activePanel.value == 4) {
         selectedPatient.value = '';

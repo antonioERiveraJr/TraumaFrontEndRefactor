@@ -9,6 +9,7 @@ import ABTCForm from '../../../components/app/injury/opd/ABTCForm.vue';
 import ProgressionDay from '../../../components/app/injury/opd/progressionDay.vue';
 import { Vue3Lottie } from 'vue3-lottie';
 import test from '../../../assets/images/ABTCloading.json';
+import PhilhealthForm from '../../../components/app/injury/opd/philhealthForm.vue';
 
 const patientStore = usePatientStore();
 const validations = createValidationRules();
@@ -59,9 +60,9 @@ const handleMouseLeave = () => {
 
 const openCaseDialogLog = async () => {
     caseLogDialog.value = true;
-    console.log('hpercode; ', patientStore.header.hpercode);
+    // console.log('hpercode; ', patientStore.header.hpercode);
     const patientsABTCLog = await injuryService.getPatientABTCLog(patientStore.header.hpercode);
-    console.log('patientsABTCLog: ', patientsABTCLog);
+    // console.log('patientsABTCLog: ', patientsABTCLog);
     groupPatientData(patientsABTCLog);
 };
 
@@ -139,7 +140,7 @@ onMounted(async () => {
 
         enccode.value = localStorage.getItem('enccode') || enccode.value;
         patientData.value = await injuryService.getOPDPatientData(enccode.value);
-        console.log('patientData: ', patientData.value);
+        // console.log('patientData: ', patientData.value);
         await patientStore.loadOPDPatientData(patientData.value);
     }
 
@@ -174,7 +175,8 @@ watch(
     () => patientStore.type_prophylaxis,
     async (newValue) => {
         patientStore.progressionDay = '';
-        checkPatientTSSRecord.value = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode, patientStore.type_prophylaxis);
+        // checkPatientTSSRecord.value = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode, patientStore.type_prophylaxis);
+        checkPatientTSSRecord.value = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode);
         // console.log('checkPatientTSSRecord: ', checkPatientTSSRecord.value);
         patientStore.patientTSSRecord = checkPatientTSSRecord;
         if (newValue !== '' && newValue !== undefined && newValue !== null) {
@@ -286,6 +288,7 @@ watch(
                     </div>
                 </AccordionTab>
             </Accordion>
+            <PhilhealthForm />
         </Dialog>
     </div>
 </template>

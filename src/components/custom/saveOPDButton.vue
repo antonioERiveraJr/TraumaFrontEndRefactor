@@ -821,7 +821,7 @@ watch(det, (newValue) => {
                 <Message :closable="false">Encounter is Locked</Message>
             </div>
             <div v-else style="width: 100%; height: 100%">
-                <div v-if="isUpdateForm">
+                <div v-if="isUpdateForm" style="height: 100%">
                     <Button
                         style="width: 100%; height: 100%"
                         label="Update (EMR and TSS)"
@@ -831,7 +831,7 @@ watch(det, (newValue) => {
                         @click="confirmSaves($event)"
                     />
                 </div>
-                <div v-else>
+                <div v-else style="height: 100%">
                     <Button
                         style="width: 100%; height: 100%"
                         label="Save (EMR and TSS)"
