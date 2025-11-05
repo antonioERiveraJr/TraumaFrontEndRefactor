@@ -1,11 +1,18 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { usePatientStore } from '../../../../store/injury/patientStore';
+import { useRoute } from 'vue-router'; // Import useRoute
 
-const patientStore = usePatientStore();
+const route = useRoute(); // Use the route object
 
-const formData = ref({});
+const formData = ref({
+    PhilhealthStatus: '',
+    ModeOfAnimalExposure: '',
+    BodyPartAffected: '',
+    TypeOfAnimal: '',
+    PastHistory: '',
+    PrimaryImmunization: ''
+});
 
 async function fetchFormData(hpercode) {
     try {
@@ -14,15 +21,15 @@ async function fetchFormData(hpercode) {
             headers: {
                 Authorization: 'Bearer ' + localStorage.getItem('authToken')
             }
-        }); 
-        formData.value = response.data[0]; // Assuming the data structure matches your needs
+        });
+        Object.assign(formData.value, response.data[0]); // Assuming the data structure matches your needs
     } catch (error) {
         console.error('Error fetching form data:', error);
     }
 }
 
 async function generatePDF() {
-    const hpercode = formData.value.hpercode; // Replace with actual logic to get the hpercode
+    const hpercode = formData.value.hpercode; // Ensure this is set correctly in your formData
     try {
         const response = await axios.post(
             '/generate-pdf',
@@ -53,35 +60,42 @@ async function generatePDF() {
 
 // Fetch data when the component is mounted
 onMounted(() => {
-    const hpercode = patientStore.header.hpercode; // Replace with actual logic to get the hpercode
+    const hpercode = route.query.hpercode; // Get hpercode from URL parameters
     console.log('hpercode: ', hpercode);
     fetchFormData(hpercode);
 });
 </script>
-
 <template>
     <div>
-        <button @click="generatePDF">Generate PDF</button>
-        <!-- <div id="pdf-content">
-            <h1>PhilHealth ABTC Form</h1>
-            <p>Date: {{ formData.DateToday }}</p>
-            <h2>Patient Information</h2>
-            <p><strong>Name:</strong> {{ formData.PatientName }}</p>
-            <p><strong>Date of Birth:</strong> {{ formData.DateOfBirth }}</p>
-            <p><strong>Age:</strong> {{ formData.Age }}</p>
-            <p><strong>Address:</strong> {{ formData.Address }}</p>
+        <h1>ABTC PhilHealth Form</h1>
 
-            <h2>Treatment Details</h2>
-            <p><strong>Date Treatment Started:</strong> {{ formData.DateTreatmentStarted }}</p>
-            <p><strong>Date of Exposure:</strong> {{ formData.DateOfExposure }}</p>
-            <p><strong>Past History:</strong> {{ formData.PastHistory }}</p>
+        <div>
+            <p><strong>Philhealth Status:</strong> {{ formData.PhilhealthStatus }}</p>
+            <p><strong>Mode of Animal Exposure:</strong> {{ formData.ModeOfAnimalExposure }}</p>
+            <p><strong>Body Part Affected:</strong> {{ formData.BodyPartAffected }}</p>
             <p><strong>Type of Animal:</strong> {{ formData.TypeOfAnimal }}</p>
-            <p><strong>Bite Category:</strong> {{ formData.BiteCategory }}</p>
-            <p><strong>Vaccineday:</strong> {{ formData.vaccineday }}</p>
-        </div> -->
+            <p><strong>Past History:</strong> {{ formData.PastHistory }}</p>
+            <p><strong>Primary Immunization:</strong> {{ formData.PrimaryImmunization }}</p>
+        </div>
+
+        <button @click="generatePDF">Generate PDF</button>
     </div>
 </template>
 
 <style scoped>
 /* Add any additional styles for your PDF here */
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+p {
+    font-size: 16px;
+    margin: 5px 0;
+}
+button {
+    margin-top: 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+}
 </style>
