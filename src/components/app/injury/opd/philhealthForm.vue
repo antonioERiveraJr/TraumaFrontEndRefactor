@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
 import axios from 'axios';
-import { useRoute } from 'vue-router'; // Import useRoute 
+import { useRoute } from 'vue-router'; // Import useRoute
 
 import CheckBoxMultiple from '../../../custom/checkBoxMultiple.vue';
 
@@ -9,7 +9,6 @@ const route = useRoute(); // Use the route object
 const allowDownload = ref(false);
 const formData = ref({});
 const hpercode = ref(route.query.hpercode);
-const membershipStatus = ref();
 let blobUrl = null;
 
 // Create a computed property for the iframe source
@@ -33,6 +32,7 @@ const animalTypeOptions = ['Dog', 'Cat', 'Others'];
 const historyOptions = ['No', 'Yes'];
 const immunizationOptions = ['Yes', 'No'];
 const formFields = ref({
+    membershipStatus: '',
     unCoveredSkin: '',
     woundedSkin: '',
     abrasion: '',
@@ -81,11 +81,13 @@ async function fetchFormData(hpercode) {
 
 async function generatePDF() {
     const hpercode = formData.value.hpercode;
+    const clonedFormFields = { ...formFields.value };
     try {
         const response = await axios.post(
             '/generate-pdf',
             {
-                Hpercode: hpercode
+                Hpercode: hpercode,
+                formFields: clonedFormFields
             },
             {
                 headers: {
@@ -162,10 +164,14 @@ const bladeContent = ref('');
 //     }
 // };
 const fetchBladeContent = async () => {
+    const clonedFormFields = { ...formFields.value };
     try {
         const response = await axios.post(
             `/previewPDF`,
-            { hpercode: hpercode.value },
+            {
+                hpercode: hpercode.value,
+                formFields: clonedFormFields
+            },
             {
                 headers: {
                     Authorization: 'Bearer ' + localStorage.getItem('authToken'),
@@ -177,34 +183,9 @@ const fetchBladeContent = async () => {
         bladeContent.value = response.data; // Store the HTML content
 
         // Trigger download of the preview as PDF
-        await downloadPreviewAsPDF(response.data);
     } catch (error) {
         console.error('Error fetching blade view:', error);
     }
-};
-
-// Function to download the preview as PDF
-const downloadPreviewAsPDF = async (htmlContent) => {
-    const pdf = new jsPDF('landscape', 'mm', 'a4'); // A4 size in landscape
-
-    // Create a temporary element to render the HTML
-    const tempElement = document.createElement('div');
-    tempElement.innerHTML = htmlContent;
-    document.body.appendChild(tempElement);
-
-    // Use the html method from jsPDF to add the HTML content to the PDF
-    pdf.html(tempElement, {
-        callback: (doc) => {
-            doc.save('Preview_ABTC_Philhealth_Form.pdf'); // Save the generated PDF
-        },
-        x: 10, // Horizontal margin
-        y: 10, // Vertical margin
-        width: 280, // Content width
-        windowWidth: 800 // Width of the window for scaling
-    });
-
-    // Clean up
-    document.body.removeChild(tempElement);
 };
 // Clean up the blob URL when the component is unmounted
 onBeforeUnmount(() => {
@@ -245,14 +226,14 @@ onMounted(() => {
 });
 </script>
 <template>
-    <Splitter layout="horizontal" style="height: 100vh" class="flex">
+    <Splitter layout="horizontal" style="height: 99vh" class="flex">
         <SplitterPanel :size="20">
             <!-- <iframeSrc v-if="iframeSrc" :src="iframeSrc" style="width: 100%; height: 100%" frameborder="5" /> -->
 
             <h4 class="flex justify-content-center font-bold">Animal Bite Treatment Record</h4>
 
             <label class="p-float-label text-black text-s mt-5" style="color: black"><i> Membership Status </i></label>
-            <Dropdown style="width: 90%" class="ml-5" v-model="membershipStatus" placeholder="Membership Status" :options="membershipStatusOptions" />
+            <Dropdown style="width: 90%" class="ml-5" v-model="formFields.membershipStatus" placeholder="Membership Status" :options="membershipStatusOptions" />
 
             <label class="p-float-label text-black text-s mt-3" style="color: black"><i> Mode of Animal Exposure </i></label>
 
