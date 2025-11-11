@@ -67,48 +67,51 @@ const setDay = (day) => {
 //     }
 // };
 const getBadge = (day) => {
+    // console.log('day: ', day);
     const matchingRecord = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === day && record.prophylaxis === patientStore.type_prophylaxis);
     const disableButton = ref(false);
 
     if (matchingRecord) {
         return matchingRecord.tStamp === null ? '' : { tStamp: matchingRecord.tStamp, disableButton: disableButton.value };
     } else {
-        const checkUnmatched = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === day);
-        if (!checkUnmatched || day === '0') {
-            if (patientStore.type_prophylaxis === 'PRE-EXPOSURE') {
-                let checkProphylaxis;
-
-                if (day === '0') {
-                    checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'POST-EXPOSURE' && record.vaccineday === '0');
-                } else if (day === '7') {
-                    checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'POST-EXPOSURE' && record.vaccineday === '3');
-                } else if (day === '21') {
-                    checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'POST-EXPOSURE' && record.vaccineday === '7');
-                }
-
-                if (checkProphylaxis) {
-                    disableButton.value = true;
-                    return checkProphylaxis.tStamp === null ? '' : { tStamp: `${checkProphylaxis.tStamp}\n${checkProphylaxis.prophylaxis}(day ${checkProphylaxis.vaccineday})`, disableButton: disableButton.value };
-                }
-            } else if (patientStore.type_prophylaxis === 'POST-EXPOSURE') {
-                let checkProphylaxis;
-
-                if (day === '0') {
-                    checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'PRE-EXPOSURE' && record.vaccineday === '0');
-                } else if (day === '3') {
-                    checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'PRE-EXPOSURE' && record.vaccineday === '7');
-                } else if (day === '7') {
-                    checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'PRE-EXPOSURE' && record.vaccineday === '21');
-                }
-
-                if (checkProphylaxis) {
-                    disableButton.value = true;
-                    return checkProphylaxis.tStamp === null ? '' : { tStamp: `${checkProphylaxis.tStamp}<\n{checkProphylaxis.prophylaxis}(day ${checkProphylaxis.vaccineday})`, disableButton: disableButton.value };
-                }
-            } else {
-                return matchingRecord ? (matchingRecord.tStamp === null ? '' : { tStamp: matchingRecord.tStamp, disableButton: disableButton.value }) : null;
+        // const checkUnmatched = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === day);
+        // console.log('checkUnmatched: ', checkUnmatched);
+        // if (!checkUnmatched || day === '0') {
+        if (patientStore.type_prophylaxis === 'PRE-EXPOSURE') {
+            let checkProphylaxis;
+            if (day === '0') {
+                // alert('hits');
+                checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'POST-EXPOSURE' && record.vaccineday === '0');
+            } else if (day === '7') {
+                // alert('hit');
+                checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'POST-EXPOSURE' && record.vaccineday === '3');
+            } else if (day === '21') {
+                checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'POST-EXPOSURE' && record.vaccineday === '7');
             }
+
+            if (checkProphylaxis) {
+                disableButton.value = true;
+                return checkProphylaxis.tStamp === null ? '' : { tStamp: `${checkProphylaxis.tStamp}\n${checkProphylaxis.prophylaxis}(day ${checkProphylaxis.vaccineday})`, disableButton: disableButton.value };
+            }
+        } else if (patientStore.type_prophylaxis === 'POST-EXPOSURE') {
+            let checkProphylaxis;
+
+            if (day === '0') {
+                checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'PRE-EXPOSURE' && record.vaccineday === '0');
+            } else if (day === '3') {
+                checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'PRE-EXPOSURE' && record.vaccineday === '7');
+            } else if (day === '7') {
+                checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'PRE-EXPOSURE' && record.vaccineday === '21');
+            }
+
+            if (checkProphylaxis) {
+                disableButton.value = true;
+                return checkProphylaxis.tStamp === null ? '' : { tStamp: `${checkProphylaxis.tStamp}<\n{checkProphylaxis.prophylaxis}(day ${checkProphylaxis.vaccineday})`, disableButton: disableButton.value };
+            }
+        } else {
+            return matchingRecord ? (matchingRecord.tStamp === null ? '' : { tStamp: matchingRecord.tStamp, disableButton: disableButton.value }) : null;
         }
+        // }
     }
 
     // Default return if no conditions are met
@@ -149,9 +152,9 @@ watch(
         patientStore.loadSignal = true;
         await dataIsLoaded();
         if (patientStore?.patientTSSRecord && patientStore?.patientTSSRecord.data) {
-            const checkPatientTSSRecord = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode, patientStore.type_prophylaxis);
+            // const checkPatientTSSRecord = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode);
             // console.log('checkPatientTSSRecord: ', checkPatientTSSRecord);
-            patientStore.patientTSSRecord = checkPatientTSSRecord;
+            // patientStore.patientTSSRecord = checkPatientTSSRecord;
 
             // alert('hit');
             // Find the record with the matching vaccineday
@@ -165,6 +168,7 @@ watch(
                 // console.log('No matching record found for progression day:', newDay);
                 enccode.value = localStorage.getItem('enccode') || enccode.value;
                 patientData.value = await injuryService.getOPDPatientData(enccode.value);
+                // patientData.value = patientStore?.OPDPatientData?.find((record) => record.enccode === enccode.value);
                 // console.log('patientData: ', patientData.value);
                 patientStore.loadOPDPatientData(patientData.value);
                 // patientStore.details.followUp = { ...patientStore.defaultDetails.followUp };

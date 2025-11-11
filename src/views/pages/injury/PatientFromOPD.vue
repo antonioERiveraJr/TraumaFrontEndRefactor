@@ -9,7 +9,6 @@ import ABTCForm from '../../../components/app/injury/opd/ABTCForm.vue';
 import ProgressionDay from '../../../components/app/injury/opd/progressionDay.vue';
 import { Vue3Lottie } from 'vue3-lottie';
 import test from '../../../assets/images/ABTCloading.json';
-import PhilhealthForm from '../../../components/app/injury/opd/philhealthForm.vue';
 
 const patientStore = usePatientStore();
 const validations = createValidationRules();
@@ -30,6 +29,10 @@ provide('v$', v$);
 // Panel widths
 const panel1Width = ref('3%');
 const panel2Width = ref('95%');
+
+const requestPhilhealthForm = () => {
+    window.location.href = `http://192.168.6.58:8010/api/loginABTCPhilhealth?hpercode=${patientStore.header.hpercode}&employeeid=${user.value.employeeid}`;
+};
 
 // Hover function
 const handleHover = (panel) => {
@@ -131,17 +134,22 @@ onMounted(async () => {
         localStorage.setItem('enccode', enccode.value);
     }
 
-    // const userInfo = await user.getUserInfo();
-    await user.getUserInfo();
-    // console.log('user info: ', userInfo);
+    user.value = await user.getUserInfo();
+    // await user.getUserInfo();
+    // console.log('user info: ', user.value);
 
     if (!patientStore.enccode) {
         // console.log('hehe');
 
         enccode.value = localStorage.getItem('enccode') || enccode.value;
         patientData.value = await injuryService.getOPDPatientData(enccode.value);
+        patientStore.OPDPatientData = patientData.value;
         // console.log('patientData: ', patientData.value);
         await patientStore.loadOPDPatientData(patientData.value);
+
+        const checkPatientTSSRecord = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode);
+        // console.log('checkPatientTSSRecord: ', checkPatientTSSRecord);
+        patientStore.patientTSSRecord = checkPatientTSSRecord;
     }
 
     // Set initial values for detailsData
@@ -176,9 +184,9 @@ watch(
     async (newValue) => {
         patientStore.progressionDay = '';
         // checkPatientTSSRecord.value = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode, patientStore.type_prophylaxis);
-        checkPatientTSSRecord.value = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode);
+        // checkPatientTSSRecord.value = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode);
         // console.log('checkPatientTSSRecord: ', checkPatientTSSRecord.value);
-        patientStore.patientTSSRecord = checkPatientTSSRecord;
+        // patientStore.patientTSSRecord = checkPatientTSSRecord;
         if (newValue !== '' && newValue !== undefined && newValue !== null) {
             panel1Width.value = '10%';
             panel2Width.value = '88%';
@@ -288,7 +296,8 @@ watch(
                     </div>
                 </AccordionTab>
             </Accordion>
-            <PhilhealthForm />
+            <!-- <PhilhealthForm /> -->
+            <Button style="width: 90%" label="Request Philhealth Form" @click="requestPhilhealthForm()" />
         </Dialog>
     </div>
 </template>

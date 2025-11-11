@@ -265,7 +265,7 @@ onMounted(() => {
         <SplitterPanel :size="80">
             <!-- <iframe v-if="pdfUrl" :src="pdfUrl" style="width: 100%; height: 100%" frameborder="0" /> -->
             <!-- <p v-else>No PDF generated yet. Please generate a PDF.</p> -->
-            <iframe v-if="iframeSrc" :src="iframeSrc" style="width: 100%; height: 100%" frameborder="5" />
+            <iframe v-if="iframeSrc" :src="iframeSrc" style="width: 100%; height: 100%" frameborder="5" pointer-events="none" />
         </SplitterPanel>
     </Splitter>
 </template>

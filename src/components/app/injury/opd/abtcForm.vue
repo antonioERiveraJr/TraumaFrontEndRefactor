@@ -22,7 +22,7 @@ const props = defineProps({
     //     required: true
     // }
 });
-const savingDialog = ref(false);
+// const savingDialog = ref(false);
 const loader = ref(true);
 const injuryService = new InjuryService();
 const patientStore = usePatientStore();
@@ -58,6 +58,10 @@ const gcsScoreDetail = () => {
     if (patientStore.details.hospitalFacilityData.gcs_score < 9) {
         return 'Severe';
     }
+};
+
+const requestPhilhealthForm = () => {
+    window.location.href = `http://192.168.6.58:8010/api/loginABTCPhilhealth?hpercode=${patientStore.header.hpercode}&employeeid=${user.value.employeeid}`;
 };
 const openCaseDialogLog = async () => {
     caseLogDialog.value = true;
@@ -557,7 +561,7 @@ onMounted(async () => {
     // console.log('mountedhit');
     // console.log(patientStore.progressionDay);
     patientStore.details.ExternalCauseOfInjury.ext_bite = 'Y';
-    if (patientStore.details.ExternalCauseOfInjury.adverseReaction === '') { 
+    if (patientStore.details.ExternalCauseOfInjury.adverseReaction === '') {
         patientStore.details.ExternalCauseOfInjury.adverseReaction = 'None';
     }
 
@@ -573,8 +577,7 @@ onUnmounted(() => {
     <!-- {{ patientStore.details.followUp }}
     {{ patientStore.progressionDay }}
     {{ patientStore.type_prophylaxis }} -->
-    <div v-if="saving" class="flex justify-content-center align-items-center"
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 98%; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
+    <div v-if="saving" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 98%; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
         <img src="../../../../assets/images/ABTCloader.gif" alt="Loading..." style="height: 10rem; width: 10rem" />
     </div>
     <div id="form" style="height: 95%; width: 100%; overflow-y: auto">
@@ -589,8 +592,7 @@ onUnmounted(() => {
                             </h5>
                         </div>
 
-                        <i class="flex justify-content-center mt-4 pi pi-bars" @click="openCaseDialogLog()"
-                            style="width: 5%; cursor: pointer"></i>
+                        <i class="flex justify-content-center mt-4 pi pi-bars" @click="openCaseDialogLog()" style="width: 5%; cursor: pointer"></i>
                     </SplitterPanel>
                     <SplitterPanel :size="95">
                         <!-- <div v-if="patientStore.patientTSSRecord?.data?.[0] && patientStore.progressionDay !== '0'"> -->
@@ -600,47 +602,31 @@ onUnmounted(() => {
                         </div>
                         <div v-else style="height: 90%">
                             <Accordion :activeIndex="0">
-                                <AccordionTab v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'"
-                                    :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
+                                <AccordionTab v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
                                     <template #header>
                                         <span class="flex align-items-center gap-2 w-full">
-                                            <span style="color: #000080" class="font-bold white-space-nowrap">GENERAL
-                                                DATA</span>
-                                            <i v-if="requiredCountGeneralData > 0"
-                                                v-badge.danger="requiredCountGeneralData" class="pi pi-file-edit"
-                                                style="font-size: 2rem"
-                                                v-tooltip.bottom="`${requiredCountGeneralData} Required Fields`" />
+                                            <span style="color: #000080" class="font-bold white-space-nowrap">GENERAL DATA</span>
+                                            <i v-if="requiredCountGeneralData > 0" v-badge.danger="requiredCountGeneralData" class="pi pi-file-edit" style="font-size: 2rem" v-tooltip.bottom="`${requiredCountGeneralData} Required Fields`" />
                                             <i v-else class="pi pi-file-edit" style="font-size: 2rem" />
                                         </span>
                                     </template>
                                     <NewGeneralData />
                                 </AccordionTab>
-                                <AccordionTab v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'"
-                                    :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
+                                <AccordionTab v-if="patientStore.type_prophylaxis === 'POST-EXPOSURE'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
                                     <template #header>
                                         <span class="flex align-items-center gap-2 w-full">
-                                            <span style="color: #000080"
-                                                class="font-bold white-space-nowrap">PREADMISSION DATA</span>
-                                            <i v-if="requiredCountPreAdmission"
-                                                v-badge.danger="requiredCountPreAdmission" class="pi pi-file-edit"
-                                                style="font-size: 2rem"
-                                                v-tooltip.bottom="`${requiredCountPreAdmission} Required Fields`" />
+                                            <span style="color: #000080" class="font-bold white-space-nowrap">PREADMISSION DATA</span>
+                                            <i v-if="requiredCountPreAdmission" v-badge.danger="requiredCountPreAdmission" class="pi pi-file-edit" style="font-size: 2rem" v-tooltip.bottom="`${requiredCountPreAdmission} Required Fields`" />
                                             <i v-else class="pi pi-file-edit" style="font-size: 2rem" />
                                         </span>
                                     </template>
-                                    <NewPreAdmission
-                                        @update:requiredCountPreAdmission="updateRequiredCountPreAdmission" />
+                                    <NewPreAdmission @update:requiredCountPreAdmission="updateRequiredCountPreAdmission" />
                                 </AccordionTab>
-                                <AccordionTab
-                                    v-if="!patientStore.patientTSSRecord?.data?.[0] || patientStore.progressionDay === '0'"
-                                    :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
+                                <AccordionTab v-if="!patientStore.patientTSSRecord?.data?.[0] || patientStore.progressionDay === '0'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
                                     <template #header>
                                         <span class="flex align-items-center gap-2 w-full">
-                                            <span style="color: #000080" class="font-bold white-space-nowrap">ABTC
-                                                FORM</span>
-                                            <i v-if="requiredCountABTCForm" v-badge.danger="requiredCountABTCForm"
-                                                class="pi pi-file-edit" style="font-size: 2rem"
-                                                v-tooltip.bottom="`${requiredCountABTCForm} Required Fields`" />
+                                            <span style="color: #000080" class="font-bold white-space-nowrap">ABTC FORM</span>
+                                            <i v-if="requiredCountABTCForm" v-badge.danger="requiredCountABTCForm" class="pi pi-file-edit" style="font-size: 2rem" v-tooltip.bottom="`${requiredCountABTCForm} Required Fields`" />
                                             <i v-else class="pi pi-file-edit" style="font-size: 2rem" />
                                         </span>
                                     </template>
@@ -713,113 +699,110 @@ onUnmounted(() => {
                 </Splitter>
             </SplitterPanel>
 
-            <SplitterPanel hidden v-if="size === 35" class="justify-content-center rainbow-border" :size="25"
-                :minSize="10" style="min-height: 98%; height: 100%; overflow-y: auto">
+            <SplitterPanel hidden v-if="size === 35" class="justify-content-center rainbow-border" :size="25" :minSize="10" style="min-height: 98%; height: 100%; overflow-y: auto">
                 <div class="sticky">
-                    <div v-if="loader" class="flex justify-content-center align-items-center"
-                        style="top: 0; left: 0; width: 100%; height: 98%; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
+                    <div v-if="loader" class="flex justify-content-center align-items-center" style="top: 0; left: 0; width: 100%; height: 98%; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
                         <img src="@/assets/images/loader.gif" alt="Loading..." style="height: 10rem; width: 10rem" />
                     </div>
                     <div v-else>
-                        <Fieldset style="width: 100%" :toggleable="true" :collapsed="collapsObjective"
-                            :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '1rem' } } }">
+                        <Fieldset style="width: 100%" :toggleable="true" :collapsed="collapsObjective" :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '1rem' } } }">
                             <template #legend>
                                 <span style="color: #000080" class="font-bold white-space-nowrap">SUBJECTIVE</span>
                             </template>
 
                             <div class="grid grid-cols-2 gap-2 justify-content-center">
                                 <div style="width: 46%">
-                                    <label for="noi" class="p-float-label text-black text-s"
-                                        style="color: #000080"><i>Nature of
-                                            Injury </i></label>
-                                    <Textarea id="hpercode" type="text" :pt="{
-                                        root: {
-                                            border: '2px dashed green',
-                                            padding: '10px',
-                                            borderRadius: '4px'
-                                        }
-                                    }" v-model="patientStore.header.doctor_noi"
-                                        class="font-bold mb-1 border border-black-500" autoResize readonly
-                                        style="width: 100%" />
+                                    <label for="noi" class="p-float-label text-black text-s" style="color: #000080"><i>Nature of Injury </i></label>
+                                    <Textarea
+                                        id="hpercode"
+                                        type="text"
+                                        :pt="{
+                                            root: {
+                                                border: '2px dashed green',
+                                                padding: '10px',
+                                                borderRadius: '4px'
+                                            }
+                                        }"
+                                        v-model="patientStore.header.doctor_noi"
+                                        class="font-bold mb-1 border border-black-500"
+                                        autoResize
+                                        readonly
+                                        style="width: 100%"
+                                    />
                                 </div>
                                 <div style="width: 46%">
-                                    <label for="noi" class="p-float-label text-black text-s"
-                                        style="color: #000080"><i>Place of
-                                            Injury </i></label>
-                                    <Textarea id="hpercode" type="text" v-model="patientStore.header.doctor_poi"
-                                        class="font-bold mb-1 border border-black-500" autoResize readonly
-                                        style="width: 100%" />
+                                    <label for="noi" class="p-float-label text-black text-s" style="color: #000080"><i>Place of Injury </i></label>
+                                    <Textarea id="hpercode" type="text" v-model="patientStore.header.doctor_poi" class="font-bold mb-1 border border-black-500" autoResize readonly style="width: 100%" />
                                 </div>
                                 <div style="width: 46%">
-                                    <label for="noi" class="p-float-label text-black text-s"
-                                        style="color: #000080"><i>Date of
-                                            Injury </i></label>
-                                    <InputText id="hpercode" type="text"
-                                        v-model="patientStore.details.generalData.doctor_doi"
-                                        class="font-bold mb-1 border border-black-500" readonly style="width: 100%" />
+                                    <label for="noi" class="p-float-label text-black text-s" style="color: #000080"><i>Date of Injury </i></label>
+                                    <InputText id="hpercode" type="text" v-model="patientStore.details.generalData.doctor_doi" class="font-bold mb-1 border border-black-500" readonly style="width: 100%" />
                                 </div>
                                 <div style="width: 46%">
-                                    <label for="noi" class="p-float-label text-black text-s"
-                                        style="color: #000080"><i>Time of
-                                            Injury </i></label>
-                                    <InputText id="hpercode" type="text"
-                                        v-model="patientStore.details.generalData.doctor_toi"
-                                        class="font-bold mb-1 border border-black-500" readonly style="width: 100%" />
+                                    <label for="noi" class="p-float-label text-black text-s" style="color: #000080"><i>Time of Injury </i></label>
+                                    <InputText id="hpercode" type="text" v-model="patientStore.details.generalData.doctor_toi" class="font-bold mb-1 border border-black-500" readonly style="width: 100%" />
                                 </div>
                             </div>
-                            <label for="details" class="p-float-label text-black text-s"
-                                style="color: #000080"><i>Details
-                                </i></label>
+                            <label for="details" class="p-float-label text-black text-s" style="color: #000080"><i>Details </i></label>
                             <div>
-                                <Textarea :pt="{
-                                    root: {
-                                        style: {
-                                            width: '100%',
-                                            overflow: 'hidden',
-                                            border: '2px dashed #ccc',
-                                            borderRadius: '4px',
-                                            padding: '5px',
-                                            boxSizing: 'border-box',
-                                            resize: 'none',
-                                            backgroundColor: '#ececec',
-                                            color: '#666',
-                                            fontSize: '13px'
+                                <Textarea
+                                    :pt="{
+                                        root: {
+                                            style: {
+                                                width: '100%',
+                                                overflow: 'hidden',
+                                                border: '2px dashed #ccc',
+                                                borderRadius: '4px',
+                                                padding: '5px',
+                                                boxSizing: 'border-box',
+                                                resize: 'none',
+                                                backgroundColor: '#ececec',
+                                                color: '#666',
+                                                fontSize: '13px'
+                                            }
                                         }
-                                    }
-                                }" style="width: 100%" v-model="detailsValue" class="mt-1 justify-content-center"
-                                    disabled autoResize />
+                                    }"
+                                    style="width: 100%"
+                                    v-model="detailsValue"
+                                    class="mt-1 justify-content-center"
+                                    disabled
+                                    autoResize
+                                />
                                 <!-- <i v-badge="'customize'" size="xlarge" class="flex justify-content-end mr-5 badge-button" style="font-size: 2rem" @click="customizedDetails = detailsValue" /> -->
                             </div>
 
                             <!-- <div><Textarea v-if="customizedDetails" style="width: 100%" v-model="customizedDetails" class="mt-1 justify-content-center font-bold" autoResize /></div>
                             <div style="width: 100%" class="flex justify-content-center"><i v-if="customizedDetails" v-badge.secondary="'final.Detail'" style="font-size: 2rem" /></div> -->
                         </Fieldset>
-                        <Fieldset style="width: 100%" :toggleable="true"
-                            :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '1rem' } } }"
-                            :collapsed="collapsSubjective">
+                        <Fieldset style="width: 100%" :toggleable="true" :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '1rem' } } }" :collapsed="collapsSubjective">
                             <template #legend>
                                 <span class="flex align-items-center gap-2 w-full">
                                     <span style="color: #000080" class="font-bold white-space-nowrap">OBJECTIVE</span>
                                 </span>
                             </template>
                             <div>
-                                <Textarea :pt="{
-                                    root: {
-                                        style: {
-                                            width: '100%',
-                                            overflow: 'hidden',
-                                            border: '2px dashed #ccc',
-                                            borderRadius: '4px',
-                                            padding: '5px',
-                                            boxSizing: 'border-box',
-                                            resize: 'none',
-                                            backgroundColor: '#ececec',
-                                            color: '#666',
-                                            fontSize: '13px'
+                                <Textarea
+                                    :pt="{
+                                        root: {
+                                            style: {
+                                                width: '100%',
+                                                overflow: 'hidden',
+                                                border: '2px dashed #ccc',
+                                                borderRadius: '4px',
+                                                padding: '5px',
+                                                boxSizing: 'border-box',
+                                                resize: 'none',
+                                                backgroundColor: '#ececec',
+                                                color: '#666',
+                                                fontSize: '13px'
+                                            }
                                         }
-                                    }
-                                }" style="width: 100%" v-model="patientStore.header.doctor_objective" disabled
-                                    autoResize />
+                                    }"
+                                    style="width: 100%"
+                                    v-model="patientStore.header.doctor_objective"
+                                    disabled
+                                    autoResize
+                                />
                                 <!-- <i v-badge="'customize'" size="xlarge" class="flex justify-content-end mr-5 badge-button" style="font-size: 4rem" @click="customizedObjective = patientStore.header.doctor_objective" /> -->
                             </div>
 
@@ -828,31 +811,35 @@ onUnmounted(() => {
                                 <i v-if="customizedObjective" v-badge.secondary="'final.Objective'" style="font-size: 2rem" />
                             </div> -->
                         </Fieldset>
-                        <Fieldset style="width: 100%" :toggleable="true"
-                            :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '1rem' } } }"
-                            :collapsed="collapsDiagnosis">
+                        <Fieldset style="width: 100%" :toggleable="true" :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '1rem' } } }" :collapsed="collapsDiagnosis">
                             <template #legend>
                                 <span class="flex align-items-center gap-2 w-full">
                                     <span style="color: #000080" class="font-bold white-space-nowrap">DIAGNOSIS</span>
                                 </span>
                             </template>
                             <div>
-                                <Textarea style="width: 100%" :pt="{
-                                    root: {
-                                        style: {
-                                            width: '100%',
-                                            overflow: 'hidden',
-                                            border: '2px dashed #ccc',
-                                            borderRadius: '4px',
-                                            padding: '5px',
-                                            boxSizing: 'border-box',
-                                            resize: 'none',
-                                            backgroundColor: '#ececec',
-                                            color: '#666',
-                                            fontSize: '13px'
+                                <Textarea
+                                    style="width: 100%"
+                                    :pt="{
+                                        root: {
+                                            style: {
+                                                width: '100%',
+                                                overflow: 'hidden',
+                                                border: '2px dashed #ccc',
+                                                borderRadius: '4px',
+                                                padding: '5px',
+                                                boxSizing: 'border-box',
+                                                resize: 'none',
+                                                backgroundColor: '#ececec',
+                                                color: '#666',
+                                                fontSize: '13px'
+                                            }
                                         }
-                                    }
-                                }" v-model="patientStore.header.doctor_diagnosis" disabled autoResize />
+                                    }"
+                                    v-model="patientStore.header.doctor_diagnosis"
+                                    disabled
+                                    autoResize
+                                />
                                 <!-- <i v-badge="'customize'" size="xlarge" class="flex justify-content-end mr-5 badge-button" style="font-size: 4rem" @click="customizedDiagnosis = patientStore.header.doctor_diagnosis" /> -->
                             </div>
 
@@ -876,20 +863,30 @@ onUnmounted(() => {
             :latestEntry="latestEntryDoc"
             @update:saving="updateSaving"
         /> -->
-        <SaveOPDButton @update:customizedObjectives="updateCustomizedObjective"
-            @update:customizedDiagnosis="updateCustomizedDiagnosis" @update:customizedDetails="updateCustomizedDetails"
-            :objective="customizedObjective" :details="customizedDetails" :diagnosis="customizedDiagnosis"
-            :latestEntry="latestEntryDoc" @update:saving="updateSaving" />
-        <SaveOPDTSSOnlyButton @update:customizedObjectives="updateCustomizedObjective"
-            @update:customizedDiagnosis="updateCustomizedDiagnosis" @update:customizedDetails="updateCustomizedDetails"
-            :objective="customizedObjective" :details="customizedDetails" :diagnosis="customizedDiagnosis"
-            :latestEntry="latestEntryDoc" @update:saving="updateSaving" />
+        <SaveOPDButton
+            @update:customizedObjectives="updateCustomizedObjective"
+            @update:customizedDiagnosis="updateCustomizedDiagnosis"
+            @update:customizedDetails="updateCustomizedDetails"
+            :objective="customizedObjective"
+            :details="customizedDetails"
+            :diagnosis="customizedDiagnosis"
+            :latestEntry="latestEntryDoc"
+            @update:saving="updateSaving"
+        />
+        <SaveOPDTSSOnlyButton
+            @update:customizedObjectives="updateCustomizedObjective"
+            @update:customizedDiagnosis="updateCustomizedDiagnosis"
+            @update:customizedDetails="updateCustomizedDetails"
+            :objective="customizedObjective"
+            :details="customizedDetails"
+            :diagnosis="customizedDiagnosis"
+            :latestEntry="latestEntryDoc"
+            @update:saving="updateSaving"
+        />
     </div>
-    <Dialog v-model:visible="caseLogDialog" header="PATIENT's ABTC LOG" :style="{ width: '25rem' }" position="topright"
-        :modal="true" :draggable="false">
+    <Dialog v-model:visible="caseLogDialog" header="PATIENT's ABTC LOG" :style="{ width: '25rem' }" position="topright" :modal="true" :draggable="false">
         <Accordion :activeIndex="0">
-            <AccordionTab v-for="(caseGroup, index) in groupedCases" :key="index"
-                :header="`${formatDate(caseGroup.lockCase)} - ${caseGroup.status}`">
+            <AccordionTab v-for="(caseGroup, index) in groupedCases" :key="index" :header="`${formatDate(caseGroup.lockCase)} - ${caseGroup.status}`">
                 <div v-for="(caseItem, itemIndex) in caseGroup.items" :key="itemIndex">
                     <p class="m-0">
                         <strong>Vaccination Day:</strong> {{ caseItem.vaccineday }}<br />
@@ -900,6 +897,7 @@ onUnmounted(() => {
                     <hr v-if="itemIndex < caseGroup.items.length - 1" style="margin: 10px 0; border: 1px solid #ccc" />
                 </div>
             </AccordionTab>
+            <Button style="width: 90%" label="Request Philhealth Form" @click="requestPhilhealthForm()" />
         </Accordion>
     </Dialog>
 </template>

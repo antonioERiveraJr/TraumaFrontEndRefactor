@@ -22,6 +22,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
     const admEnccode = ref('');
     const pending = ref('N');
     const status = ref('');
+    const OPDPatientData = ref();
     // const resetSelectedPatients = ref(false);
     const sameDay = ref(false);
     const loadSignal = ref(false);
@@ -935,6 +936,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
                 }
 
                 //reset the vaccine given if it's a follow up form
+            } else {
+                sameDay.value = true;
             }
             // loadSignal.value = fase;
             // console.log('done loading');
@@ -1698,6 +1701,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         pending,
         doctor_plan,
         sameDay,
+        OPDPatientData,
         primetss
     };
 });
