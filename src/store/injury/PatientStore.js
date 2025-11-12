@@ -43,6 +43,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
     const storeCities = ref([]);
     const storeBrgy = ref([]);
     const doctor_plan = ref('');
+    const chief_complaint = ref('');
     const type_prophylaxis = ref();
     const primetss = ref(false);
 
@@ -903,10 +904,11 @@ export const usePatientStore = defineStore('PatientStore', () => {
         // await new Promise(resolve => setTimeout(resolve, 5000));
         // console.log('loading');
         // console.log('stored: ', patientData);
+        // console.log('enccode: ', enccode.value);
         if (patientData?.data && type_prophylaxis.value === patientData.data.type_prophylaxis) {
+            enccode.value = patientData.data.enccode;
             header.value = patientData.data.header;
-
-            // console.log('fetched data: ', patientData.data);
+            // console.log('fetched data: ', patientData.data.enccode);
             header.value.hpercode = patientData.data.header.hpercode;
             details.value = patientData.data;
             // console.log('updated data: ', details);
@@ -924,6 +926,9 @@ export const usePatientStore = defineStore('PatientStore', () => {
                     sameDay.value = false;
                     // console.log('day not the same : ', progressionDay.value + ': ', patientData.data.progressionDay);
                     details.value.followUp = { ...defaultDetails.value.followUp };
+
+                    //set current enccode if day doesnt have data
+                    enccode.value = localStorage.getItem('enccode') || enccode.value;
 
                     if (progressionDay.value !== '0') {
                         details.value.ABTC = { ...defaultDetails.value.ABTC };
@@ -954,9 +959,16 @@ export const usePatientStore = defineStore('PatientStore', () => {
         } else {
             if (!patientData?.data) {
                 primetss.value = true;
-            }
 
-            // console.log('doesnt have data: ', patientData);
+                // enccode.value = localStorage.getItem('enccode') || enccode.value;
+            }
+            // else {
+            //     enccode.value = patientData.data.enccode;
+            // }
+
+            // console.log('doesnt have data: ', patientData.data.enccode);
+
+            // enccode.value = patientData.data.enccode;
             header.value.patname = patientData.patientname;
             header.value.hpercode = patientData.hpercode;
             enccode.value = patientData.enccode;
@@ -1702,6 +1714,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         doctor_plan,
         sameDay,
         OPDPatientData,
-        primetss
+        primetss,
+        chief_complaint
     };
 });

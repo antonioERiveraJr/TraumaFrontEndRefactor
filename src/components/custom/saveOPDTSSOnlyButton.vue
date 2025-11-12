@@ -1,13 +1,12 @@
 <script setup>
 import { useToast } from 'primevue/usetoast';
-import { inject, ref, computed, watch } from 'vue';
+import { inject, ref, computed, watch, onMounted } from 'vue';
 import { usePatientStore } from '@/store/injury/PatientStore';
 import useToastWaitingForFetch from '@/composables/useToastWaitingForFetch';
 // import InjuryService from '../../service/InjuryService';
 import createValidationRules from '../../validation/ABTCValidation';
 import Swal from 'sweetalert2';
 import { useUserStore } from '../../store/general/UserStore';
-import { size } from 'lodash';
 const user = useUserStore();
 const toast = useToast();
 const emit = defineEmits(['update:saving', 'update:customizedObjectives', 'update:customizedDiagnosis', 'update:customizedDetails']);
@@ -46,7 +45,8 @@ const obj = ref(patientStore.header.doctor_objective);
 const plan = ref(patientStore.header.doctor_plan);
 const loader = ref(true);
 
-const allowUpdateFormn = async () => {
+const allowUpdateForm = async () => {
+    // console.log('empID: ', user.userInfo.employeeid, 'entryBy: ', props?.latestEntry?.value?.entryby);
     if (user.userInfo.employeeid === props?.latestEntry?.value?.entryby) {
         isUpdateForm.value = true;
     } else {
@@ -191,6 +191,10 @@ const savePatientData = async () => {
     // await injuryService.insertDiagnosis(patientStore.enccode, patientStore.header.final_doctor_diagnosis, isUpdateForm.value);
 
     const response = await patientStore.saveOPDFormattedData();
+    console.log('insertPlan: ', patientStore.doctor_plan);
+
+    // const insertChiefComplaint = await injuryService.insertChiefComplaint(patientStore.enccode, patientStore.chief_complaint, patientStore.header.hpercode, isUpdateForm.value, patientStore.ufiveID);
+    console.log('insertChiefComplaint: ', patientStore.chief_complaint);
 
     return response;
 };
@@ -541,12 +545,12 @@ const cancelForm = async () => {
 };
 const patientDataIsLoaded = async () => {
     // await user.getUserInfo();
-    allowUpdateFormn();
+    allowUpdateForm();
 };
 watch(
     () => patientStore.latestEntryAvailable,
-    () => {
-        if (patientStore.latestEntryAvailable === true) {
+    (newValue) => {
+        if (newValue === true) {
             patientDataIsLoaded();
         }
     }
@@ -587,6 +591,9 @@ watch(diag, (newValue) => {
 
 watch(det, (newValue) => {
     emit('update:customizedDetails', newValue);
+});
+onMounted(() => {
+    allowUpdateForm();
 });
 </script>
 <template>

@@ -106,7 +106,7 @@ const groupPatientData = (patientsABTCLog) => {
 };
 
 onMounted(async () => {
-    loading.value = true;
+    loading.value = true; 
 
     const fullUrl = window.location.href;
     const match = fullUrl.match(/[?&]enccode=([^&#]*)/);

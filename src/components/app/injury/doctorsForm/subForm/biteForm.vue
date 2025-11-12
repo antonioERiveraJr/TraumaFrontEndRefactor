@@ -508,7 +508,7 @@ watch(
                             style="text-transform: uppercase; width: 100%"
                             placeholder="Details....."
                         />
-                        {{ patientStore.details.ABTC.ats }}
+                        <!-- {{ patientStore.details.ABTC.ats }} -->
                     </div>
                 </div>
             </div>

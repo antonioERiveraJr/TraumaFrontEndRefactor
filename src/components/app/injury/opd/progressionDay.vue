@@ -106,7 +106,7 @@ const getBadge = (day) => {
 
             if (checkProphylaxis) {
                 disableButton.value = true;
-                return checkProphylaxis.tStamp === null ? '' : { tStamp: `${checkProphylaxis.tStamp}<\n{checkProphylaxis.prophylaxis}(day ${checkProphylaxis.vaccineday})`, disableButton: disableButton.value };
+                return checkProphylaxis.tStamp === null ? '' : { tStamp: `${checkProphylaxis.tStamp}\n${checkProphylaxis.prophylaxis}(day ${checkProphylaxis.vaccineday})`, disableButton: disableButton.value };
             }
         } else {
             return matchingRecord ? (matchingRecord.tStamp === null ? '' : { tStamp: matchingRecord.tStamp, disableButton: disableButton.value }) : null;
@@ -138,7 +138,7 @@ const newCase = async () => {
 const dataIsLoaded = async () => {
     // emit('update:loading', true);
     // console.log('hpercode: ', patientStore.header.hpercode);
-    vaccineDays.value = patientStore?.patientTSSRecord?.data.map((record) => record.vaccineday);
+    vaccineDays.value = patientStore?.patientTSSRecord?.data?.map((record) => record.vaccineday);
     // console.log('tsssrecode: ', patientStore);
 };
 onMounted(() => {

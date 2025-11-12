@@ -159,6 +159,23 @@ export default class InjuryService {
             // throw error;
         }
     }
+    async isOPDABTCFormUpdatable(hpercode, enccode) {
+        try {
+            const response = await axios.get('/isOPDABTCFormUpdatable', {
+                params: { hpercode, enccode },
+
+                headers: {
+                    Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                }
+            });
+
+            return response.data;
+        } catch (error) {
+            console.log('Error fetching latest entry of doctors:', error);
+
+            // throw error;
+        }
+    }
 
     async checkLockedEnccode(enccode) {
         try {
@@ -858,6 +875,53 @@ export default class InjuryService {
                 return err.response;
             });
         return response;
+    }
+    async insertPlan(enccode, plan, hpercode, isUpdateForm, ufiveID) {
+        // console.log('insertObjSubj called with parameters:', {
+        //     isUpdateForm,
+        //     ufiveID
+        // });
+        // alert('hit');
+        const user = useUserStore();
+        const response = await axios
+            .put(
+                'insertObjSubj',
+                { enccode: enccode, plan: plan, hpercode: hpercode, entryby: user.userInfo.employeeid, isUpdateForm: isUpdateForm, ufiveID: ufiveID },
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                    }
+                }
+            )
+            .then((res) => {
+                return res;
+            })
+            .catch((err) => {
+                return err.response;
+            });
+        return response;
+    }
+
+    async insertChiefComplaint(enccode, chief_complaint, hpercode, isUpdateForm, ufiveID) { 
+        const user = useUserStore();
+        const response = await axios
+            .put(
+                'insertChiefComplaint',
+                { enccode: enccode, chief_complaint: chief_complaint, hpercode: hpercode, entryby: user.userInfo.employeeid, isUpdateForm: isUpdateForm, ufiveID: ufiveID },
+                {
+                    headers: {
+                        Authorization: 'Bearer ' + localStorage.getItem('authToken')
+                    }
+                }
+            )
+            .then((res) => {
+                return res;
+            })
+            .catch((err) => {
+                return err.response;
+            });
+            return response;
+     
     }
 
     async archDate(patientEnccode, dateNow) {

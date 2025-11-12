@@ -1,6 +1,6 @@
 <script setup>
 import { useToast } from 'primevue/usetoast';
-import { inject, ref, computed, watch } from 'vue';
+import { inject, ref, computed, watch, onMounted } from 'vue';
 import { usePatientStore } from '@/store/injury/PatientStore';
 import useToastWaitingForFetch from '@/composables/useToastWaitingForFetch';
 import InjuryService from '../../service/InjuryService';
@@ -21,7 +21,7 @@ const patientStore = usePatientStore();
 const injuryService = new InjuryService();
 const isUpdateForm = ref(false);
 const confirmEMRDetails = ref(false);
-const isLocked = ref(false);
+// const isLocked = ref(false);
 const props = defineProps({
     latestEntry: {
         type: Object,
@@ -58,7 +58,7 @@ const det = ref(patientStore.finalDoctorDetails);
 const obj = ref(patientStore.header.doctor_objective);
 const loader = ref(true);
 
-const allowUpdateFormn = async () => {
+const allowUpdateForm = async () => {
     // console.log('user: ', user.userInfo.employeeid, '\nlatest entry user: ', props?.latestEntry?.value?.entryby);
     if (user.userInfo.employeeid === props?.latestEntry?.value?.entryby) {
         isUpdateForm.value = true;
@@ -171,6 +171,12 @@ const savePatientData = async () => {
         isUpdateForm.value,
         patientStore.ufiveID
     );
+
+    // const insertPlan = await injuryService.insertPlan(patientStore.enccode, patientStore.doctor_plan, patientStore.header.hpercode, isUpdateForm.value, patientStore.ufiveID);
+    console.log('insertPlan: ', patientStore.enccode, patientStore.doctor_plan, patientStore.header.hpercode, isUpdateForm.value, patientStore.ufiveID);
+
+    // const insertChiefComplaint = await injuryService.insertChiefComplaint(patientStore.enccode, patientStore.chief_complaint, patientStore.header.hpercode, isUpdateForm.value, patientStore.ufiveID);
+    console.log('insertChiefComplaint: ', patientStore.enccode, patientStore.chief_complaint, patientStore.header.hpercode, isUpdateForm.value, patientStore.ufiveID);
 
     if (!patientStore.ufiveID) {
         // console.log('insert:', insert.data);
@@ -743,9 +749,9 @@ const confirmSaves = async (event) => {
 const patientDataIsLoaded = async () => {
     // await user.getUserInfo();
 
-    isLocked.value = await injuryService.checkLockedEnccode(patientStore.enccode);
+    // isLocked.value = await injuryService.checkLockedEnccode(patientStore.enccode);
     // console.log('isLocked:', isLocked);
-    allowUpdateFormn();
+    allowUpdateForm();
 };
 // onMounted(async () => {
 //     loader.value = true;
@@ -812,15 +818,18 @@ watch(diag, (newValue) => {
 watch(det, (newValue) => {
     emit('update:customizedDetails', newValue);
 });
+onMounted(() => {
+    allowUpdateForm();
+});
 </script>
 <template>
     <!-- <div v-if="loader" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)"></div> -->
     <div style="width: 100%; height: 100%">
         <span class="flex" style="width: 100%; height: 100%">
-            <div v-if="isLocked === '1'">
+            <!-- <div v-if="isLocked === '1'">
                 <Message :closable="false">Encounter is Locked</Message>
-            </div>
-            <div v-else style="width: 100%; height: 100%">
+            </div> -->
+            <div style="width: 100%; height: 100%">
                 <div v-if="isUpdateForm" style="height: 100%">
                     <Button
                         style="width: 100%; height: 100%"

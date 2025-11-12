@@ -11,7 +11,11 @@ import BiteForm from '../doctorsForm/subForm/biteForm.vue';
 import SaveOPDTSSOnlyButton from '../../../custom/saveOPDTSSOnlyButton.vue';
 import FollowUpForm from './followUpForm.vue';
 import SaveOPDButton from '../../../custom/saveOPDButton.vue';
+import { useUserStore } from '../../../../../src/store/general/UserStore';
+import { is } from '@vee-validate/rules';
 
+const isFollowUpForm = ref(false);
+const user = useUserStore();
 const props = defineProps({
     enccode: {
         type: String,
@@ -47,6 +51,7 @@ const latestEntry = ref();
 const barangay = ref();
 const caseLogDialog = ref(false);
 const groupedCases = ref([]);
+const isUpdateForm = ref(false);
 ref();
 const gcsScoreDetail = () => {
     if (patientStore.details.hospitalFacilityData.gcs_score > 12) {
@@ -294,14 +299,42 @@ const updateDetailsValue = () => {
     }
 };
 const patientDataIsLoaded = async () => {
+    if (patientStore.patientTSSRecord?.data?.[0]) {
+        const primeRecords = patientStore.patientTSSRecord.data.filter((record) => record.vaccineday === patientStore.progressionDay && (record.primeTSS === 'Y' || record.primeTSS === 'I'));
+
+        // console.log('Prime Records: ', primeRecords);
+
+        const hasPrimeRecord = primeRecords.length > 0;
+        // console.log('Has Prime Record: ', hasPrimeRecord);
+        if (!hasPrimeRecord) {
+            isFollowUpForm.value = true;
+        } else {
+            isFollowUpForm.value = false;
+        }
+
+        // if (isFormPrime.find((record) => record === true)) {
+        //     console.log('isFormPrime: ', isFormPrime);
+        //     isFollowUpForm.value = true;
+        // } else {
+        //     false;
+        // }
+    }
     // console.log('progression Day: ', patientStore.progressionDay);
     // patientStore.dataIsLoaded = false;
     // patientStore.dataIsLoaded = true;
     // console.log('data is loaded: ', patientStore.dataIsLoaded);
 
+    patientStore.latestEntryAvailable = false;
     try {
-        latestEntry.value = await injuryService.getLatestEntryOfDoctors(patientStore.enccode);
+        latestEntry.value = await injuryService.isOPDABTCFormUpdatable(patientStore.header.hpercode, patientStore.enccode);
         latestEntryDoc.value = latestEntry;
+        // console.log('latestEntryDocs: ', latestEntryDoc.value.value);
+        if (latestEntryDoc.value.value !== undefined) {
+            isUpdateForm.value = true;
+        } else {
+            isUpdateForm.value = false;
+        }
+        // console.log('latestEntryDocs: ', latestEntryDoc.value.value);
         patientStore.latestEntryAvailable = true;
     } catch (error) {
         console.log('Error fetching latest entry of doctors:', error);
@@ -338,6 +371,7 @@ const patientDataIsLoaded = async () => {
         await new Promise((resolve) => setTimeout(resolve, 3000));
         loadLocations();
     }
+
     loader.value = false;
 };
 watch(
@@ -512,7 +546,7 @@ watch(
 
                 requiredCountFollowUp.value = missingFields.length;
 
-                console.log('Missing required follow-up fields:', missingFields);
+                // console.log('Missing required follow-up fields:', missingFields);
             }
         }
     },
@@ -596,7 +630,8 @@ onUnmounted(() => {
                     </SplitterPanel>
                     <SplitterPanel :size="95">
                         <!-- <div v-if="patientStore.patientTSSRecord?.data?.[0] && patientStore.progressionDay !== '0'"> -->
-                        <div v-if="patientStore.patientTSSRecord?.data?.[0] && patientStore.progressionDay !== '0'">
+                        <!-- <div v-if="patientStore.patientTSSRecord?.data?.[0] && patientStore.progressionDay !== '0'"> -->
+                        <div v-if="isFollowUpForm">
                             <FollowUpForm />
                             <!-- <BiteForm /> -->
                         </div>
@@ -622,7 +657,7 @@ onUnmounted(() => {
                                     </template>
                                     <NewPreAdmission @update:requiredCountPreAdmission="updateRequiredCountPreAdmission" />
                                 </AccordionTab>
-                                <AccordionTab v-if="!patientStore.patientTSSRecord?.data?.[0] || patientStore.progressionDay === '0'" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
+                                <AccordionTab v-if="!isFollowUpForm" :pt="{ headerAction: { style: { backgroundColor: '', padding: '1rem' } } }">
                                     <template #header>
                                         <span class="flex align-items-center gap-2 w-full">
                                             <span style="color: #000080" class="font-bold white-space-nowrap">ABTC FORM</span>
@@ -851,7 +886,7 @@ onUnmounted(() => {
             </SplitterPanel>
         </Splitter>
     </div>
-    <div style="height: 5%; width: 100%" class="flex" v-if="patientStore.sameDay === false">
+    <div style="height: 5%; width: 100%" class="flex" v-if="patientStore.sameDay === false || isUpdateForm">
         <!-- <SaveOPDButton
             style="height: 100%"
             @update:customizedObjectives="updateCustomizedObjective"
