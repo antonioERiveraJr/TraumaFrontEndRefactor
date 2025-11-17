@@ -138,7 +138,45 @@ const positive_negative_option = ['+', '-'];
                 </div>
             </Fieldset>
         </Transition>
+
         <!-- <label for="Tenderness" v-if="PatientStore.details.followUp.finding === 'WITH FINDINGS'" class="text-black text-xs" style="color: #000080; width: 100%"><i>Finding </i></label> -->
         <!-- <Textarea v-if="PatientStore.details.followUp.finding === 'WITH FINDINGS'" v-model="PatientStore.details.followUp.finding_sp" style="width: 100%; font-weight: bold" /> -->
     </div>
+    <Fieldset
+        style="width: 100%; margin-top: 1%;"
+        :toggleable="true"
+        :collapsed="true"
+        :pt="{
+            root: { style: { backgroundColor: 'transparent', border: 'none', padding: 'none' } },
+            legend: { style: { border: 'none', backgroundColor: 'transparent', textAlign: 'center' } },
+            toggler: { style: { padding: '1rem' } }
+        }"
+    >
+        <template #legend>
+            <span style="color: #000080" class="font-bold white-space-nowrap">MEDICATION/ANTIBIOTIC</span>
+        </template>
+        <Textarea
+            :pt="{
+                root: {
+                    style: {
+                        width: '100%',
+                        overflow: 'hidden',
+                        border: '2px dashed #ccc',
+                        borderRadius: '4px',
+                        padding: '5px',
+                        boxSizing: 'border-box',
+                        resize: 'none',
+                        backgroundColor: '#ececec',
+                        color: '#666',
+                        fontWeight: 'bold',
+                        fontSize: '13px'
+                    }
+                }
+            }"
+            style="width: 100%"
+            v-model="PatientStore.details.ABTC.medication"
+            class="mt-1 justify-content-center"
+            autoResize
+        />
+    </Fieldset>
 </template>

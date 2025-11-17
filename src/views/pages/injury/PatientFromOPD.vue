@@ -8,7 +8,7 @@ import InjuryService from '../../../service/InjuryService';
 import ABTCForm from '../../../components/app/injury/opd/ABTCForm.vue';
 import ProgressionDay from '../../../components/app/injury/opd/progressionDay.vue';
 import { Vue3Lottie } from 'vue3-lottie';
-import test from '../../../assets/images/ABTCloading.json';
+import ABTCloading from '../../../assets/images/ABTCloading.json';
 
 const patientStore = usePatientStore();
 const validations = createValidationRules();
@@ -69,6 +69,41 @@ const openCaseDialogLog = async () => {
     groupPatientData(patientsABTCLog);
 };
 
+// const groupPatientData = (patientsABTCLog) => {
+//     const grouped = patientsABTCLog.reduce((acc, curr) => {
+//         const lockCase = curr.lockCase.trim();
+//         const caseData = {
+//             vaccineday: curr.vaccineday,
+//             prophylaxis: curr.prophylaxis,
+//             tStamp: curr.tStamp,
+//             status: curr.status // Capture the status
+//         };
+
+//         if (!acc[lockCase]) {
+//             acc[lockCase] = { lockCase, items: [caseData] }; // Store case data
+//         } else {
+//             acc[lockCase].items.push(caseData); // Add to existing lockCase
+//         }
+//         return acc;
+//     }, {});
+
+//     // Update the status based on the conditions
+//     for (const key in grouped) {
+//         const caseGroup = grouped[key];
+//         const itemCount = caseGroup.items.length;
+//         const latestProphylaxis = caseGroup.items[itemCount - 1].prophylaxis;
+
+//         if (latestProphylaxis === 'POST-EXPOSURE' && itemCount >= 3) {
+//             caseGroup.status = 'Finished';
+//         } else if (latestProphylaxis === 'PRE-EXPOSURE' && itemCount >= 2) {
+//             caseGroup.status = 'Finished';
+//         } else {
+//             caseGroup.status = 'Unfinished';
+//         }
+//     }
+
+//     groupedCases.value = Object.values(grouped); // Set the grouped cases
+// };
 const groupPatientData = (patientsABTCLog) => {
     const grouped = patientsABTCLog.reduce((acc, curr) => {
         const lockCase = curr.lockCase.trim();
@@ -90,12 +125,10 @@ const groupPatientData = (patientsABTCLog) => {
     // Update the status based on the conditions
     for (const key in grouped) {
         const caseGroup = grouped[key];
-        const itemCount = caseGroup.items.length;
-        const latestProphylaxis = caseGroup.items[itemCount - 1].prophylaxis;
+        const hasDay7 = caseGroup.items.some((item) => item.vaccineday === '7');
 
-        if (latestProphylaxis === 'POST-EXPOSURE' && itemCount >= 3) {
-            caseGroup.status = 'Finished';
-        } else if (latestProphylaxis === 'PRE-EXPOSURE' && itemCount >= 2) {
+        // Set the status based on the presence of day 7
+        if (hasDay7) {
             caseGroup.status = 'Finished';
         } else {
             caseGroup.status = 'Unfinished';
@@ -106,7 +139,7 @@ const groupPatientData = (patientsABTCLog) => {
 };
 
 onMounted(async () => {
-    loading.value = true; 
+    loading.value = true;
 
     const fullUrl = window.location.href;
     const match = fullUrl.match(/[?&]enccode=([^&#]*)/);
@@ -274,7 +307,7 @@ watch(
                             <SplitterPanel class="flex" :size="95">
                                 <!-- {{ test }} -->
                                 <!-- <img class="flex justify-content-center" src="@/assets/images/ABTCloader.gif" alt="Loading..." /> -->
-                                <Vue3Lottie :animationData="test" :height="200" :width="200" />
+                                <Vue3Lottie :animationData="ABTCloading" :height="200" :width="200" />
                             </SplitterPanel>
                         </Splitter>
                     </SplitterPanel>
@@ -282,7 +315,7 @@ watch(
                 </div>
             </div>
         </div>
-        <Dialog v-model:visible="caseLogDialog" header="PATIENT's ABTC LOG" :style="{ width: '25rem' }" position="topright" :modal="true" :draggable="false">
+        <Dialog v-model:visible="caseLogDialog" header="PATIENT's ABTC LOG" class="flex" :style="{ width: '25rem' }" position="topright" :modal="true" :draggable="false">
             <Accordion v-model:activeIndex="activeAccordionIndex">
                 <AccordionTab v-for="(caseGroup, index) in groupedCases" :key="index" :header="`${formatDate(caseGroup.lockCase)} - ${caseGroup.status}`">
                     <div v-for="(caseItem, itemIndex) in caseGroup.items" :key="itemIndex">
@@ -297,7 +330,7 @@ watch(
                 </AccordionTab>
             </Accordion>
             <!-- <PhilhealthForm /> -->
-            <Button style="width: 90%" label="Request Philhealth Form" @click="requestPhilhealthForm()" />
+            <Button class="flex justify-content-center" style="width: 100%; margin-top: 5%;" label="Request Philhealth Form" @click="requestPhilhealthForm()" />
         </Dialog>
     </div>
 </template>

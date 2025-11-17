@@ -15,6 +15,7 @@ const gcsCodeScore = ref();
 const dataIsLoaded = ref(false);
 const v$ = useVuelidate(createValidationRules(), patientStore.details);
 const diagnosisLocation = ref('dx');
+const noPhysical = ref(true);
 const validate = async () => {
     const natureOfInjury = await v$.value.natureOfInjury.$validate();
     return { natureOfInjury };
@@ -321,7 +322,36 @@ const patientDataIsLoaded = async () => {
     loading.value = false;
     onResize();
     dataIsLoaded.value = true;
+    const hasInjury = [
+        patientStore.details.natureOfInjury.noi_no_physical,
+        patientStore.details.natureOfInjury.noi_abrasion,
+        patientStore.details.natureOfInjury.noi_burn_r,
+        patientStore.details.natureOfInjury.noi_avulsion,
+        patientStore.details.natureOfInjury.noi_owound,
+        patientStore.details.natureOfInjury.noi_amp,
+        patientStore.details.natureOfInjury.noi_brain,
+        patientStore.details.natureOfInjury.noi_gunshot,
+        patientStore.details.natureOfInjury.noi_stab_wound,
+        patientStore.details.natureOfInjury.noi_concussion,
+        patientStore.details.natureOfInjury.noi_contusion,
+        patientStore.details.natureOfInjury.noi_frac_clo,
+        patientStore.details.natureOfInjury.noi_frac_ope,
+        patientStore.details.natureOfInjury.noi_disl_open,
+        patientStore.details.natureOfInjury.noi_disl_close,
+        patientStore.details.natureOfInjury.noi_punc,
+        patientStore.details.natureOfInjury.noi_others,
+        patientStore.details.natureOfInjury.noi_incision
+    ].includes('Y');
+
+    // Update noPhysical.value based on the presence of injuries
+    if (hasInjury) {
+        noPhysical.value = false; // or some logic based on your needs
+    } else {
+        noPhysical.value = true; // or some logic based on your needs
+    }
+    // Check if any nature of injury is marked as 'Y'
 };
+
 // Lifecycle hook before the component is mounted
 onBeforeMount(() => {
     // Check the initial state of patientStore.dataIsLoaded
@@ -392,7 +422,6 @@ watch(
         }
     }
 );
-const noPhysical = ref(true);
 
 watch(
     () =>

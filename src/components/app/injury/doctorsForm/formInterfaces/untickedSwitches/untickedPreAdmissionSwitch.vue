@@ -41,7 +41,7 @@ watch(
         heights.value = newHeight;
     },
     { immediate: true }
-);
+); 
 </script>
 <template>
     <div v-if="patientStore.progressionDay === ''" :style="{ width: widths < 1500 ? '100%' : '66%' }" class="mt-1">

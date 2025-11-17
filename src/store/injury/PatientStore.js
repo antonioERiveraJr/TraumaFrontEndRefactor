@@ -931,7 +931,12 @@ export const usePatientStore = defineStore('PatientStore', () => {
                     enccode.value = localStorage.getItem('enccode') || enccode.value;
 
                     if (progressionDay.value !== '0') {
-                        details.value.ABTC = { ...defaultDetails.value.ABTC };
+                        // details.value.ABTC = { ...defaultDetails.value.ABTC };
+
+                        details.value.ABTC = {
+                            ...defaultDetails.value.ABTC,
+                            medication: details.value.ABTC.medication // Retain the current value of medication
+                        };
                         // alert('hit');
                         details.value.followUp.complaints = 'NO SUBJECTIVE COMPLAINTS';
                         // console.log('complaints: ', details.value.followUp.complaints);

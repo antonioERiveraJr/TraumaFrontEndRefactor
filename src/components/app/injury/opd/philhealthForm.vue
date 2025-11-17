@@ -2,6 +2,7 @@
 import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
 import axios from 'axios';
 import { useRoute } from 'vue-router'; // Import useRoute
+import Swal from 'sweetalert2';
 
 import CheckBoxMultiple from '../../../custom/checkBoxMultiple.vue';
 
@@ -55,6 +56,11 @@ async function fetchFormData(hpercode) {
                 Authorization: 'Bearer ' + localStorage.getItem('authToken')
             }
         });
+        // console.log('response: ', response.data);
+        if (response.data.length === 0) {
+            await Swal.fire('No Data Found');
+            window.history.back(); 
+        }
 
         formData.value = response.data[0];
     } catch (error) {
@@ -220,7 +226,7 @@ onMounted(() => {
         localStorage.setItem('hpercode', hpercode.value);
     }
 
-    console.log('hpercode: ', hpercode.value);
+    // console.log('hpercode: ', hpercode.value);
 
     fetchFormData(hpercode.value);
 });
@@ -260,7 +266,7 @@ onMounted(() => {
             <label class="p-float-label text-black text-s mt-3" style="color: black"><i> Was the PEP Primary Immunization Schedule Complete? </i></label>
             <Dropdown style="width: 90%" class="ml-5" v-model="formFields.completeImmunization" placeholder="Select Answer" :options="immunizationOptions" multiple />
 
-            <Button style="width: 90%" class="ml-5 mt-5" :disable="allowDownload" severity="info" icon="pi pi-download" label="Generate PDF" @click="generatePDF" />
+            <Button style="width: 90%" class="ml-5 mt-5" :disable="!allowDownload" severity="info" icon="pi pi-download" label="Generate PDF" @click="generatePDF" />
         </SplitterPanel>
         <SplitterPanel :size="80">
             <!-- <iframe v-if="pdfUrl" :src="pdfUrl" style="width: 100%; height: 100%" frameborder="0" /> -->

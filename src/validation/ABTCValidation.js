@@ -43,17 +43,17 @@ export default function createValidationRules() {
             }
         },
         followUp: {
-            complaints: { requiredIf: patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' },
-            adverse_reaction: { requiredIf: patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' },
-            biting: { requiredIf: patientStore.type_prophylaxis === 'POST-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' },
-            finding: { requiredIf: patientStore.type_prophylaxis === 'PRE-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' },
-            finding_sp: { requiredIf: patientStore.details.followUp.finding === 'WITH FINDINGS' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' },
-            // others: { requiredIf: patientStore.progressionDay !== '0'&& patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' },
-            wound_description: { requiredIf: patientStore.type_prophylaxis === 'POST-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' },
-            erythema: { requiredIf: patientStore.type_prophylaxis === 'POST-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' },
-            discharge: { requiredIf: patientStore.type_prophylaxis === 'POST-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' },
-            tenderness: { requiredIf: patientStore.type_prophylaxis === 'POST-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' },
-            hematoma: { requiredIf: patientStore.type_prophylaxis === 'POST-EXPOSURE' && patientStore.progressionDay !== '0'&& patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' }
+            complaints: { requiredIf: patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' && patientStore.patientTSSRecord?.data?.[0] },
+            adverse_reaction: { requiredIf: patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' && patientStore.patientTSSRecord?.data?.[0] },
+            biting: { requiredIf: patientStore.type_prophylaxis === 'POST-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' && patientStore.patientTSSRecord?.data?.[0] },
+            finding: { requiredIf: patientStore.type_prophylaxis === 'PRE-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' && patientStore.patientTSSRecord?.data?.[0] },
+            finding_sp: { requiredIf: patientStore.details.followUp.finding === 'WITH FINDINGS' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' && patientStore.patientTSSRecord?.data?.[0] },
+            // others: { requiredIf: patientStore.progressionDay !== '0'&& patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' &&  patientStore.patientTSSRecord?.data?.[0] },
+            wound_description: { requiredIf: patientStore.type_prophylaxis === 'POST-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' && patientStore.patientTSSRecord?.data?.[0] },
+            erythema: { requiredIf: patientStore.type_prophylaxis === 'POST-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' && patientStore.patientTSSRecord?.data?.[0] },
+            discharge: { requiredIf: patientStore.type_prophylaxis === 'POST-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' && patientStore.patientTSSRecord?.data?.[0] },
+            tenderness: { requiredIf: patientStore.type_prophylaxis === 'POST-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' && patientStore.patientTSSRecord?.data?.[0] },
+            hematoma: { requiredIf: patientStore.type_prophylaxis === 'POST-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' && patientStore.patientTSSRecord?.data?.[0] }
         },
         ABTC: {
             erig: {

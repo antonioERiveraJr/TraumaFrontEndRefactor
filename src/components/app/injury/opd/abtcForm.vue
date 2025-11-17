@@ -12,7 +12,7 @@ import SaveOPDTSSOnlyButton from '../../../custom/saveOPDTSSOnlyButton.vue';
 import FollowUpForm from './followUpForm.vue';
 import SaveOPDButton from '../../../custom/saveOPDButton.vue';
 import { useUserStore } from '../../../../../src/store/general/UserStore';
-import { is } from '@vee-validate/rules';
+import ABTCloading from '../../../../assets/images/ABTCloading.json';
 
 const isFollowUpForm = ref(false);
 const user = useUserStore();
@@ -139,7 +139,7 @@ const groupPatientData = (patientsABTCLog) => {
     // Update the status based on the conditions
     for (const key in grouped) {
         const caseGroup = grouped[key];
-        const hasDay7 = caseGroup.items.some((item) => item.vaccineday === 7);
+        const hasDay7 = caseGroup.items.some((item) => item.vaccineday === '7');
 
         // Set the status based on the presence of day 7
         if (hasDay7) {
@@ -612,7 +612,8 @@ onUnmounted(() => {
     {{ patientStore.progressionDay }}
     {{ patientStore.type_prophylaxis }} -->
     <div v-if="saving" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 98%; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)">
-        <img src="../../../../assets/images/ABTCloader.gif" alt="Loading..." style="height: 10rem; width: 10rem" />
+        <!-- <img src="../../../../assets/images/ABTCloader.gif" alt="Loading..." style="height: 10rem; width: 10rem" /> -->
+        <Vue3Lottie :animationData="ABTCloading" :height="200" :width="200" />
     </div>
     <div id="form" style="height: 95%; width: 100%; overflow-y: auto">
         <Splitter style="height: 100%">
@@ -932,8 +933,8 @@ onUnmounted(() => {
                     <hr v-if="itemIndex < caseGroup.items.length - 1" style="margin: 10px 0; border: 1px solid #ccc" />
                 </div>
             </AccordionTab>
-            <Button style="width: 90%" label="Request Philhealth Form" @click="requestPhilhealthForm()" />
         </Accordion>
+        <Button style="width: 100%; margin-top: 5%" label="Request Philhealth Form" @click="requestPhilhealthForm()" />
     </Dialog>
 </template>
 <style>
