@@ -171,8 +171,8 @@ export default class InjuryService {
 
             return response.data;
         } catch (error) {
-            console.log('Error fetching latest entry of doctors:', error);
-
+            // console.log('Error fetching latest entry of doctors:', error);
+            return null;
             // throw error;
         }
     }

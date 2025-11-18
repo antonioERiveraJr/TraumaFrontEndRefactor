@@ -829,7 +829,7 @@ onMounted(() => {
             <!-- <div v-if="isLocked === '1'">
                 <Message :closable="false">Encounter is Locked</Message>
             </div> -->
-            <div style="width: 100%; height: 100%">
+            <div style="width: 100%; height: 100%" disabled>
                 <div v-if="isUpdateForm" style="height: 100%">
                     <Button
                         style="width: 100%; height: 100%"

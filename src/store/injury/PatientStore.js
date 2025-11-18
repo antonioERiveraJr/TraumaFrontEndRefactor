@@ -46,6 +46,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
     const chief_complaint = ref('');
     const type_prophylaxis = ref();
     const primetss = ref(false);
+    const dayNoRecord = ref(true);
+    const triggerDatasDay = ref(false);
 
     // const entryBy = ref('');
 
@@ -905,6 +907,9 @@ export const usePatientStore = defineStore('PatientStore', () => {
         // console.log('loading');
         // console.log('stored: ', patientData);
         // console.log('enccode: ', enccode.value);
+        // console.log('patientData.data:', patientData.data);
+        // console.log('Type of patientData.data:', Array.isArray(patientData.data));
+
         if (patientData?.data && type_prophylaxis.value === patientData.data.type_prophylaxis) {
             enccode.value = patientData.data.enccode;
             header.value = patientData.data.header;
@@ -1720,6 +1725,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
         sameDay,
         OPDPatientData,
         primetss,
-        chief_complaint
+        chief_complaint,
+        dayNoRecord,
+        triggerDatasDay
     };
 });

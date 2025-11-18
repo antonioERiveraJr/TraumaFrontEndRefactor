@@ -34,6 +34,9 @@ const requiredCountPreAdmission = ref(0);
 const requiredCountFollowUp = ref(8);
 const requiredCountABTCForm = ref(0);
 const requiredCountGeneralData = ref(2);
+const fullUrl = window.location.href;
+const match = fullUrl.match(/[?&]enccode=([^&#]*)/);
+const paramEnccode = match ? match[1] : null;
 const collapsObjective = ref(true);
 const collapsSubjective = ref(true);
 const collapsDiagnosis = ref(true);
@@ -52,6 +55,7 @@ const barangay = ref();
 const caseLogDialog = ref(false);
 const groupedCases = ref([]);
 const isUpdateForm = ref(false);
+
 ref();
 const gcsScoreDetail = () => {
     if (patientStore.details.hospitalFacilityData.gcs_score > 12) {
@@ -337,7 +341,7 @@ const patientDataIsLoaded = async () => {
         // console.log('latestEntryDocs: ', latestEntryDoc.value.value);
         patientStore.latestEntryAvailable = true;
     } catch (error) {
-        console.log('Error fetching latest entry of doctors:', error);
+        // console.log('No recent entry of doctors');
     } finally {
         loader.value = false;
     }
@@ -602,6 +606,7 @@ onMounted(async () => {
     updateRequiredFieldCountForBite();
     window.addEventListener('resize', onResize);
     size.value = width.value < 1250 ? 0 : 35;
+    console.log('paramEnccode: ', paramEnccode);
 });
 onUnmounted(() => {
     window.removeEventListener('resize', onResize);
@@ -887,7 +892,14 @@ onUnmounted(() => {
             </SplitterPanel>
         </Splitter>
     </div>
-    <div style="height: 5%; width: 100%" class="flex" v-if="patientStore.sameDay === false || isUpdateForm">
+    <div
+        style="height: 5%; width: 100%"
+        class="flex"
+        v-if="
+            (patientStore.sameDay === false || isUpdateForm) &&
+            ((patientStore.details.enccode.toLowerCase() === paramEnccode.toLowerCase() && !patientStore.dayNoRecord) || (patientStore.dayNoRecord && patientStore.details.enccode.toLowerCase() !== paramEnccode.toLowerCase()))
+        "
+    >
         <!-- <SaveOPDButton
             style="height: 100%"
             @update:customizedObjectives="updateCustomizedObjective"

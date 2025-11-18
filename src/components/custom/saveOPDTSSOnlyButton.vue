@@ -16,6 +16,7 @@ const patientStore = usePatientStore();
 const isUpdateForm = ref(false);
 const confirmEMRDetails = ref(false);
 const isLocked = ref(false);
+
 const props = defineProps({
     latestEntry: {
         type: Object,
