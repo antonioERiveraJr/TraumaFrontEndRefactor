@@ -233,11 +233,11 @@ const dataIsLoaded = async () => {
     // console.log('hpercode: ', patientStore.header.hpercode);
     vaccineDays.value = patientStore?.patientTSSRecord?.data?.map((record) => record.vaccineday);
     // console.log('tsssrecode: ', patientStore);
-    if (patientStore.triggerDatasDay) {
-        console.log('triggerDatasDay: ', patientStore.patientTSSRecord);
-        setDay(patientStore.patientTSSRecord.data[0].vaccineday);
-        patientStore.triggerDatasDay = false;
-    }
+    // if (patientStore.triggerDatasDay) {
+    //     console.log('triggerDatasDay: ', patientStore.patientTSSRecord);
+    //     setDay(patientStore.patientTSSRecord.data[0].vaccineday);
+    //     patientStore.triggerDatasDay = false;
+    // }
 };
 onMounted(() => {
     dataIsLoaded();
@@ -258,7 +258,7 @@ watch(
             // alert('hit');
             // Find the record with the matching vaccineday
             const isDayHasRecord = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === newDay);
-            console.log('isDayHasRecord: ', isDayHasRecord);
+            // console.log('isDayHasRecord: ', isDayHasRecord);
             if (isDayHasRecord) {
                 patientStore.dayNoRecord = false;
             } else {

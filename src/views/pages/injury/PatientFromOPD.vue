@@ -177,7 +177,7 @@ onMounted(async () => {
         enccode.value = localStorage.getItem('enccode') || enccode.value;
         patientData.value = await injuryService.getOPDPatientData(enccode.value);
         patientStore.OPDPatientData = patientData.value;
-        console.log('patientData: ', patientData.value);
+        // console.log('patientData: ', patientData.value);
         await patientStore.loadOPDPatientData(patientData.value);
 
         const checkPatientTSSRecord = await injuryService.checkPatientTSSRecord(patientStore.header.hpercode);
@@ -205,15 +205,15 @@ onMounted(async () => {
 
     // console.log('patdata: ', patientData.value.data.enccode);
     // console.log('pareEnccode: ', enccode.value);
-    if (patientData.value.data.enccode.toLowerCase() === enccode.value.toLowerCase()) {
+    if (patientData.value.data?.enccode.toLowerCase() === enccode?.value?.toLowerCase()) {
         // console.log('par: ', patientData.value.data.type_prophylaxis);
         // console.log('pat: ', patientData.value.data.progressionDay);
 
-        console.log(patientStore.triggerDatasDay);
+        // console.log(patientStore.triggerDatasDay);
         patientStore.type_prophylaxis = patientData.value.data.type_prophylaxis;
         patientStore.progressionDay = patientData.value.data.progressionDay;
-        patientStore.triggerDatasDay = true;
-        console.log(patientStore.triggerDatasDay);
+        // patientStore.triggerDatasDay = true;
+        // console.log(patientStore.triggerDatasDay);
         //         console.log('par res: ', patientStore.type_prophylaxis);
         // console.log('pat res: ', patientStore.progressionDay);
     }

@@ -34,6 +34,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
     const registry = ref('');
     const dataIsLoaded = ref(false);
     const latestEntryAvailable = ref(false);
+    const latestEntry = ref();
     const selectedPatients = ref([]);
     const noPhysical = ref('');
     const savingDone = ref(false);
@@ -1708,6 +1709,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         dataIsLoaded,
         firstDiagnosis,
         latestEntryAvailable,
+        latestEntry,
         selectedPatients,
         noPhysical,
         savingDone,

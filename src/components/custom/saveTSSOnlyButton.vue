@@ -477,8 +477,8 @@ const confirmSaves = async () => {
                         Swal.fire('Saved!', '', 'success');
                         resolve();
                         await new Promise((resolve) => setTimeout(resolve, 3000)); // Add delay of 3 seconds
-                        // window.close();
-                        window.location.href = `http://192.168.7.9:86/soapIndex?enccode=${patientStore.enccode}&id=-1#/`; // Redirect here
+                        window.close();
+                        // window.location.href = `http://192.168.7.9:86/soapIndex?enccode=${patientStore.enccode}&id=-1#/`; // Redirect here
                     } catch (error) {
                         reject(error);
                     }

@@ -135,6 +135,10 @@ const positive_negative_option = ['+', '-'];
                             <Textarea v-model="PatientStore.details.followUp.discharge_sp" style="width: 100%; font-weight: bold" />
                         </div>
                     </div>
+                    <div style="width: 98%">
+                        <label for="Other Pertinent" class="text-black text-xs" style="color: #000080"><i>Other Pertinent </i></label>
+                        <Textarea v-model="PatientStore.details.followUp.finding_sp" style="width: 100%; font-weight: bold" />
+                    </div>
                 </div>
             </Fieldset>
         </Transition>
@@ -143,7 +147,7 @@ const positive_negative_option = ['+', '-'];
         <!-- <Textarea v-if="PatientStore.details.followUp.finding === 'WITH FINDINGS'" v-model="PatientStore.details.followUp.finding_sp" style="width: 100%; font-weight: bold" /> -->
     </div>
     <Fieldset
-        style="width: 100%; margin-top: 1%;"
+        style="width: 100%; margin-top: 1%"
         :toggleable="true"
         :collapsed="true"
         :pt="{

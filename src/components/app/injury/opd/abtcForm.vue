@@ -53,8 +53,9 @@ const city = ref();
 const latestEntry = ref();
 const barangay = ref();
 const caseLogDialog = ref(false);
+const hideSaveButton = ref(false);
 const groupedCases = ref([]);
-const isUpdateForm = ref(false);
+// const isUpdateForm = ref(false);
 
 ref();
 const gcsScoreDetail = () => {
@@ -304,15 +305,25 @@ const updateDetailsValue = () => {
 };
 const patientDataIsLoaded = async () => {
     if (patientStore.patientTSSRecord?.data?.[0]) {
-        const primeRecords = patientStore.patientTSSRecord.data.filter((record) => record.vaccineday === patientStore.progressionDay && (record.primeTSS === 'Y' || record.primeTSS === 'I'));
+        const primeRecords = patientStore.patientTSSRecord.data.filter(
+            (record) => (record.vaccineday === patientStore.progressionDay || (record.primeTSS === 'I' && patientStore.type_prophylaxis === 'POST-EXPOSURE')) && (record.primeTSS === 'Y' || record.primeTSS === 'I')
+        );
 
+        const followUpRecord = patientStore.patientTSSRecord.data.filter(
+            (record) =>
+                (patientStore.type_prophylaxis === 'PRE-EXPOSURE' && record.primeTSS === 'I' && patientStore.progressionDay === record.vaccineday) ||
+                (patientStore.type_prophylaxis === 'POST-EXPOSURE' && record.primeTSS === 'Y' && patientStore.progressionDay === record.vaccineday)
+        );
+        // console.log('followUpRecord: ', followUpRecord);
         // console.log('Prime Records: ', primeRecords);
 
-        const hasPrimeRecord = primeRecords.length > 0;
+        const hasPrimeRecord = followUpRecord.length > 0;
         // console.log('Has Prime Record: ', hasPrimeRecord);
         if (!hasPrimeRecord) {
+            // console.log('1');
             isFollowUpForm.value = true;
         } else {
+            // console.log('2');
             isFollowUpForm.value = false;
         }
 
@@ -331,20 +342,28 @@ const patientDataIsLoaded = async () => {
     patientStore.latestEntryAvailable = false;
     try {
         latestEntry.value = await injuryService.isOPDABTCFormUpdatable(patientStore.header.hpercode, patientStore.enccode);
+        console.log('latestEntry: ', latestEntry.value);
         latestEntryDoc.value = latestEntry;
         // console.log('latestEntryDocs: ', latestEntryDoc.value.value);
-        if (latestEntryDoc.value.value !== undefined) {
-            isUpdateForm.value = true;
-        } else {
-            isUpdateForm.value = false;
-        }
+        // if (latestEntryDoc.value.value !== undefined) {
+        //     isUpdateForm.value = true;
+        // } else {
+        //     isUpdateForm.value = false;
+        // }
         // console.log('latestEntryDocs: ', latestEntryDoc.value.value);
+        // patientStore.latestEntry = latestEntry;
         patientStore.latestEntryAvailable = true;
     } catch (error) {
         // console.log('No recent entry of doctors');
     } finally {
         loader.value = false;
     }
+    // console.log('latestEnccode: ', latestEntry.value);
+    // console.log(patientStore.patientTSSRecord);
+    // console.log('OPDPatientData: ', patientStore.OPDPatientData);
+    // const checkDayRecord = patientStore.patientTSSRecord.data.filter((record) => record.data.enccode.toLowerCase() !== paramEnccode.toLowerCase() && record.vaccineday === patientStore.progressionDay);
+    // hideSaveButton.value = checkDayRecord.length > 0 ;
+    // console.log('checkDayRecord:', checkDayRecord);
 
     updateDetailsValue();
     if (patientStore.details?.header?.final_doctor_details) {
@@ -529,7 +548,7 @@ watch(
 
                 requiredCountFollowUp.value = missingFields.length;
 
-                console.log('Missing required follow-up fields:', missingFields);
+                // console.log('Missing required follow-up fields:', missingFields);
             } else {
                 const requiredFields = [
                     // { key: 'immunization_schedule', value: patientStore.details.followUp.immunization_schedule, required: true },
@@ -606,7 +625,7 @@ onMounted(async () => {
     updateRequiredFieldCountForBite();
     window.addEventListener('resize', onResize);
     size.value = width.value < 1250 ? 0 : 35;
-    console.log('paramEnccode: ', paramEnccode);
+    // console.log('paramEnccode: ', paramEnccode);
 });
 onUnmounted(() => {
     window.removeEventListener('resize', onResize);
@@ -892,14 +911,16 @@ onUnmounted(() => {
             </SplitterPanel>
         </Splitter>
     </div>
-    <div
+    <!-- <div style="height: 5%; width: 100%"  class="flex" v-if="(hideSaveButton && latestEntry) || (latestEntry && latestEntry.enccode.toLowerCase() === paramEnccode.toLowerCase())"> -->
+    <div style="height: 5%; width: 100%" class="flex">
+        <!-- <div
         style="height: 5%; width: 100%"
         class="flex"
         v-if="
             (patientStore.sameDay === false || isUpdateForm) &&
-            ((patientStore.details.enccode.toLowerCase() === paramEnccode.toLowerCase() && !patientStore.dayNoRecord) || (patientStore.dayNoRecord && patientStore.details.enccode.toLowerCase() !== paramEnccode.toLowerCase()))
+            ((patientStore.details.enccode.toLowerCase() === paramEnccode.toLowerCase() && !patientStore.dayNoRecord && hideSaveButton) || (patientStore.dayNoRecord && patientStore.details.enccode.toLowerCase() !== paramEnccode.toLowerCase()))
         "
-    >
+    > -->
         <!-- <SaveOPDButton
             style="height: 100%"
             @update:customizedObjectives="updateCustomizedObjective"
