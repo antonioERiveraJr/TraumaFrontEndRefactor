@@ -22,6 +22,8 @@ const immunizationOption = ['PRIMARY REGIMEN', 'BOOSTER'];
 const lastTetanusDoseCompleteDate = ref(null);
 const positive_negative_option = ['+', '-'];
 const patientStore = usePatientStore();
+const animal = ref();
+const cause = ref();
 // const typesOfProphylaxis = ['PRE-EXPOSURE', 'POST-EXPOSURE'];
 
 // Function to handle ARV date selection
@@ -53,6 +55,32 @@ const bitingAnimalOptions = [
 const observationOptions = [
     { label: 'Yes', value: 'YES' },
     { label: 'No', value: 'NO' }
+];
+
+const previousARVOption = [
+    { label: 'Yes', value: 'YES' },
+    { label: 'No', value: 'NO' },
+    { label: 'Completed Primary DPT Doses', value: 'DPT' }
+];
+
+const animalOption = [
+    { label: 'Dog', value: 'DOG' },
+    { label: 'Cat', value: 'CAT' },
+    { label: 'Rat', value: 'RAT' },
+    { label: 'Pig', value: 'PIG' },
+    { label: 'Monkey', value: 'MONKEY' },
+    { label: 'Human', value: 'HUMAN' },
+    { label: 'Others', value: 'OTHERS' }
+];
+
+const causeOption = [
+    { label: 'Bite', value: 'BITE' },
+    { label: 'Scratch', value: 'SCRATCH' },
+    { label: 'Licking of Open Wound', value: 'LICKING' },
+    { label: 'Ingestion of Meat', value: 'INGEST' },
+    { label: 'Saliva', value: 'SALIVA' },
+    { label: 'Exposure', value: 'EXPOSURE' },
+    { label: 'Others', value: 'OTHERS' }
 ];
 
 const washingOptions = [
@@ -162,8 +190,14 @@ onMounted(async () => {
 //         generateText();
 //     },
 //     { deep: true }
-// );
+// );)
 
+//watch animal and cause then save it as animal + cause =  patientStore.details.ExternalCauseOfInjury.ext_bite_sp
+watch(()=>[patientStore.details.ExternalCauseOfInjury.animal, patientStore.details.ExternalCauseOfInjury.cause], ()=>{
+    if(patientStore.details.ExternalCauseOfInjury.animal && patientStore.details.ExternalCauseOfInjury.cause){
+        patientStore.details.ExternalCauseOfInjury.ext_bite_sp = patientStore.details.ExternalCauseOfInjury.animal + patientStore.details.ExternalCauseOfInjury.cause;
+    }
+})
 watch(
     () => patientStore.details.ABTC.skintest,
     (newValue) => {
@@ -203,12 +237,36 @@ watch(
                         <div class="flex justify-content-between w-1/2 md:w-1/2">
                             <strong style="color: #000080; font-size: 11px">NATURE OF INJURY</strong>
                         </div>
-                        <InputText
+                        <!-- <InputText
                             v-model="patientStore.details.ExternalCauseOfInjury.ext_bite_sp"
                             placeholder="Nature of Injury"
                             :class="{
                                 'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
                                 'bg-green-100': patientStore.details.ExternalCauseOfInjury.ext_bite_sp === ''
+                            }"
+                        /> -->
+                        <Dropdown
+                            v-model="patientStore.details.ExternalCauseOfInjury.animal"
+                            style="width: 48%"
+                            :options="animalOption"
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Select Animal"
+                            :class="{
+                                'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
+                                'bg-green-100': patientStore.details.ExternalCauseOfInjury.animal === ''
+                            }"
+                        />
+                        <Dropdown
+                            v-model="patientStore.details.ExternalCauseOfInjury.cause"
+                            style="width: 48%"
+                            :options="causeOption"
+                            optionLabel="label"
+                            optionValue="value"
+                            placeholder="Select Cause"
+                            :class="{
+                                'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
+                                'bg-green-100': patientStore.details.ExternalCauseOfInjury.cause === ''
                             }"
                         />
                     </div>
@@ -437,7 +495,7 @@ watch(
                         </div>
                         <Dropdown
                             v-model="patientStore.details.ExternalCauseOfInjury.tetanusVaccination"
-                            :options="observationOptions"
+                            :options="previousARVOption"
                             optionLabel="label"
                             optionValue="value"
                             placeholder="Previous Anti-Tetanus Vaccination"
@@ -520,7 +578,9 @@ watch(
                     </div>
                 </div>
             </div>
-            <div class="w-full md:w-1/2 p-4" v-if="patientStore.progressionDay !== ('' || undefined || null)"><VaccineForm /></div>
+            <div class="w-full md:w-1/2 p-4" v-if="patientStore.progressionDay !== ('' || undefined || null)">
+                <VaccineForm />
+            </div>
         </div>
 
         <div
@@ -1013,7 +1073,8 @@ watch(
                                         <Transition name="slide-fade" mode="out-in">
                                             <div class="field" v-if="patientStore.details.ABTC.skintest === '-'">
                                                 <span class="p-float-label">
-                                                    <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ABTC.erig_num" />
+                                                    <InputNumber suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ABTC.erig_num" />
+                                                    <!-- <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ABTC.erig_num" /> -->
                                                 </span>
                                             </div>
                                         </Transition>
@@ -1212,6 +1273,7 @@ watch(
     transform: translateX(20px);
     opacity: 0;
 }
+
 .custom-shadow {
     box-shadow: 0 2px 7px rgba(255, 0, 0, 0.5);
     transition: box-shadow 0.3s ease;

@@ -297,6 +297,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
         },
 
         ExternalCauseOfInjury: {
+            animal: '',
+            cause: '',
             prophylaxis: '',
             pvrv: '',
             pcec: '',
@@ -621,6 +623,8 @@ export const usePatientStore = defineStore('PatientStore', () => {
             medication: ''
         },
         ExternalCauseOfInjury: {
+            animal: '',
+            cause: '',
             prophylaxis: '',
             pvrv: '',
             pcec: '',
@@ -830,6 +834,31 @@ export const usePatientStore = defineStore('PatientStore', () => {
             hematoma: ''
         }
     });
+    // Watch for pvrv values
+    watch(
+        () => [details.value.ABTC.pvrv_site_1_id, details.value.ABTC.pvrv_site_1_im, details.value.ABTC.pvrv_site_2, details.value.ABTC.pvrv_site_4],
+        (newValues) => {
+            if (newValues.some((value) => value === 'Y')) {
+                details.value.ABTC.pvrv_site_1_id = newValues[0] === 'Y' ? 'Y' : 'N';
+                details.value.ABTC.pvrv_site_1_im = newValues[1] === 'Y' ? 'Y' : 'N';
+                details.value.ABTC.pvrv_site_2 = newValues[2] === 'Y' ? 'Y' : 'N';
+                details.value.ABTC.pvrv_site_4 = newValues[3] === 'Y' ? 'Y' : 'N';
+            }
+        }
+    );
+
+    // Watch for pcec values
+    watch(
+        () => [details.value.ABTC.pcec_site_1_id, details.value.ABTC.pcec_site_1_im, details.value.ABTC.pcec_site_2, details.value.ABTC.pcec_site_4],
+        (newValues) => {
+            if (newValues.some((value) => value === 'Y')) {
+                details.value.ABTC.pcec_site_1_id = newValues[0] === 'Y' ? 'Y' : 'N';
+                details.value.ABTC.pcec_site_1_im = newValues[1] === 'Y' ? 'Y' : 'N';
+                details.value.ABTC.pcec_site_2 = newValues[2] === 'Y' ? 'Y' : 'N';
+                details.value.ABTC.pcec_site_4 = newValues[3] === 'Y' ? 'Y' : 'N';
+            }
+        }
+    );
     watch(
         () => details.value,
         (newValue) => {
@@ -918,7 +947,6 @@ export const usePatientStore = defineStore('PatientStore', () => {
             header.value.hpercode = patientData.data.header.hpercode;
             details.value = patientData.data;
             // console.log('updated data: ', details);
-
             // ufiveID.value = patientData?.data?.details?.ufiveID;
             // header.value = patientData?.data?.header;
             // enccode.value = patientData?.data?.enccode;
@@ -1565,7 +1593,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         details.value.ABTC.pvrv_site_2 = '';
         details.value.ABTC.pcec_site_2 = '';
         details.value.ABTC.pvrv_site_4 = '';
-        details.value.ABTC.pcec_site_5 = '';
+        details.value.ABTC.pcec_site_4 = '';
         details.value.ABTC.prophylaxis = '';
         details.value.ABTC.pvrv = '';
         details.value.ABTC.pcec = '';

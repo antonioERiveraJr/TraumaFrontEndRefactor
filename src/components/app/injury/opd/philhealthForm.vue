@@ -48,10 +48,10 @@ const formFields = ref({
     completeImmunization: ''
 });
 
-async function fetchFormData(hpercode) {
+async function fetchFormData(hpercode, empID) {
     try {
         const response = await axios.get('/getABTCPhilhealthForm', {
-            params: { Hpercode: hpercode },
+            params: { Hpercode: hpercode, empID: empID },
             headers: {
                 Authorization: 'Bearer ' + localStorage.getItem('authToken')
             }
@@ -59,7 +59,7 @@ async function fetchFormData(hpercode) {
         // console.log('response: ', response.data);
         if (response.data.length === 0) {
             await Swal.fire('No Data Found');
-            window.history.back(); 
+            window.history.back();
         }
 
         formData.value = response.data[0];
@@ -228,7 +228,7 @@ onMounted(() => {
 
     // console.log('hpercode: ', hpercode.value);
 
-    fetchFormData(hpercode.value);
+    fetchFormData(hpercode.value, empID);
 });
 </script>
 <template>
