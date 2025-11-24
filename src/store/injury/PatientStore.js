@@ -7,6 +7,7 @@ import { ref, watch, toRefs } from 'vue';
 // import { watch, toRefs } from 'vue';
 import resetStore from '../plugins/reset-store';
 import { useUserStore } from '../general/UserStore';
+import { is } from '@vee-validate/rules';
 // import Toast from 'primevue/toast';
 
 //const API_URL = 'http://127.0.0.1:8000/api/user/';
@@ -49,6 +50,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
     const primetss = ref(false);
     const dayNoRecord = ref(true);
     const triggerDatasDay = ref(false);
+    const isUpdateForm = ref(false);
 
     // const entryBy = ref('');
 
@@ -298,7 +300,9 @@ export const usePatientStore = defineStore('PatientStore', () => {
 
         ExternalCauseOfInjury: {
             animal: '',
+            animal_sp: '',
             cause: '',
+            cause_sp: '',
             prophylaxis: '',
             pvrv: '',
             pcec: '',
@@ -624,7 +628,9 @@ export const usePatientStore = defineStore('PatientStore', () => {
         },
         ExternalCauseOfInjury: {
             animal: '',
+            animal_sp: '',
             cause: '',
+            cause_sp: '',
             prophylaxis: '',
             pvrv: '',
             pcec: '',
@@ -834,28 +840,100 @@ export const usePatientStore = defineStore('PatientStore', () => {
             hematoma: ''
         }
     });
-    // Watch for pvrv values
+    // Watch for pvrv_site_1_id
     watch(
-        () => [details.value.ABTC.pvrv_site_1_id, details.value.ABTC.pvrv_site_1_im, details.value.ABTC.pvrv_site_2, details.value.ABTC.pvrv_site_4],
-        (newValues) => {
-            if (newValues.some((value) => value === 'Y')) {
-                details.value.ABTC.pvrv_site_1_id = newValues[0] === 'Y' ? 'Y' : 'N';
-                details.value.ABTC.pvrv_site_1_im = newValues[1] === 'Y' ? 'Y' : 'N';
-                details.value.ABTC.pvrv_site_2 = newValues[2] === 'Y' ? 'Y' : 'N';
-                details.value.ABTC.pvrv_site_4 = newValues[3] === 'Y' ? 'Y' : 'N';
+        () => details.value.ABTC.pvrv_site_1_id,
+        (newValue) => {
+            if (newValue === 'Y') {
+                details.value.ABTC.pvrv_site_1_im = 'N';
+                details.value.ABTC.pvrv_site_2 = 'N';
+                details.value.ABTC.pvrv_site_4 = 'N';
             }
         }
     );
 
-    // Watch for pcec values
+    // Watch for pvrv_site_1_im
     watch(
-        () => [details.value.ABTC.pcec_site_1_id, details.value.ABTC.pcec_site_1_im, details.value.ABTC.pcec_site_2, details.value.ABTC.pcec_site_4],
-        (newValues) => {
-            if (newValues.some((value) => value === 'Y')) {
-                details.value.ABTC.pcec_site_1_id = newValues[0] === 'Y' ? 'Y' : 'N';
-                details.value.ABTC.pcec_site_1_im = newValues[1] === 'Y' ? 'Y' : 'N';
-                details.value.ABTC.pcec_site_2 = newValues[2] === 'Y' ? 'Y' : 'N';
-                details.value.ABTC.pcec_site_4 = newValues[3] === 'Y' ? 'Y' : 'N';
+        () => details.value.ABTC.pvrv_site_1_im,
+        (newValue) => {
+            if (newValue === 'Y') {
+                details.value.ABTC.pvrv_site_1_id = 'N';
+                details.value.ABTC.pvrv_site_2 = 'N';
+                details.value.ABTC.pvrv_site_4 = 'N';
+            }
+        }
+    );
+
+    // Watch for pvrv_site_2
+    watch(
+        () => details.value.ABTC.pvrv_site_2,
+        (newValue) => {
+            if (newValue === 'Y') {
+                details.value.ABTC.pvrv_site_1_id = 'N';
+                details.value.ABTC.pvrv_site_1_im = 'N';
+                details.value.ABTC.pvrv_site_4 = 'N';
+            }
+        }
+    );
+
+    // Watch for pvrv_site_4
+    watch(
+        () => details.value.ABTC.pvrv_site_4,
+        (newValue) => {
+            if (newValue === 'Y') {
+                details.value.ABTC.pvrv_site_1_id = 'N';
+                details.value.ABTC.pvrv_site_1_im = 'N';
+                details.value.ABTC.pvrv_site_2 = 'N';
+            }
+        }
+    );
+
+    // Similar structure for pcec values
+
+    // Watch for pcec_site_1_id
+    watch(
+        () => details.value.ABTC.pcec_site_1_id,
+        (newValue) => {
+            if (newValue === 'Y') {
+                details.value.ABTC.pcec_site_1_im = 'N';
+                details.value.ABTC.pcec_site_2 = 'N';
+                details.value.ABTC.pcec_site_4 = 'N';
+            }
+        }
+    );
+
+    // Watch for pcec_site_1_im
+    watch(
+        () => details.value.ABTC.pcec_site_1_im,
+        (newValue) => {
+            if (newValue === 'Y') {
+                details.value.ABTC.pcec_site_1_id = 'N';
+                details.value.ABTC.pcec_site_2 = 'N';
+                details.value.ABTC.pcec_site_4 = 'N';
+            }
+        }
+    );
+
+    // Watch for pcec_site_2
+    watch(
+        () => details.value.ABTC.pcec_site_2,
+        (newValue) => {
+            if (newValue === 'Y') {
+                details.value.ABTC.pcec_site_1_id = 'N';
+                details.value.ABTC.pcec_site_1_im = 'N';
+                details.value.ABTC.pcec_site_4 = 'N';
+            }
+        }
+    );
+
+    // Watch for pcec_site_4
+    watch(
+        () => details.value.ABTC.pcec_site_4,
+        (newValue) => {
+            if (newValue === 'Y') {
+                details.value.ABTC.pcec_site_1_id = 'N';
+                details.value.ABTC.pcec_site_1_im = 'N';
+                details.value.ABTC.pcec_site_2 = 'N';
             }
         }
     );
@@ -1595,6 +1673,10 @@ export const usePatientStore = defineStore('PatientStore', () => {
         details.value.ABTC.pvrv_site_4 = '';
         details.value.ABTC.pcec_site_4 = '';
         details.value.ABTC.prophylaxis = '';
+        details.value.ExternalCauseOfInjury.animal_sp = '';
+        details.value.ExternalCauseOfInjury.cause_sp = '';
+        details.value.ExternalCauseOfInjury.animal = '';
+        details.value.ExternalCauseOfInjury.cause = '';
         details.value.ABTC.pvrv = '';
         details.value.ABTC.pcec = '';
         details.value.ABTC.hrig = '';
@@ -1757,6 +1839,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
         primetss,
         chief_complaint,
         dayNoRecord,
-        triggerDatasDay
+        triggerDatasDay,
+        isUpdateForm
     };
 });

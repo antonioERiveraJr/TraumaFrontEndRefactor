@@ -62,19 +62,21 @@ const allowUpdateForm = async () => {
     // console.log('encc: ', patientStore.details.enccode, 'lateenc: ', props?.latestEntry?.value?.enccode);
     if (user.userInfo.employeeid === props?.latestEntry?.value?.entryby && patientStore.details.enccode.toLowerCase() === props?.latestEntry?.value?.enccode.toLowerCase()) {
         isUpdateForm.value = true;
+        patientStore.isUpdateForm = true;
     } else {
         loader.value = false;
+        patientStore.isUpdateForm = false;
         patientStore.ufiveID = '';
     }
-    console.log('patientTSSRecord:', patientStore.patientTSSRecord.data, '\n paramEnccode:', paramEnccode);
+    // console.log('patientTSSRecord:', patientStore.patientTSSRecord.data, '\n paramEnccode:', paramEnccode);
     const existingEnccode = patientStore.patientTSSRecord.data.find((record) => record.data.enccode.toLowerCase() === paramEnccode.toLowerCase());
     // patientStore.patientTSSRecord.data.forEach((record) => {
     //     console.log(record.data.enccode.toLowerCase());
     // });
-    console.log('existingEnccode:', existingEnccode);
+    // console.log('existingEnccode:', existingEnccode);
     if (existingEnccode) {
         const isParamEnccodeLatest = await injuryService.isOPDABTCFormUpdatable(patientStore.header.hpercode, patientStore.enccode);
-        console.log('isParamEnccodeLatest:', isParamEnccodeLatest);
+        // console.log('isParamEnccodeLatest:', isParamEnccodeLatest);
         if (isParamEnccodeLatest && isParamEnccodeLatest.vaccineday === patientStore.progressionDay) {
             hideSaveButton.value = false;
             loadDone.value = true;
@@ -98,7 +100,7 @@ const allowUpdateForm = async () => {
 };
 
 const regionName = computed(() => {
-    console.log('regions: ', patientStore.storeRegions);
+    // console.log('regions: ', patientStore.storeRegions);
     const region = patientStore?.storeRegions.find((reg) => reg.regcode === patientStore.details.generalData.plc_regcode);
     return region ? region.regname : 'Unknown Region';
 });
@@ -170,7 +172,7 @@ const savePatientData = async () => {
     }
     placeOccCode;
     const getNoi = patientStore.header.doctor_noi.join(', ');
-    console.log('noi: ', getNoi);
+    // console.log('noi: ', getNoi);
     // await injuryService.updateMedilogs(patientStore.enccode, patientStore.details.generalData.doctor_injtme, getNoi, placeOccCode, injIntentCode);
     patientStore.details.hospitalFacilityData.disposition_code = patientStore.header.dispcode;
     patientStore.details.hospitalFacilityData.condition_code = patientStore.header.condcode;
@@ -231,10 +233,10 @@ const savePatientData = async () => {
     // await injuryService.insertDiagnosis(patientStore.enccode, patientStore.header.final_doctor_diagnosis, isUpdateForm.value);
 
     const response = await patientStore.saveOPDFormattedData();
-    console.log('insertPlan: ', patientStore.doctor_plan);
+    // console.log('insertPlan: ', patientStore.doctor_plan);
 
     // const insertChiefComplaint = await injuryService.insertChiefComplaint(patientStore.enccode, patientStore.chief_complaint, patientStore.header.hpercode, isUpdateForm.value, patientStore.ufiveID);
-    console.log('insertChiefComplaint: ', patientStore.chief_complaint);
+    // console.log('insertChiefComplaint: ', patientStore.chief_complaint);
 
     return response;
 };
@@ -690,9 +692,9 @@ watch(det, (newValue) => {
                         <SplitterPanel style="height: 100%" :size="50">
                             <div class="flex justify-content-center">
                                 <h5 style="color: #000080" class="font-bold">GENERATED TEXT</h5>
-                    {{ patientStore.details.ABTC.immunization_schedule }}
+                    <!-- {{ patientStore.details.ABTC.immunization_schedule }}
                     {{ patientStore.progressionDay }}
-                {{  patientStore.details.ABTC.booster_regimen }}            
+                {{  patientStore.details.ABTC.booster_regimen }}             -->
                 </div>
                             <label for="details" class="p-float-label text-black text-s ml-5" style="color: #000080"><i>Details </i></label>
                             <div>

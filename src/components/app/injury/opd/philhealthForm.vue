@@ -32,6 +32,7 @@ const bodyPartOptions = ['Head and/or Neck', 'Other Parts of the Body', 'NA (if 
 const animalTypeOptions = ['Dog', 'Cat', 'Others'];
 const historyOptions = ['No', 'Yes'];
 const immunizationOptions = ['Yes', 'No'];
+const empID = ref();
 const formFields = ref({
     membershipStatus: '',
     unCoveredSkin: '',
@@ -92,6 +93,7 @@ async function generatePDF() {
         const response = await axios.post(
             '/generate-pdf',
             {
+                empID: empID.value,
                 Hpercode: hpercode,
                 formFields: clonedFormFields
             },
@@ -174,7 +176,8 @@ const fetchBladeContent = async () => {
     try {
         const response = await axios.post(
             `/previewPDF`,
-            {
+            {   
+                empID: empID.value,
                 hpercode: hpercode.value,
                 formFields: clonedFormFields
             },
@@ -205,30 +208,30 @@ onMounted(() => {
     const fullUrl = window.location.href;
     const match3 = fullUrl.match(/[?&]access_token=([^&#]*)/);
     const match2 = fullUrl.match(/[?&]employeeid=([^&#]*)/);
-    const empID = match2 ? match2[1] : null;
+    empID.value = match2 ? match2[1] : null;
     const getToken = match3 ? match3[1] : null;
 
     if (localStorage.getItem('hpercode') === hpercode.value) {
         if (!localStorage.getItem('hpercode')) {
             localStorage.setItem('authToken', getToken);
-            localStorage.setItem('employeeid', empID);
+            localStorage.setItem('employeeid', empID.value);
             localStorage.setItem('hpercode', hpercode.value);
         } else if (!localStorage.getItem('authToken')) {
             localStorage.setItem('authToken', getToken);
         } else {
             localStorage.setItem('authToken', getToken);
-            localStorage.setItem('employeeid', empID);
+            localStorage.setItem('employeeid', empID.value);
             localStorage.setItem('hpercode', hpercode.value);
         }
     } else {
         localStorage.setItem('authToken', getToken);
-        localStorage.setItem('employeeid', empID);
+        localStorage.setItem('employeeid', empID.value);
         localStorage.setItem('hpercode', hpercode.value);
     }
 
     // console.log('hpercode: ', hpercode.value);
 
-    fetchFormData(hpercode.value, empID);
+    fetchFormData(hpercode.value, empID.value);
 });
 </script>
 <template>

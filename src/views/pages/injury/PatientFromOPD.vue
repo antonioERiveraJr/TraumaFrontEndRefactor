@@ -9,6 +9,7 @@ import ABTCForm from '../../../components/app/injury/opd/ABTCForm.vue';
 import ProgressionDay from '../../../components/app/injury/opd/progressionDay.vue';
 import { Vue3Lottie } from 'vue3-lottie';
 import ABTCloading from '../../../assets/images/ABTCloading.json';
+import { is } from '@vee-validate/rules';
 
 const patientStore = usePatientStore();
 const validations = createValidationRules();
@@ -104,14 +105,43 @@ const openCaseDialogLog = async () => {
 
 //     groupedCases.value = Object.values(grouped); // Set the grouped cases
 // };
+
 const groupPatientData = (patientsABTCLog) => {
     const grouped = patientsABTCLog.reduce((acc, curr) => {
+        const dogbiteDegree = ref();
+        if (curr && curr.data) {
+            let parsedData;
+
+            try {
+                parsedData = JSON.parse(curr.data); // Parse the JSON string
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+                return; // Exit if parsing fails
+            }
+
+            console.log('Parsed Data:', parsedData); // Log the parsed data
+
+            // Now you can access properties of parsedData
+            const externalCause = parsedData.ExternalCauseOfInjury;
+            console.log('ExternalCauseOfInjury:', externalCause); // Should not be undefined now
+
+            if (externalCause) {
+                dogbiteDegree.value = externalCause.dogbiteDegree;
+                console.log('dogbiteDegree:', dogbiteDegree.value); // Should output 'I'
+            } else {
+                console.log('ExternalCauseOfInjury is missing.');
+            }
+        } else {
+            console.log('curr.data is undefined or null.');
+        }
+
         const lockCase = curr.lockCase.trim();
         const caseData = {
+            dogbiteDegree,
             vaccineday: curr.vaccineday,
             prophylaxis: curr.prophylaxis,
             tStamp: curr.tStamp,
-            status: curr.status // Capture the status
+            status: curr.status
         };
 
         if (!acc[lockCase]) {
@@ -126,9 +156,12 @@ const groupPatientData = (patientsABTCLog) => {
     for (const key in grouped) {
         const caseGroup = grouped[key];
         const hasDay7 = caseGroup.items.some((item) => item.vaccineday === '7');
+        // const isFirstDegree = caseGroup.items.some((item) => item.dogbiteDegree === 'I');
+        const isFirstDegree = caseGroup.items.some((item) => item.dogbiteDegree.value ==='I');
 
+        console.log('isFirstDegree: ', isFirstDegree);
         // Set the status based on the presence of day 7
-        if (hasDay7) {
+        if (hasDay7 || isFirstDegree) {
             caseGroup.status = 'Finished';
         } else {
             caseGroup.status = 'Unfinished';

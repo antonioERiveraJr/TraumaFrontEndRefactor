@@ -125,12 +125,14 @@ const formatDate = (dateString) => {
 
 const groupPatientData = (patientsABTCLog) => {
     const grouped = patientsABTCLog.reduce((acc, curr) => {
+        const dogbiteDegree = curr.data ? curr.data.ExternalCauseOfInjury?.dogbiteDegree : null;
         const lockCase = curr.lockCase.trim();
         const caseData = {
+            dogbiteDegree,
             vaccineday: curr.vaccineday,
             prophylaxis: curr.prophylaxis,
             tStamp: curr.tStamp,
-            status: curr.status // Capture the status
+            status: curr.status
         };
 
         if (!acc[lockCase]) {
@@ -145,9 +147,12 @@ const groupPatientData = (patientsABTCLog) => {
     for (const key in grouped) {
         const caseGroup = grouped[key];
         const hasDay7 = caseGroup.items.some((item) => item.vaccineday === '7');
+        const isFirstDegree = caseGroup.items.some((item) => item.dogbiteDegree === 'I');
+        // console.log('hasDay7: ', hasDay7);
+        console.log('isFirstDegree: ', isFirstDegree);
 
         // Set the status based on the presence of day 7
-        if (hasDay7) {
+        if (hasDay7 || isFirstDegree) {
             caseGroup.status = 'Finished';
         } else {
             caseGroup.status = 'Unfinished';
@@ -309,17 +314,45 @@ const patientDataIsLoaded = async () => {
             (record) => (record.vaccineday === patientStore.progressionDay || (record.primeTSS === 'I' && patientStore.type_prophylaxis === 'POST-EXPOSURE')) && (record.primeTSS === 'Y' || record.primeTSS === 'I')
         );
 
+        // console.log('patientStore.patientTSSRecord: ', patientStore.patientTSSRecord);
         const followUpRecord = patientStore.patientTSSRecord.data.filter(
             (record) =>
-                (patientStore.type_prophylaxis === 'PRE-EXPOSURE' && record.primeTSS === 'I' && patientStore.progressionDay === record.vaccineday) ||
-                (patientStore.type_prophylaxis === 'POST-EXPOSURE' && record.primeTSS === 'Y' && patientStore.progressionDay === record.vaccineday)
+                (patientStore.type_prophylaxis === 'PRE-EXPOSURE' && record.primeTSS === 'I' && patientStore.progressionDay !== record.vaccineday) ||
+                (patientStore.type_prophylaxis === 'POST-EXPOSURE' && record.primeTSS === 'Y' && patientStore.progressionDay !== record.vaccineday)
         );
+        // const followUpRecord = patientStore.patientTSSRecord.data.filter((record) => {
+        //     let conditionMet = false;
+
+        //     // Check for PRE-EXPOSURE
+        //     if (patientStore.type_prophylaxis === 'PRE-EXPOSURE') {
+        //         console.log(`Checking PRE-EXPOSURE: primeTSS = ${record.primeTSS}, progressionDay = ${patientStore.progressionDay}, vaccinateday = ${record.vaccineday}`);
+        //         if (record.primeTSS === 'I' && patientStore.progressionDay === record.vaccineday) {
+        //             conditionMet = true;
+        //         }
+        //     }
+
+        //     // Check for POST-EXPOSURE
+        //     if (patientStore.type_prophylaxis === 'POST-EXPOSURE') {
+        //         console.log(`Checking POST-EXPOSURE: primeTSS = ${record.primeTSS}, progressionDay = ${patientStore.progressionDay}, vaccinateday = ${record.vaccineday}`);
+        //         if (record.primeTSS === 'Y' && patientStore.progressionDay === record.vaccineday) {
+        //             conditionMet = true;
+        //         }
+        //     }
+
+        //     if (conditionMet) {
+        //         console.log('Condition met, including record:', record);
+        //     } else {
+        //         console.log('Condition not met, excluding record:', record);
+        //     }
+
+        //     return conditionMet;
+        // });
         // console.log('followUpRecord: ', followUpRecord);
         // console.log('Prime Records: ', primeRecords);
 
         const hasPrimeRecord = followUpRecord.length > 0;
         // console.log('Has Prime Record: ', hasPrimeRecord);
-        if (!hasPrimeRecord) {
+        if (hasPrimeRecord) {
             // console.log('1');
             isFollowUpForm.value = true;
         } else {
@@ -342,7 +375,7 @@ const patientDataIsLoaded = async () => {
     patientStore.latestEntryAvailable = false;
     try {
         latestEntry.value = await injuryService.isOPDABTCFormUpdatable(patientStore.header.hpercode, patientStore.enccode);
-        console.log('latestEntry: ', latestEntry.value);
+        // console.log('latestEntry: ', latestEntry.value);
         latestEntryDoc.value = latestEntry;
         // console.log('latestEntryDocs: ', latestEntryDoc.value.value);
         // if (latestEntryDoc.value.value !== undefined) {
