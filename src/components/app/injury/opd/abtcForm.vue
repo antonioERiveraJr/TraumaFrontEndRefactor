@@ -123,9 +123,38 @@ const formatDate = (dateString) => {
 //     groupedCases.value = Object.values(grouped); // Set the grouped cases
 // };
 
+
 const groupPatientData = (patientsABTCLog) => {
     const grouped = patientsABTCLog.reduce((acc, curr) => {
-        const dogbiteDegree = curr.data ? curr.data.ExternalCauseOfInjury?.dogbiteDegree : null;
+        const dogbiteDegree = ref();
+        if (curr && curr.data) {
+            let parsedData;
+
+            try {
+                parsedData = JSON.parse(curr.data); // Parse the JSON string
+            } catch (error) {
+                // console.error('Error parsing JSON:', error);
+                return; // Exit if parsing fails
+            }
+
+            // console.log('Parsed Data:', parsedData); // Log the parsed data
+
+            // Now you can access properties of parsedData
+            const externalCause = parsedData.ExternalCauseOfInjury;
+            // console.log('ExternalCauseOfInjury:', externalCause); // Should not be undefined now
+
+            if (externalCause) {
+                dogbiteDegree.value = externalCause.dogbiteDegree;
+                // console.log('dogbiteDegree:', dogbiteDegree.value); // Should output 'I'
+            }
+            //  else {
+            //     console.log('ExternalCauseOfInjury is missing.');
+            // }
+        } 
+        // else {
+        //     console.log('curr.data is undefined or null.');
+        // }
+
         const lockCase = curr.lockCase.trim();
         const caseData = {
             dogbiteDegree,
@@ -143,15 +172,12 @@ const groupPatientData = (patientsABTCLog) => {
         return acc;
     }, {});
 
-    // Update the status based on the conditions
     for (const key in grouped) {
         const caseGroup = grouped[key];
         const hasDay7 = caseGroup.items.some((item) => item.vaccineday === '7');
-        const isFirstDegree = caseGroup.items.some((item) => item.dogbiteDegree === 'I');
-        // console.log('hasDay7: ', hasDay7);
-        console.log('isFirstDegree: ', isFirstDegree);
+        const isFirstDegree = caseGroup.items.some((item) => item.dogbiteDegree.value ==='I');
 
-        // Set the status based on the presence of day 7
+        // console.log('isFirstDegree: ', isFirstDegree);
         if (hasDay7 || isFirstDegree) {
             caseGroup.status = 'Finished';
         } else {
@@ -159,7 +185,7 @@ const groupPatientData = (patientsABTCLog) => {
         }
     }
 
-    groupedCases.value = Object.values(grouped); // Set the grouped cases
+    groupedCases.value = Object.values(grouped); 
 };
 
 const updateCustomizedDetails = (value) => {
@@ -317,7 +343,8 @@ const patientDataIsLoaded = async () => {
         // console.log('patientStore.patientTSSRecord: ', patientStore.patientTSSRecord);
         const followUpRecord = patientStore.patientTSSRecord.data.filter(
             (record) =>
-                (patientStore.type_prophylaxis === 'PRE-EXPOSURE' && record.primeTSS === 'I' && patientStore.progressionDay !== record.vaccineday) ||
+                // (patientStore.type_prophylaxis === 'PRE-EXPOSURE' && record.primeTSS === 'I' && patientStore.progressionDay !== record.vaccineday) ||
+                (patientStore.type_prophylaxis === 'PRE-EXPOSURE' && record.primeTSS !== 'I' && patientStore.progressionDay !== record.vaccineday) ||
                 (patientStore.type_prophylaxis === 'POST-EXPOSURE' && record.primeTSS === 'Y' && patientStore.progressionDay !== record.vaccineday)
         );
         // const followUpRecord = patientStore.patientTSSRecord.data.filter((record) => {

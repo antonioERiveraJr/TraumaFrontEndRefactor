@@ -128,7 +128,7 @@ watch(
                         <Dropdown style="width: 98%" id="woundDescription" class="font-bold" v-model="PatientStore.details.followUp.wound_description" :options="woundDescriptionOptions" />
                         <div v-if="PatientStore.details.followUp.wound_description === 'OTHERS'">
                             <label for="woundOthDescription" class="text-black text-xs" style="color: #000080"><i>Others</i></label>
-                            <Textarea style="width: 98%" id="woundOthDescription" v-model="PatientStore.details.followUp.wound_descriptionOthers" rows="1" class="mt-2 justify-content-center font-bold" autoResize />
+                            <Textarea style="width: 98%" id="woundOthDescription" v-model="PatientStore.details.followUp.wound_description_others" rows="1" class="mt-2 justify-content-center font-bold" autoResize />
                         </div>
                     </div>
 
@@ -253,7 +253,7 @@ watch(
                                     <Dropdown style="width: 98%" id="woundDescription" class="font-bold" v-model="PatientStore.details.followUp.wound_description" :options="woundDescriptionOptions" />
                                     <div v-if="PatientStore.details.followUp.wound_description === 'OTHERS'">
                                         <label for="woundOthDescription" class="text-black text-xs" style="color: #000080"><i>Others</i></label>
-                                        <Textarea style="width: 98%" id="woundOthDescription" v-model="PatientStore.details.followUp.wound_descriptionOthers" rows="1" class="mt-2 justify-content-center font-bold" autoResize />
+                                        <Textarea style="width: 98%" id="woundOthDescription" v-model="PatientStore.details.followUp.wound_description_others" rows="1" class="mt-2 justify-content-center font-bold" autoResize />
                                     </div>
                                 </div>
 
@@ -448,7 +448,7 @@ watch(
                                 </div>
                             </div>
                             <Transition name="slide-fade" mode="out-in">
-                                <div class="field mt-2" v-if="PatientStore.details.ABTC.skintest === '-'">
+                                <div class="field mt-2" v-if="PatientStore.details.ABTC.skintest === '-' && PatientStore.details.ABTC.erig === 'Y'">
                                     <span class="p-float-label">
                                         <InputNumber :minFractionDigits="1" :maxFractionDigits="5" suffix=" mL" :min="0" :max="25" id="erig" v-model="PatientStore.details.ABTC.erig_num" />
                                     </span>
@@ -479,7 +479,7 @@ watch(
                                 </div>
                             </div>
                             <Transition name="slide-fade" mode="out-in" style="width: 100%">
-                                <div class="field mt-2" v-if="PatientStore.details.ABTC.skintest === '-'">
+                                <div class="field mt-2" v-if="PatientStore.details.ABTC.skintest === '-' && PatientStore.details.ABTC.ats === 'Y'">
                                     <div v-if="PatientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
                                         <div class="field" style="width: 100%">
                                             <span class="p-float-label">

@@ -897,7 +897,7 @@ watch(
                     <Transition name="slide-fade" mode="out-in">
                         <div v-if="patientStore.details.ABTC.erig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
                             <Transition name="slide-fade" mode="out-in">
-                                <div class="field" v-if="patientStore.details.ABTC.skintest === '-'">
+                                <div class="field" v-if="patientStore.details.ABTC.skintest === '-' && patientStore.details.ABTC.erig === 'Y'">
                                     <span class="p-float-label">
                                         <InputNumber :minFractionDigits="1" :maxFractionDigits="5" suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ABTC.erig_num" />
                                     </span>
@@ -910,7 +910,7 @@ watch(
                     <Transition name="slide-fade" mode="out-in">
                         <div v-if="patientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
                             <Transition name="slide-fade" mode="out-in">
-                                <div class="field" v-if="patientStore.details.ABTC.skintest === '-'">
+                                <div class="field" v-if="patientStore.details.ABTC.skintest === '-' && patientStore.details.ABTC.ats === 'Y'">
                                     <!-- <span class="p-float-label">
                                         <InputNumber type="number" suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ABTC.ats_num" />
                                     </span> -->
@@ -1065,7 +1065,7 @@ watch(
                                     </div>
                                 </div>
                                 <Transition name="slide-fade" mode="out-in">
-                                    <div class="field mt-2" v-if="patientStore.details.ABTC.skintest === '-'">
+                                    <div class="field mt-2" v-if="patientStore.details.ABTC.skintest === '-' && patientStore.details.ABTC.erig === 'Y'">
                                         <span class="p-float-label">
                                             <InputNumber :minFractionDigits="1" :maxFractionDigits="5" suffix=" mL" :min="0" :max="25" id="erig" v-model="patientStore.details.ABTC.erig_num" />
                                         </span>
@@ -1096,7 +1096,7 @@ watch(
                                     </div>
                                 </div>
                                 <Transition name="slide-fade" mode="out-in" style="width: 100%">
-                                    <div class="field mt-2" v-if="patientStore.details.ABTC.skintest === '-'">
+                                    <div class="field mt-2" v-if="patientStore.details.ABTC.skintest === '-' && patientStore.details.ABTC.ats === 'Y'">
                                         <div v-if="patientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
                                             <div class="field" style="width: 100%">
                                                 <span class="p-float-label">

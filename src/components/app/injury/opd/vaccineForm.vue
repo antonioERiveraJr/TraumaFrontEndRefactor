@@ -51,7 +51,7 @@ const positive_negative_option = ['+', '-'];
                             <Dropdown style="width: 98%" id="woundDescription" class="font-bold" v-model="PatientStore.details.followUp.wound_description" :options="woundDescriptionOptions" />
                             <div v-if="PatientStore.details.followUp.wound_description === 'OTHERS'">
                                 <label for="woundOthDescription" class="text-black text-xs" style="color: #000080"><i>Others</i></label>
-                                <Textarea style="width: 98%" id="woundOthDescription" v-model="PatientStore.details.followUp.wound_descriptionOthers" rows="1" class="mt-2 justify-content-center font-bold" autoResize />
+                                <Textarea style="width: 98%" id="woundOthDescription" v-model="PatientStore.details.followUp.wound_description_others" rows="1" class="mt-2 justify-content-center font-bold" autoResize />
                             </div>
                         </div>
 

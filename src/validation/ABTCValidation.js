@@ -50,7 +50,8 @@ export default function createValidationRules() {
                     !patientStore.isUpdateForm && patientStore.type_prophylaxis === 'POST-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' && patientStore.patientTSSRecord?.data?.[0]
             },
             finding: {
-                requiredIf: !patientStore.isUpdateForm && patientStore.type_prophylaxis === 'PRE-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' && patientStore.patientTSSRecord?.data?.[0]
+                requiredIf:
+                    !patientStore.isUpdateForm && patientStore.type_prophylaxis === 'PRE-EXPOSURE' && patientStore.progressionDay !== '0' && patientStore.patientTSSRecord?.data?.[0]?.primeTSS !== 'I' && patientStore.patientTSSRecord?.data?.[0]
             },
             finding_sp: {
                 requiredIf:
@@ -221,9 +222,9 @@ export default function createValidationRules() {
                 requiredIf: patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ABTC.hrig === 'Y'
             },
             erig_num: {
-                requiredIf: patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ABTC.erig === 'Y'
+                requiredIf: patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ABTC.erig === 'Y' && patientStore.details.ABTC.skintest === 'Y'
             },
-            ats_num: { requiredIf: patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ExternalCauseOfInjury.ats === 'Y' }
+            ats_num: { requiredIf: patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' && patientStore.details.ExternalCauseOfInjury.ats === 'Y' && patientStore.details.ABTC.skintest === 'Y' }
         },
         preAdmissionData: {
             place_occ_code: {

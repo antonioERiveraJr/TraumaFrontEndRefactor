@@ -876,17 +876,12 @@ export default class InjuryService {
             });
         return response;
     }
-    async insertPlan(enccode, plan, hpercode, isUpdateForm, ufiveID) {
-        // console.log('insertObjSubj called with parameters:', {
-        //     isUpdateForm,
-        //     ufiveID
-        // });
-        // alert('hit');
+    async insertPlan(enccode, plan, hpercode) {
         const user = useUserStore();
         const response = await axios
             .put(
-                'insertObjSubj',
-                { enccode: enccode, plan: plan, hpercode: hpercode, entryby: user.userInfo.employeeid, isUpdateForm: isUpdateForm, ufiveID: ufiveID },
+                'insertPlan',
+                { enccode: enccode, plan: plan, hpercode: hpercode, entryby: user.userInfo.employeeid },
                 {
                     headers: {
                         Authorization: 'Bearer ' + localStorage.getItem('authToken')
@@ -902,12 +897,12 @@ export default class InjuryService {
         return response;
     }
 
-    async insertChiefComplaint(enccode, chief_complaint, hpercode, isUpdateForm, ufiveID) { 
+    async insertChiefComplaint(enccode, chief_complaint, hpercode) { 
         const user = useUserStore();
         const response = await axios
             .put(
                 'insertChiefComplaint',
-                { enccode: enccode, chief_complaint: chief_complaint, hpercode: hpercode, entryby: user.userInfo.employeeid, isUpdateForm: isUpdateForm, ufiveID: ufiveID },
+                { enccode: enccode, chief_complaint: chief_complaint, hpercode: hpercode, entryby: user.userInfo.employeeid },
                 {
                     headers: {
                         Authorization: 'Bearer ' + localStorage.getItem('authToken')

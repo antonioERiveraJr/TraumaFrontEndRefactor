@@ -115,25 +115,27 @@ const groupPatientData = (patientsABTCLog) => {
             try {
                 parsedData = JSON.parse(curr.data); // Parse the JSON string
             } catch (error) {
-                console.error('Error parsing JSON:', error);
+                // console.error('Error parsing JSON:', error);
                 return; // Exit if parsing fails
             }
 
-            console.log('Parsed Data:', parsedData); // Log the parsed data
+            // console.log('Parsed Data:', parsedData); // Log the parsed data
 
             // Now you can access properties of parsedData
             const externalCause = parsedData.ExternalCauseOfInjury;
-            console.log('ExternalCauseOfInjury:', externalCause); // Should not be undefined now
+            // console.log('ExternalCauseOfInjury:', externalCause); // Should not be undefined now
 
             if (externalCause) {
                 dogbiteDegree.value = externalCause.dogbiteDegree;
-                console.log('dogbiteDegree:', dogbiteDegree.value); // Should output 'I'
-            } else {
-                console.log('ExternalCauseOfInjury is missing.');
+                // console.log('dogbiteDegree:', dogbiteDegree.value); // Should output 'I'
             }
-        } else {
-            console.log('curr.data is undefined or null.');
-        }
+            //  else {
+            //     console.log('ExternalCauseOfInjury is missing.');
+            // }
+        } 
+        // else {
+        //     console.log('curr.data is undefined or null.');
+        // }
 
         const lockCase = curr.lockCase.trim();
         const caseData = {
@@ -152,15 +154,12 @@ const groupPatientData = (patientsABTCLog) => {
         return acc;
     }, {});
 
-    // Update the status based on the conditions
     for (const key in grouped) {
         const caseGroup = grouped[key];
         const hasDay7 = caseGroup.items.some((item) => item.vaccineday === '7');
-        // const isFirstDegree = caseGroup.items.some((item) => item.dogbiteDegree === 'I');
         const isFirstDegree = caseGroup.items.some((item) => item.dogbiteDegree.value ==='I');
 
-        console.log('isFirstDegree: ', isFirstDegree);
-        // Set the status based on the presence of day 7
+        // console.log('isFirstDegree: ', isFirstDegree);
         if (hasDay7 || isFirstDegree) {
             caseGroup.status = 'Finished';
         } else {
@@ -168,7 +167,7 @@ const groupPatientData = (patientsABTCLog) => {
         }
     }
 
-    groupedCases.value = Object.values(grouped); // Set the grouped cases
+    groupedCases.value = Object.values(grouped); 
 };
 
 onMounted(async () => {
