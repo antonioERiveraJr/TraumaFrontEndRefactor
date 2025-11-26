@@ -146,7 +146,7 @@ const positive_negative_option = ['+', '-'];
         <!-- <label for="Tenderness" v-if="PatientStore.details.followUp.finding === 'WITH FINDINGS'" class="text-black text-xs" style="color: #000080; width: 100%"><i>Finding </i></label> -->
         <!-- <Textarea v-if="PatientStore.details.followUp.finding === 'WITH FINDINGS'" v-model="PatientStore.details.followUp.finding_sp" style="width: 100%; font-weight: bold" /> -->
     </div>
-    <Fieldset
+    <!-- <Fieldset
         style="width: 100%; margin-top: 1%"
         :toggleable="true"
         :collapsed="true"
@@ -182,5 +182,5 @@ const positive_negative_option = ['+', '-'];
             class="mt-1 justify-content-center"
             autoResize
         />
-    </Fieldset>
+    </Fieldset> -->
 </template>

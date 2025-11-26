@@ -104,6 +104,19 @@ function handleClick() {
     patientStore.details.ABTC.booster_regimen = '';
 }
 
+function addExternalCause() {
+    patientStore.details.ExternalCauseOfInjury.animal.push('');
+    patientStore.details.ExternalCauseOfInjury.cause.push('');
+    patientStore.details.ExternalCauseOfInjury.animal_sp.push('');
+    patientStore.details.ExternalCauseOfInjury.cause_sp.push('');
+}
+
+function removeExternalCause(index) {
+    patientStore.details.ExternalCauseOfInjury.animal.splice(index, 1);
+    patientStore.details.ExternalCauseOfInjury.cause.splice(index, 1);
+    patientStore.details.ExternalCauseOfInjury.animal_sp.splice(index, 1);
+    patientStore.details.ExternalCauseOfInjury.cause_sp.splice(index, 1);
+}
 // Lifecycle hook to initialize date values
 onMounted(async () => {
     if (patientStore.details.ExternalCauseOfInjury.arvDate) {
@@ -193,25 +206,54 @@ onMounted(async () => {
 // );)
 
 //watch animal and cause then save it as animal + cause =  patientStore.details.ExternalCauseOfInjury.ext_bite_sp
+// watch(
+//     () => [patientStore.details.ExternalCauseOfInjury.animal, patientStore.details.ExternalCauseOfInjury.cause, patientStore.details.ExternalCauseOfInjury.animal_sp, patientStore.details.ExternalCauseOfInjury.cause_sp],
+//     () => {
+//         if (patientStore.details.ExternalCauseOfInjury.animal && patientStore.details.ExternalCauseOfInjury.cause) {
+//             if (patientStore.details.ExternalCauseOfInjury.cause === 'OTHERS' && patientStore.details.ExternalCauseOfInjury.animal === 'OTHERS') {
+//                 // alert('hit');
+//                 patientStore.details.ExternalCauseOfInjury.ext_bite_sp = patientStore.details.ExternalCauseOfInjury.animal_sp + ' ' + patientStore.details.ExternalCauseOfInjury.cause_sp;
+//             } else if (patientStore.details.ExternalCauseOfInjury.cause === 'OTHERS') {
+//                 // alert('hits');
+//                 patientStore.details.ExternalCauseOfInjury.ext_bite_sp = patientStore.details.ExternalCauseOfInjury.animal + ' ' + patientStore.details.ExternalCauseOfInjury.cause_sp;
+//             } else if (patientStore.details.ExternalCauseOfInjury.animal === 'OTHERS') {
+//                 // alert('hitss');
+//                 patientStore.details.ExternalCauseOfInjury.ext_bite_sp = patientStore.details.ExternalCauseOfInjury.animal_sp + ' ' + patientStore.details.ExternalCauseOfInjury.cause;
+//             } else {
+//                 // alert('hitsss');
+//                 patientStore.details.ExternalCauseOfInjury.ext_bite_sp = patientStore.details.ExternalCauseOfInjury.animal + ' ' + patientStore.details.ExternalCauseOfInjury.cause;
+//             }
+//         }
+//     }
+// );
 watch(
     () => [patientStore.details.ExternalCauseOfInjury.animal, patientStore.details.ExternalCauseOfInjury.cause, patientStore.details.ExternalCauseOfInjury.animal_sp, patientStore.details.ExternalCauseOfInjury.cause_sp],
     () => {
-        if (patientStore.details.ExternalCauseOfInjury.animal && patientStore.details.ExternalCauseOfInjury.cause) {
-            if (patientStore.details.ExternalCauseOfInjury.cause === 'OTHERS' && patientStore.details.ExternalCauseOfInjury.animal === 'OTHERS') {
-                // alert('hit');
-                patientStore.details.ExternalCauseOfInjury.ext_bite_sp = patientStore.details.ExternalCauseOfInjury.animal_sp + ' ' + patientStore.details.ExternalCauseOfInjury.cause_sp;
-            } else if (patientStore.details.ExternalCauseOfInjury.cause === 'OTHERS') {
-                // alert('hits');
-                patientStore.details.ExternalCauseOfInjury.ext_bite_sp = patientStore.details.ExternalCauseOfInjury.animal + ' ' + patientStore.details.ExternalCauseOfInjury.cause_sp;
-            } else if (patientStore.details.ExternalCauseOfInjury.animal === 'OTHERS') {
-                // alert('hitss');
-                patientStore.details.ExternalCauseOfInjury.ext_bite_sp = patientStore.details.ExternalCauseOfInjury.animal_sp + ' ' + patientStore.details.ExternalCauseOfInjury.cause;
+        const animals = patientStore.details.ExternalCauseOfInjury.animal;
+        const causes = patientStore.details.ExternalCauseOfInjury.cause;
+        const animalSP = patientStore.details.ExternalCauseOfInjury.animal_sp;
+        const causeSP = patientStore.details.ExternalCauseOfInjury.cause_sp;
+
+        const result = animals.map((animal, i) => {
+            const cause = causes[i];
+            const aSP = animalSP[i] || '';
+            const cSP = causeSP[i] || '';
+
+            if (animal === 'OTHERS' && cause === 'OTHERS') {
+                return aSP + ' ' + cSP;
+            } else if (animal === 'OTHERS') {
+                return aSP + ' ' + cause;
+            } else if (cause === 'OTHERS') {
+                return animal + ' ' + cSP;
             } else {
-                // alert('hitsss');
-                patientStore.details.ExternalCauseOfInjury.ext_bite_sp = patientStore.details.ExternalCauseOfInjury.animal + ' ' + patientStore.details.ExternalCauseOfInjury.cause;
+                return animal + ' ' + cause;
             }
-        }
-    }
+        });
+
+        // Join with comma or space depending on your need
+        patientStore.details.ExternalCauseOfInjury.ext_bite_sp = result.join(', ');
+    },
+    { deep: true }
 );
 watch(
     () => patientStore.details.ABTC.skintest,
@@ -286,7 +328,7 @@ watch(
                                 'bg-green-100': patientStore.details.ExternalCauseOfInjury.ext_bite_sp === ''
                             }"
                         /> -->
-                        <div class="flex justify-content-between">
+                        <!-- <div class="flex justify-content-between">
                             <Dropdown
                                 v-model="patientStore.details.ExternalCauseOfInjury.animal"
                                 style="width: 48%"
@@ -338,6 +380,75 @@ watch(
                                         'bg-green-100': patientStore.details.ExternalCauseOfInjury.cause_sp === ''
                                     }"
                                 />
+                            </div>
+                        </div> -->
+                        <!-- {{ patientStore.details.ExternalCauseOfInjury.animal }} -->
+                        <div v-for="(item, index) in patientStore.details.ExternalCauseOfInjury.animal" :key="index" class="mb-3">
+                            <div class="flex justify-content-between">
+                                <!-- ANIMAL -->
+                                <Dropdown
+                                    v-model="patientStore.details.ExternalCauseOfInjury.animal[index]"
+                                    style="width: 45%"
+                                    :options="animalOption"
+                                    optionLabel="label"
+                                    optionValue="value"
+                                    placeholder="Select Animal"
+                                    :class="{
+                                        'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
+                                        'bg-green-100': patientStore.details.ExternalCauseOfInjury.animal[index] === ''
+                                    }"
+                                />
+
+                                <!-- CAUSE + BUTTON -->
+                                <Dropdown
+                                    v-model="patientStore.details.ExternalCauseOfInjury.cause[index]"
+                                    style="width: 45%"
+                                    :options="causeOption"
+                                    optionLabel="label"
+                                    optionValue="value"
+                                    placeholder="Select Cause"
+                                    :class="{
+                                        'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
+                                        'bg-green-100': patientStore.details.ExternalCauseOfInjury.cause[index] === ''
+                                    }"
+                                />
+
+                                <!-- + BUTTON (only on last item) -->
+                                <i style="width: 7%" v-if="index === patientStore.details.ExternalCauseOfInjury.animal.length - 1" class="pi pi-plus" @click="addExternalCause()"></i>
+                                <i style="width: 7%" v-else class="pi pi-times" @click="removeExternalCause(index)"></i>
+                            </div>
+
+                            <!-- ANIMAL SPECIFY -->
+
+                            <div class="flex justify-content-between">
+                                <div style="width: 45%">
+                                    <Textarea
+                                        v-if="patientStore.details.ExternalCauseOfInjury.animal[index] === 'OTHERS'"
+                                        v-model="patientStore.details.ExternalCauseOfInjury.animal_sp[index]"
+                                        class="mt-2 flex justify-content-start"
+                                        placeholder="Specify Animal"
+                                        style="width: 100%"
+                                        :class="{
+                                            'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
+                                            'bg-green-100': patientStore.details.ExternalCauseOfInjury.animal_sp[index] === ''
+                                        }"
+                                    />
+                                </div>
+                                <!-- CAUSE SPECIFY -->
+                                <div style="width: 45%">
+                                    <Textarea
+                                        v-if="patientStore.details.ExternalCauseOfInjury.cause[index] === 'OTHERS'"
+                                        v-model="patientStore.details.ExternalCauseOfInjury.cause_sp[index]"
+                                        class="mt-2 flex justify-content-end"
+                                        placeholder="Specify Cause"
+                                        style="width: 100%"
+                                        :class="{
+                                            'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
+                                            'bg-green-100': patientStore.details.ExternalCauseOfInjury.cause_sp[index] === ''
+                                        }"
+                                    />
+                                </div>
+                                <div style="width: 7%"></div>
                             </div>
                         </div>
                     </div>
@@ -641,6 +752,43 @@ watch(
                 <VaccineForm />
             </div>
         </div>
+        <Fieldset
+            style="width: 100%"
+            :toggleable="true"
+            :collapsed="true"
+            :pt="{
+                root: { style: { backgroundColor: 'transparent', border: 'none', padding: 'none' } },
+                legend: { style: { border: 'none', backgroundColor: 'transparent', textAlign: 'start' } },
+                toggler: { style: { padding: '1rem' } }
+            }"
+        >
+            <template #legend>
+                <span style="color: #000080" class="font-bold white-space-nowrap">MEDICATION/ANTIBIOTIC</span>
+            </template>
+            <Textarea
+                :pt="{
+                    root: {
+                        style: {
+                            width: '100%',
+                            overflow: 'hidden',
+                            border: '2px dashed #ccc',
+                            borderRadius: '4px',
+                            padding: '5px',
+                            boxSizing: 'border-box',
+                            resize: 'none',
+                            backgroundColor: '#ececec',
+                            color: '#666',
+                            fontWeight: 'bold',
+                            fontSize: '13px'
+                        }
+                    }
+                }"
+                style="width: 100%"
+                v-model="patientStore.details.ABTC.medication"
+                class="mt-1 justify-content-center"
+                autoResize
+            />
+        </Fieldset>
 
         <div
             v-if="patientStore.progressionDay === ('' || undefined || null)"

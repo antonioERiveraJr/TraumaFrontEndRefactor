@@ -62,8 +62,11 @@ const allowUpdateForm = async () => {
     }
     const existingEnccode = patientStore.patientTSSRecord.data.find((record) => record.data.enccode.toLowerCase() === paramEnccode.toLowerCase());
     if (existingEnccode) {
-        const isParamEnccodeLatest = await injuryService.isOPDABTCFormUpdatable(patientStore.header.hpercode, patientStore.enccode);
-        if (isParamEnccodeLatest && isParamEnccodeLatest.vaccineday === patientStore.progressionDay) {
+        //         const isParamEnccodeLatest = await injuryService.isOPDABTCFormUpdatable(patientStore.header.hpercode, patientStore.enccode);
+        // console.log('isParamEnccodeLatest:', isParamEnccodeLatest);
+        // console.log('props.latestEntry:', props?.latestEntry);
+        // if (isParamEnccodeLatest && isParamEnccodeLatest.vaccineday === patientStore.progressionDay) {
+        if (props?.latestEntry?.value && props?.latestEntry?.value?.vaccineday === patientStore.progressionDay) {
             hideSaveButton.value = false;
             loadDone.value = true;
         } else {
@@ -170,7 +173,7 @@ const savePatientData = async () => {
             patientStore.details.generalData.doctor_toi +
             '\n' +
             '\nDetail(s): \n' +
-            patientStore.details.ExternalCauseOfInjury.ext_bite_sp,
+            patientStore.header.final_doctor_details,
         patientStore.header.final_doctor_objective,
         patientStore.header.hpercode,
         isUpdateForm.value,
@@ -178,9 +181,8 @@ const savePatientData = async () => {
     );
 
     // console.log('insertPlan: ', patientStore.enccode, patientStore.doctor_plan, patientStore.header.hpercode, user.userInfo.employeeid);
-    await injuryService.insertPlan(patientStore.enccode, patientStore.doctor_plan, patientStore.header.hpercode);
-    await injuryService.insertChiefComplaint(patientStore.enccode, patientStore.chief_complaint, patientStore.header.hpercode);
-
+    await injuryService.insertPlan(patientStore.enccode, patientStore.doctor_plan, patientStore.header.hpercode, isUpdateForm.value);
+    await injuryService.insertChiefComplaint(patientStore.enccode, patientStore.chief_complaint, patientStore.header.hpercode, isUpdateForm.value);
     // console.log('insertChiefComplaint: ', patientStore.enccode, patientStore.chief_complaint, patientStore.header.hpercode, user.userInfo.employeeid);
 
     if (!patientStore.ufiveID) {
@@ -202,7 +204,7 @@ const savePatientData = async () => {
         patientStore.details.generalData.doctor_toi +
         '\n' +
         '\nDetail(s): \n' +
-        patientStore.details.ExternalCauseOfInjury.ext_bite_sp),
+        patientStore.header.final_doctor_details),
         //update subjective
         (patientStore.header.subjective = patientStore.header.doctor_objective);
 
@@ -389,6 +391,7 @@ const removeUnusedString = () => {
     });
 };
 
+const missingFields = [];
 const confirmSaves = async (event) => {
     generateText();
     // console.log('ufiveID: ', patientStore.ufiveID);
@@ -418,7 +421,6 @@ const confirmSaves = async (event) => {
         }
         const validationRules = createValidationRules();
         removeUnusedString();
-        const missingFields = [];
 
         for (const [section, fields] of Object.entries(validationRules)) {
             for (const [field, rules] of Object.entries(fields)) {
@@ -436,18 +438,54 @@ const confirmSaves = async (event) => {
         }
 
         if (missingFields.length > 0) {
-            console.log('Missing fields:', missingFields); // Log the missing fields
+            console.log('Missing fieldsss:', missingFields);
+
             return false;
         }
         return true;
     };
 
     if (!isFormValid()) {
+         const fieldMappings = {
+            previousARV: 'PREVIOUS COMPLETED ARV',
+            tetanusVaccination: 'PREVIOUS ANTI-TETANUS VACCINATION',
+            ext_bite_sp: 'NATURE OF INJURY',
+            dogbiteDegree: 'BITE CATEGORY',
+            bleeding: 'BLEEDING OF INJURY',
+            bitingAnimal: 'BITING ANIMAL',
+            observation: 'BITING ANIMAL CAN BE OBSERVED',
+            washingDone: 'WASHING OF WOUND DONE',
+            // erig: 'Vaccine to be Given',
+            // pvrv: 'Vaccine to be Given',
+            // pcec: 'Vaccine to be Given',
+            // hrig: 'Vaccine to be Given',
+            // ats: 'Vaccine to be Given',
+            // tt: 'Vaccine to be Given',
+            // vaccine_none: 'Vaccine to be Given',
+            vaccineFields: 'VACCINE TO BE GIVEN',
+            doctor_injtme: 'INJURY TIME',
+            plc_regcode: 'POI REGION',
+            plc_provcode: 'POI PROVINCE',
+            plc_ctycode: 'POI CITY'
+        };
+        const vaccineFields = ['erig', 'pvrv', 'pcec', 'hrig', 'ats', 'tt', 'vaccine_none'];
+        const missingVaccineFields = vaccineFields.some((field) => missingFields.includes(field));
+
+        const missingFieldDescriptions = missingFields
+            .filter((field) => !vaccineFields.includes(field)) // Filter out individual vaccine fields
+            .map((field) => fieldMappings[field])
+            .filter(Boolean);
+
+        if (missingVaccineFields) {
+            missingFieldDescriptions.push(fieldMappings.vaccineFields);
+        }
+
+        // Display the SweetAlert with the mapped descriptions
         Swal.fire({
-            icon: 'error',
             title: 'Some required fields are blank and need to be completed.',
-            timer: 2000,
-            showConfirmButton: false
+            html: 'The following fields are missing: <br>' + missingFieldDescriptions.join('<br>'),
+            icon: 'warning',
+            button: 'OK'
         });
         return;
     }

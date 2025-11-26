@@ -283,6 +283,8 @@ watch(
 );
 onBeforeMount(() => {
     // Check the initial state of patientStore.dataIsLoaded
+
+    // console.log('3');
     if (patientStore.dataIsLoaded) {
         patientDataIsLoaded(); // Handle already loaded data
         // console.log('Doctor pre data is loaded on mount using before mounted: ', patientStore.dataIsLoaded);
@@ -362,11 +364,13 @@ watch(
 window.addEventListener('resize', onResize);
 
 onUnmounted(() => {
+    // console.log('2');
     window.removeEventListener('resize', onResize);
 });
 watch(
     () => patientStore.dataIsLoaded,
     (newValue) => {
+        // console.log('1');
         if (newValue === true) {
             patientDataIsLoaded();
         }

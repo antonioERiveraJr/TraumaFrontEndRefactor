@@ -299,10 +299,10 @@ export const usePatientStore = defineStore('PatientStore', () => {
         },
 
         ExternalCauseOfInjury: {
-            animal: '',
-            animal_sp: '',
-            cause: '',
-            cause_sp: '',
+            animal: [''],
+            animal_sp: [''],
+            cause: [''],
+            cause_sp: [''],
             prophylaxis: '',
             pvrv: '',
             pcec: '',
@@ -627,10 +627,10 @@ export const usePatientStore = defineStore('PatientStore', () => {
             medication: ''
         },
         ExternalCauseOfInjury: {
-            animal: '',
-            animal_sp: '',
-            cause: '',
-            cause_sp: '',
+            animal: [''],
+            animal_sp: [''],
+            cause: [''],
+            cause_sp: [''],
             prophylaxis: '',
             pvrv: '',
             pcec: '',
@@ -1673,10 +1673,10 @@ export const usePatientStore = defineStore('PatientStore', () => {
         details.value.ABTC.pvrv_site_4 = '';
         details.value.ABTC.pcec_site_4 = '';
         details.value.ABTC.prophylaxis = '';
-        details.value.ExternalCauseOfInjury.animal_sp = '';
-        details.value.ExternalCauseOfInjury.cause_sp = '';
-        details.value.ExternalCauseOfInjury.animal = '';
-        details.value.ExternalCauseOfInjury.cause = '';
+        details.value.ExternalCauseOfInjury.animal_sp = [''];
+        details.value.ExternalCauseOfInjury.cause_sp = [''];
+        details.value.ExternalCauseOfInjury.animal = [''];
+        details.value.ExternalCauseOfInjury.cause = [''];
         details.value.ABTC.pvrv = '';
         details.value.ABTC.pcec = '';
         details.value.ABTC.hrig = '';

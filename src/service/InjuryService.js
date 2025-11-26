@@ -852,10 +852,13 @@ export default class InjuryService {
     }
 
     async insertObjSubj(enccode, subjective, objective, hpercode, isUpdateForm, ufiveID) {
-        console.log('insertObjSubj called with parameters:', {
-            isUpdateForm,
-            ufiveID
-        });
+        // console.log('insertObjSubj called with parameters:', {
+        //     subjective,
+        //     objective, 
+        //     isUpdateForm,
+        //     ufiveID
+        
+        // });
         // alert('hit');
         const user = useUserStore();
         const response = await axios
@@ -876,12 +879,12 @@ export default class InjuryService {
             });
         return response;
     }
-    async insertPlan(enccode, plan, hpercode) {
+    async insertPlan(enccode, plan, hpercode, isUpdateForm) {
         const user = useUserStore();
         const response = await axios
             .put(
                 'insertPlan',
-                { enccode: enccode, plan: plan, hpercode: hpercode, entryby: user.userInfo.employeeid },
+                { enccode: enccode, plan: plan, hpercode: hpercode, entryby: user.userInfo.employeeid, isUpdateForm: isUpdateForm},
                 {
                     headers: {
                         Authorization: 'Bearer ' + localStorage.getItem('authToken')
@@ -897,12 +900,12 @@ export default class InjuryService {
         return response;
     }
 
-    async insertChiefComplaint(enccode, chief_complaint, hpercode) { 
+    async insertChiefComplaint(enccode, chief_complaint, hpercode, isUpdateForm) { 
         const user = useUserStore();
         const response = await axios
             .put(
                 'insertChiefComplaint',
-                { enccode: enccode, chief_complaint: chief_complaint, hpercode: hpercode, entryby: user.userInfo.employeeid },
+                { enccode: enccode, chief_complaint: chief_complaint, hpercode: hpercode, entryby: user.userInfo.employeeid, isUpdateForm: isUpdateForm },
                 {
                     headers: {
                         Authorization: 'Bearer ' + localStorage.getItem('authToken')

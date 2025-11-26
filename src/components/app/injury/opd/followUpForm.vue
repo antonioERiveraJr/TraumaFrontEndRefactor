@@ -66,7 +66,8 @@ watch(
 //         }
 //     }
 // );
-// </script>
+//
+</script>
 <template>
     <h5 style="text-align: center; font-weight: bolder; color: #333">FOLLOW-UP FORM</h5>
 
@@ -347,6 +348,80 @@ watch(
             </div>
         </Fieldset>
     </div>
+    <Fieldset
+        style="width: 98%; margin-top: 1%;"
+        :toggleable="true"
+        :collapsed="true"
+        :pt="{
+            root: { style: { backgroundColor: 'transparent', border: 'none', padding: 'none' } },
+            legend: { style: { border: 'none', backgroundColor: 'transparent', textAlign: 'start' } },
+            toggler: { style: { padding: '1rem' } }
+        }"
+    >
+        <template #legend>
+            <span style="color: #000080" class="font-bold white-space-nowrap">CUSTOMIZE DIAGNOSIS</span>
+        </template>
+        <Textarea
+            :pt="{
+                root: {
+                    style: {
+                        width: '100%',
+                        overflow: 'hidden',
+                        border: '2px dashed #ccc',
+                        borderRadius: '4px',
+                        padding: '5px',
+                        boxSizing: 'border-box',
+                        resize: 'none',
+                        backgroundColor: '#ececec',
+                        color: '#666',
+                        fontWeight: 'bold',
+                        fontSize: '13px'
+                    }
+                }
+            }"
+            style="width: 100%"
+            v-model="PatientStore.header.doctor_diagnosis"
+            class="mt-1 justify-content-center"
+            autoResize
+        />
+    </Fieldset>
+    <Fieldset
+        style="width: 98%"
+        :toggleable="true"
+        :collapsed="true"
+        :pt="{
+            root: { style: { backgroundColor: 'transparent', border: 'none', padding: 'none' } },
+            legend: { style: { border: 'none', backgroundColor: 'transparent', textAlign: 'start' } },
+            toggler: { style: { padding: '1rem' } }
+        }"
+    >
+        <template #legend>
+            <span style="color: #000080" class="font-bold white-space-nowrap">MEDICATION/ANTIBIOTIC</span>
+        </template>
+        <Textarea
+            :pt="{
+                root: {
+                    style: {
+                        width: '100%',
+                        overflow: 'hidden',
+                        border: '2px dashed #ccc',
+                        borderRadius: '4px',
+                        padding: '5px',
+                        boxSizing: 'border-box',
+                        resize: 'none',
+                        backgroundColor: '#ececec',
+                        color: '#666',
+                        fontWeight: 'bold',
+                        fontSize: '13px'
+                    }
+                }
+            }"
+            style="width: 100%"
+            v-model="PatientStore.details.ABTC.medication"
+            class="mt-1 justify-content-center"
+            autoResize
+        />
+    </Fieldset>
 
     <div class="flex justify-content-center">
         <Fieldset style="width: 98%" pt:content:class="flex" :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '1rem' } } }">
@@ -427,7 +502,7 @@ watch(
                         </div>
                         <div style="width: 10%" :style="{ width: PatientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '0%' : '10%', height: PatientStore.details.ABTC.erig === 'Y' ? '22vh' : '5vh' }">
                             <CheckBoxMultiple v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" v-model="PatientStore.details.ABTC.erig" label="ERIG" />
-                            <div v-if="PatientStore.details.ABTC.erig === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                            <div v-if="PatientStore.details.ABTC.erig === 'Y' && PatientStore.type_prophylaxis === 'POST-EXPOSURE'"" style="width: 100%" class="flex justify-content-evenly">
                                 <div style="width: 100%">
                                     <label for="Skintest" class="text-black text-xs" style="color: #000080"><i>Skin Test </i></label>
                                     <SelectButton
@@ -448,7 +523,7 @@ watch(
                                 </div>
                             </div>
                             <Transition name="slide-fade" mode="out-in">
-                                <div class="field mt-2" v-if="PatientStore.details.ABTC.skintest === '-' && PatientStore.details.ABTC.erig === 'Y'">
+                                <div class="field mt-2" v-if="PatientStore.details.ABTC.skintest === '-' && PatientStore.details.ABTC.erig === 'Y'&& patientStore.type_prophylaxis === 'POST-EXPOSURE' ">
                                     <span class="p-float-label">
                                         <InputNumber :minFractionDigits="1" :maxFractionDigits="5" suffix=" mL" :min="0" :max="25" id="erig" v-model="PatientStore.details.ABTC.erig_num" />
                                     </span>
@@ -458,7 +533,7 @@ watch(
 
                         <div style="width: 10%" :style="{ width: PatientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '0%' : '10%', height: PatientStore.details.ABTC.ats === 'Y' ? '22    vh' : '5vh' }">
                             <CheckBoxMultiple v-if="PatientStore.type_prophylaxis === 'POST-EXPOSURE'" class="justify-content-center" v-model="PatientStore.details.ABTC.ats" label="ATS" />
-                            <div v-if="PatientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                            <div v-if="PatientStore.details.ABTC.ats === 'Y' && PatientStore.type_prophylaxis === 'POST-EXPOSURE'" style="width: 100%" class="flex justify-content-evenly">
                                 <div style="width: 100%">
                                     <label for="Skintest" class="text-black text-xs" style="color: #000080"><i>Skin Test </i></label>
                                     <SelectButton
@@ -480,7 +555,7 @@ watch(
                             </div>
                             <Transition name="slide-fade" mode="out-in" style="width: 100%">
                                 <div class="field mt-2" v-if="PatientStore.details.ABTC.skintest === '-' && PatientStore.details.ABTC.ats === 'Y'">
-                                    <div v-if="PatientStore.details.ABTC.ats === 'Y'" style="width: 100%" class="flex justify-content-evenly">
+                                    <div v-if="PatientStore.details.ABTC.ats === 'Y' && patientStore.type_prophylaxis === 'POST-EXPOSURE'" style="width: 100%" class="flex justify-content-evenly">
                                         <div class="field" style="width: 100%">
                                             <span class="p-float-label">
                                                 <Dropdown
@@ -510,7 +585,7 @@ watch(
         </Fieldset>
     </div>
 
-    <div class="flex justify-content-center mt-3" style="width: 100%">
+    <!-- <div class="flex justify-content-center mt-3" style="width: 100%">
         <Fieldset
             style="width: 48%"
             :toggleable="true"
@@ -585,7 +660,7 @@ watch(
                 autoResize
             />
         </Fieldset>
-    </div>
+    </div> -->
 </template>
 
 <style scoped></style>

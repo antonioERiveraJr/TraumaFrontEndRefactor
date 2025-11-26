@@ -202,7 +202,7 @@ export default function createValidationRules() {
                     patientStore.details.ABTC.pvrv_site_1_im !== 'Y' &&
                     patientStore.details.ABTC.pvrv_site_1_id !== 'Y'
             },
-            pcec_site_2: {
+            pcec_site_2: {  
                 requiredIf:
                     patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
                     patientStore.details.ABTC.pcec === 'Y' &&

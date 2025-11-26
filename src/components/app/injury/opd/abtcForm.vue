@@ -20,7 +20,8 @@ const props = defineProps({
     enccode: {
         type: String,
         required: true
-    }
+    },
+    
     // day: {
     //     type: String,
     //     required: true
@@ -123,7 +124,6 @@ const formatDate = (dateString) => {
 //     groupedCases.value = Object.values(grouped); // Set the grouped cases
 // };
 
-
 const groupPatientData = (patientsABTCLog) => {
     const grouped = patientsABTCLog.reduce((acc, curr) => {
         const dogbiteDegree = ref();
@@ -150,7 +150,7 @@ const groupPatientData = (patientsABTCLog) => {
             //  else {
             //     console.log('ExternalCauseOfInjury is missing.');
             // }
-        } 
+        }
         // else {
         //     console.log('curr.data is undefined or null.');
         // }
@@ -175,7 +175,7 @@ const groupPatientData = (patientsABTCLog) => {
     for (const key in grouped) {
         const caseGroup = grouped[key];
         const hasDay7 = caseGroup.items.some((item) => item.vaccineday === '7');
-        const isFirstDegree = caseGroup.items.some((item) => item.dogbiteDegree.value ==='I');
+        const isFirstDegree = caseGroup.items.some((item) => item.dogbiteDegree.value === 'I');
 
         // console.log('isFirstDegree: ', isFirstDegree);
         if (hasDay7 || isFirstDegree) {
@@ -185,7 +185,7 @@ const groupPatientData = (patientsABTCLog) => {
         }
     }
 
-    groupedCases.value = Object.values(grouped); 
+    groupedCases.value = Object.values(grouped);
 };
 
 const updateCustomizedDetails = (value) => {
@@ -464,18 +464,6 @@ watch(
     },
     { deep: true }
 );
-// watch(
-//     () => patientStore.progressionDay,
-//     () => {
-//         // console.log('progression day: ', props.day);
-//         console.log('hit');
-//         console.log('progression Day: ', patientStore.progressionDay);
-//         patientDataIsLoaded();
-//     },
-//     {
-//         deep: true
-//     }
-// );
 watch(
     () => patientStore.locationLoaded,
     (newValue) => {
@@ -636,6 +624,17 @@ watch(
     { deep: true }
 );
 
+// watch(
+//     () => patientStore.progressionDay,
+//     () => {
+//         // alert('hit');
+//         patientDataIsLoaded();
+//     },
+//     {
+//         deep: true
+//     }
+// );
+
 watch(
     () => [patientStore.details.preAdmissionData, patientStore.details.generalData, patientStore.details.hospitalFacilityData],
     () => {
@@ -680,6 +679,9 @@ onMounted(async () => {
     patientStore.details.ExternalCauseOfInjury.ext_bite = 'Y';
     if (patientStore.details.ExternalCauseOfInjury.adverseReaction === '') {
         patientStore.details.ExternalCauseOfInjury.adverseReaction = 'None';
+    }
+    if (patientStore.details.ExternalCauseOfInjury.allergies === '') {
+        patientStore.details.ExternalCauseOfInjury.allergies = 'None';
     }
 
     updateRequiredFieldCountForBite();
@@ -1113,3 +1115,5 @@ body {
     color: #999;
 }
 </style>
+
+wait for second just ok

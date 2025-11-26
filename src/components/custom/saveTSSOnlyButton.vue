@@ -56,7 +56,7 @@ const allowUpdateFormn = async () => {
 };
 
 const regionName = computed(() => {
-    console.log('regions: ', patientStore.storeRegions);
+    // console.log('regions: ', patientStore.storeRegions);
     const region = patientStore?.storeRegions.find((reg) => reg.regcode === patientStore.details.generalData.plc_regcode);
     return region ? region.regname : 'Unknown Region';
 });

@@ -1,7 +1,7 @@
 <script setup>
 import { usePatientStore } from '../../../../store/injury/patientStore';
 import InjuryService from '../../../../service/InjuryService';
-import { onMounted, watch, ref } from 'vue';
+import { onMounted, watch, ref, defineEmits } from 'vue';
 import Swal from 'sweetalert2';
 // const emit = defineEmits('update:loading');
 const injuryService = new InjuryService();
@@ -9,6 +9,7 @@ const patientStore = usePatientStore();
 const vaccineDays = ref([]);
 // const checkPatientTSSRecord = ref();
 const enccode = ref();
+// const emit = defineEmits(['update:progressionDay']); // Define your emit event
 const patientData = ref();
 
 const setDay = (day) => {
@@ -17,6 +18,9 @@ const setDay = (day) => {
         patientStore.details = patientStore?.defaultDetails;
     }
     patientStore.progressionDay = day;
+
+    // emit('update:progressionDay', day); // Emit the value of day here 
+
     // console.log(patientStore.progressionDay);
     if (day === '0') {
         patientStore.details.preAdmissionData.inj_intent_code = '01';
@@ -93,7 +97,7 @@ const getBadge = (day) => {
             if (day === '0') {
                 // alert('hits');
                 checkProphylaxis = patientStore?.patientTSSRecord?.data?.find((record) => record.prophylaxis === 'POST-EXPOSURE' && record.vaccineday === '0');
-                console.log('checkProphylaxis: ', checkProphylaxis);
+                // console.log('checkProphylaxis: ', checkProphylaxis);
                 if (checkProphylaxis === undefined && checkLog0) {
                     checkProphylaxis = {
                         tStamp: 'TRANSFERRED',
@@ -247,6 +251,7 @@ onMounted(() => {
 watch(
     () => patientStore.progressionDay,
     async (newDay) => {
+        // console.log('logging', patientStore.progressionDay);
         // setDay(newDay);
         patientStore.loadSignal = true;
         await dataIsLoaded();

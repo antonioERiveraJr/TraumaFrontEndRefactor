@@ -75,9 +75,10 @@ const allowUpdateForm = async () => {
     // });
     // console.log('existingEnccode:', existingEnccode);
     if (existingEnccode) {
-        const isParamEnccodeLatest = await injuryService.isOPDABTCFormUpdatable(patientStore.header.hpercode, patientStore.enccode);
+        // const isParamEnccodeLatest = await injuryService.isOPDABTCFormUpdatable(patientStore.header.hpercode, patientStore.enccode);
         // console.log('isParamEnccodeLatest:', isParamEnccodeLatest);
-        if (isParamEnccodeLatest && isParamEnccodeLatest.vaccineday === patientStore.progressionDay) {
+        // if (isParamEnccodeLatest && isParamEnccodeLatest.vaccineday === patientStore.progressionDay) {
+        if (props?.latestEntry?.value && props?.latestEntry?.value?.vaccineday === patientStore.progressionDay) {
             hideSaveButton.value = false;
             loadDone.value = true;
         } else {
@@ -386,6 +387,7 @@ const removeUnusedString = () => {
     });
 };
 
+const missingFields = [];
 const confirmSaves = async () => {
     generateText();
     if (!patientStore.header.final_doctor_diagnosis) {
@@ -412,7 +414,6 @@ const confirmSaves = async () => {
         }
         const validationRules = createValidationRules();
         removeUnusedString();
-        const missingFields = [];
 
         for (const [section, fields] of Object.entries(validationRules)) {
             for (const [field, rules] of Object.entries(fields)) {
@@ -431,17 +432,58 @@ const confirmSaves = async () => {
 
         if (missingFields.length > 0) {
             console.log('Missing fields:', missingFields); // Log the missing fields
+            Swal.fire({
+                title: 'Missing Fields',
+                text: 'The following fields are missing: ' + missingFields.join(', '),
+                icon: 'warning',
+                button: 'OK'
+            });
             return false;
         }
         return true;
     };
 
     if (!isFormValid()) {
+        const fieldMappings = {
+            previousARV: 'PREVIOUS COMPLETED ARV',
+            tetanusVaccination: 'PREVIOUS ANTI-TETANUS VACCINATION',
+            ext_bite_sp: 'NATURE OF INJURY',
+            dogbiteDegree: 'BITE CATEGORY',
+            bleeding: 'BLEEDING OF INJURY',
+            bitingAnimal: 'BITING ANIMAL',
+            observation: 'BITING ANIMAL CAN BE OBSERVED',
+            washingDone: 'WASHING OF WOUND DONE',
+            // erig: 'Vaccine to be Given',
+            // pvrv: 'Vaccine to be Given',
+            // pcec: 'Vaccine to be Given',
+            // hrig: 'Vaccine to be Given',
+            // ats: 'Vaccine to be Given',
+            // tt: 'Vaccine to be Given',
+            // vaccine_none: 'Vaccine to be Given',
+            vaccineFields: 'VACCINE TO BE GIVEN',
+            doctor_injtme: 'INJURY TIME',
+            plc_regcode: 'POI REGION',
+            plc_provcode: 'POI PROVINCE',
+            plc_ctycode: 'POI CITY'
+        };
+        const vaccineFields = ['erig', 'pvrv', 'pcec', 'hrig', 'ats', 'tt', 'vaccine_none'];
+        const missingVaccineFields = vaccineFields.some((field) => missingFields.includes(field));
+
+        const missingFieldDescriptions = missingFields
+            .filter((field) => !vaccineFields.includes(field)) // Filter out individual vaccine fields
+            .map((field) => fieldMappings[field])
+            .filter(Boolean);
+
+        if (missingVaccineFields) {
+            missingFieldDescriptions.push(fieldMappings.vaccineFields);
+        }
+
+        // Display the SweetAlert with the mapped descriptions
         Swal.fire({
-            icon: 'error',
             title: 'Some required fields are blank and need to be completed.',
-            timer: 2000,
-            showConfirmButton: false
+            html: 'The following fields are missing: <br>' + missingFieldDescriptions.join('<br>'),
+            icon: 'warning',
+            button: 'OK'
         });
         return;
     } else {
@@ -586,7 +628,7 @@ const saveForm = async () => {
     Swal.fire('Saved!', '', 'success');
     await new Promise((resolve) => setTimeout(resolve, 3000)); // Add delay of 3 seconds
     // window.close();
-    window.location.href = `http://192.168.7.9:86/soapIndex?enccode=${patientStore.enccode}&id=-1#/`; // Redirect here
+    window.location.href = `http://192.168.7.9:80/soapIndex?enccode=${patientStore.enccode}&id=-1#/`; // Redirect here
 };
 
 const cancelForm = async () => {
@@ -692,10 +734,10 @@ watch(det, (newValue) => {
                         <SplitterPanel style="height: 100%" :size="50">
                             <div class="flex justify-content-center">
                                 <h5 style="color: #000080" class="font-bold">GENERATED TEXT</h5>
-                    <!-- {{ patientStore.details.ABTC.immunization_schedule }}
+                                <!-- {{ patientStore.details.ABTC.immunization_schedule }}
                     {{ patientStore.progressionDay }}
                 {{  patientStore.details.ABTC.booster_regimen }}             -->
-                </div>
+                            </div>
                             <label for="details" class="p-float-label text-black text-s ml-5" style="color: #000080"><i>Details </i></label>
                             <div>
                                 <div class="flex align-items-center" style="position: relative">
