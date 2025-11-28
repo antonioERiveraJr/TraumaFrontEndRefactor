@@ -60,7 +60,7 @@ const allowUpdateForm = async () => {
         loader.value = false;
         patientStore.ufiveID = '';
     }
-    const existingEnccode = patientStore.patientTSSRecord.data.find((record) => record.data.enccode.toLowerCase() === paramEnccode.toLowerCase());
+    const existingEnccode = patientStore?.patientTSSRecord?.data?.find((record) => record.data.enccode.toLowerCase() === paramEnccode.toLowerCase());
     if (existingEnccode) {
         //         const isParamEnccodeLatest = await injuryService.isOPDABTCFormUpdatable(patientStore.header.hpercode, patientStore.enccode);
         // console.log('isParamEnccodeLatest:', isParamEnccodeLatest);
@@ -74,8 +74,8 @@ const allowUpdateForm = async () => {
             loadDone.value = true;
         }
     } else {
-        const checkDayRecord = patientStore.patientTSSRecord.data.find((record) => record.vaccineday === patientStore.progressionDay);
-        const isProgressionDayNull = patientStore.patientTSSRecord.data.find((record) => record.vaccineday === patientStore.progressionDay);
+        const checkDayRecord = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === patientStore.progressionDay);
+        const isProgressionDayNull = patientStore?.patientTSSRecord?.data?.find((record) => record.vaccineday === patientStore.progressionDay);
         if (checkDayRecord?.length > 0 || isProgressionDayNull) {
             hideSaveButton.value = true;
             loadDone.value = true;
@@ -391,7 +391,7 @@ const removeUnusedString = () => {
     });
 };
 
-const missingFields = [];
+const missingFields = ref([]);
 const confirmSaves = async (event) => {
     generateText();
     // console.log('ufiveID: ', patientStore.ufiveID);
@@ -410,6 +410,10 @@ const confirmSaves = async (event) => {
     if (patientStore.details.ExternalCauseOfInjury.ref_expnature_code !== '07') {
         patientStore.details.ExternalCauseOfInjury.ext_expo_nature_sp = '';
     }
+
+    missingFields.value = [];
+    // console.log('missingFields: ', missingFields);
+    // console.log('formValidation: ', isFormValid);
     const isFormValid = () => {
         if (patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y') {
             if (patientStore.details.ExternalCauseOfInjury.allergies === '') {
@@ -425,20 +429,21 @@ const confirmSaves = async (event) => {
         for (const [section, fields] of Object.entries(validationRules)) {
             for (const [field, rules] of Object.entries(fields)) {
                 if (rules.required && !patientStore.details[section][field]) {
-                    missingFields.push(field);
+                    missingFields.value.push(field);
                 }
 
                 if (rules.requiredIf) {
                     const condition = rules.requiredIf;
                     if (condition && !patientStore.details[section][field]) {
-                        missingFields.push(field);
+                        missingFields.value.push(field);
                     }
                 }
             }
         }
 
-        if (missingFields.length > 0) {
-            console.log('Missing fieldsss:', missingFields);
+        // console.log('missingFields afer: ', missingFields);
+        if (missingFields.value.length > 0) {
+            // console.log('Missing fieldsss:', missingFields);
 
             return false;
         }
@@ -446,7 +451,8 @@ const confirmSaves = async (event) => {
     };
 
     if (!isFormValid()) {
-         const fieldMappings = {
+        // console.log('hit2');
+        const fieldMappings = {
             previousARV: 'PREVIOUS COMPLETED ARV',
             tetanusVaccination: 'PREVIOUS ANTI-TETANUS VACCINATION',
             ext_bite_sp: 'NATURE OF INJURY',
@@ -469,9 +475,9 @@ const confirmSaves = async (event) => {
             plc_ctycode: 'POI CITY'
         };
         const vaccineFields = ['erig', 'pvrv', 'pcec', 'hrig', 'ats', 'tt', 'vaccine_none'];
-        const missingVaccineFields = vaccineFields.some((field) => missingFields.includes(field));
+        const missingVaccineFields = vaccineFields.some((field) => missingFields.value.includes(field));
 
-        const missingFieldDescriptions = missingFields
+        const missingFieldDescriptions = missingFields.value
             .filter((field) => !vaccineFields.includes(field)) // Filter out individual vaccine fields
             .map((field) => fieldMappings[field])
             .filter(Boolean);
@@ -485,7 +491,7 @@ const confirmSaves = async (event) => {
             title: 'Some required fields are blank and need to be completed.',
             html: 'The following fields are missing: <br>' + missingFieldDescriptions.join('<br>'),
             icon: 'warning',
-            button: 'OK'
+            confirmButtonText: 'OK'
         });
         return;
     }
@@ -641,6 +647,9 @@ onMounted(() => {
                 </div>
             </div>
         </span>
+    </div>
+    <div v-else style="width: 50%" class="flex justify-content-center">
+        <i class="pi pi-sort-up" @click="hideSaveButton = false" style="font-size: 24px"></i>
     </div>
     <div v-if="confirmEMRDetails" style="width: 100vw; height: 100vh; position: fixed; z-index: 1000">
         <Dialog

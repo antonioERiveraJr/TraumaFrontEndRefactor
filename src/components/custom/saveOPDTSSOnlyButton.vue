@@ -387,8 +387,9 @@ const removeUnusedString = () => {
     });
 };
 
-const missingFields = [];
+const missingFields = ref([]);
 const confirmSaves = async () => {
+    missingFields.value = [];
     generateText();
     if (!patientStore.header.final_doctor_diagnosis) {
         patientStore.header.final_doctor_diagnosis = patientStore.header.doctor_diagnosis;
@@ -418,25 +419,25 @@ const confirmSaves = async () => {
         for (const [section, fields] of Object.entries(validationRules)) {
             for (const [field, rules] of Object.entries(fields)) {
                 if (rules.required && !patientStore.details[section][field]) {
-                    missingFields.push(field);
+                    missingFields.value.push(field);
                 }
 
                 if (rules.requiredIf) {
                     const condition = rules.requiredIf;
                     if (condition && !patientStore.details[section][field]) {
-                        missingFields.push(field);
+                        missingFields.value.push(field);
                     }
                 }
             }
         }
 
-        if (missingFields.length > 0) {
-            console.log('Missing fields:', missingFields); // Log the missing fields
+        if (missingFields.value.length > 0) {
+            // console.log('Missing fields:', missingFields); // Log the missing fields
             Swal.fire({
                 title: 'Missing Fields',
-                text: 'The following fields are missing: ' + missingFields.join(', '),
+                text: 'The following fields are missing: ' + missingFields.value.join(', '),
                 icon: 'warning',
-                button: 'OK'
+                confirmButtonText: 'OK'
             });
             return false;
         }
@@ -467,9 +468,9 @@ const confirmSaves = async () => {
             plc_ctycode: 'POI CITY'
         };
         const vaccineFields = ['erig', 'pvrv', 'pcec', 'hrig', 'ats', 'tt', 'vaccine_none'];
-        const missingVaccineFields = vaccineFields.some((field) => missingFields.includes(field));
+        const missingVaccineFields = vaccineFields.some((field) => missingFields.value.includes(field));
 
-        const missingFieldDescriptions = missingFields
+        const missingFieldDescriptions = missingFields.value
             .filter((field) => !vaccineFields.includes(field)) // Filter out individual vaccine fields
             .map((field) => fieldMappings[field])
             .filter(Boolean);
@@ -627,8 +628,8 @@ const saveForm = async () => {
     patientStore.loadSignal = true;
     Swal.fire('Saved!', '', 'success');
     await new Promise((resolve) => setTimeout(resolve, 3000)); // Add delay of 3 seconds
-    // window.close();
-    window.location.href = `http://192.168.7.9:80/soapIndex?enccode=${patientStore.enccode}&id=-1#/`; // Redirect here
+    window.close();
+    // window.location.href = `http://192.168.7.9:80/soapIndex?enccode=${patientStore.enccode}&id=-1#/`; // Redirect here
 };
 
 const cancelForm = async () => {
@@ -692,7 +693,9 @@ watch(det, (newValue) => {
     <!-- <div v-if="loader" class="flex justify-content-center align-items-center" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; backdrop-filter: blur(5px); z-index: 9999; background-color: rgba(255, 255, 255, 0.5)"></div> -->
     <div v-if="!hideSaveButton && loadDone" style="width: 100%; height: 100%">
         <span class="flex" style="width: 100%; height: 100%">
-            <div v-if="isLocked === '1'"><Message :closable="false">Encounter is Locked</Message></div>
+            <div v-if="isLocked === '1'">
+                <Message :closable="false">Encounter is Locked</Message>
+            </div>
             <div v-else style="width: 100%; height: 100%">
                 <div v-if="isUpdateForm" style="width: 100%; height: 100%">
                     <Button
@@ -716,6 +719,10 @@ watch(det, (newValue) => {
                 </div>
             </div>
         </span>
+    </div>
+
+    <div v-else style="width: 50%" class="flex justify-content-center">
+        <i class="pi pi-sort-up" @click="hideSaveButton = false" style="font-size: 24px"></i>
     </div>
     <div v-if="confirmEMRDetails" style="width: 100vw; height: 100vh; position: fixed; z-index: 1000">
         <Dialog

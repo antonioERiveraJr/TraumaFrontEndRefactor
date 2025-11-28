@@ -10,7 +10,6 @@ defineRule('required', required);
 
 export default function createValidationRules() {
     const patientStore = usePatientStore();
-
     const validationRules = {
         ExternalCauseOfInjury: {
             previousARV: { required: true },
@@ -202,7 +201,7 @@ export default function createValidationRules() {
                     patientStore.details.ABTC.pvrv_site_1_im !== 'Y' &&
                     patientStore.details.ABTC.pvrv_site_1_id !== 'Y'
             },
-            pcec_site_2: {  
+            pcec_site_2: {
                 requiredIf:
                     patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
                     patientStore.details.ABTC.pcec === 'Y' &&
@@ -275,25 +274,25 @@ export default function createValidationRules() {
     };
 
     // Function to check each rule and log required fields and their status
-    const logRequiredFieldsStatus = () => {
-        // console.log('Checking required fields...');
-        for (const [section, rules] of Object.entries(validationRules)) {
-            for (const [field, rule] of Object.entries(rules)) {
-                const isRequired = rule.required || (rule.requiredIf && eval(rule.requiredIf));
-                const value = patientStore.details.ExternalCauseOfInjury[field] || patientStore.details[field]; // Adjust based on the field's actual path
+    // const logRequiredFieldsStatus = () => {
+    //     // console.log('Checking required fields...');
+    //     for (const [section, rules] of Object.entries(validationRules)) {
+    //         for (const [field, rule] of Object.entries(rules)) {
+    //             const isRequired = rule.required || (rule.requiredIf && eval(rule.requiredIf));
+    //             const value = patientStore.details.ExternalCauseOfInjury[field] || patientStore.details[field]; // Adjust based on the field's actual path
 
-                if (isRequired) {
-                    if (value) {
-                        // console.log(`Field ${section}.${field} is required and filled: ${value}`);
-                    } else {
-                        // console.log(`Field ${section}.${field} is required but not filled.`);
-                    }
-                }
-            }
-        }
-    };
+    //             if (isRequired) {
+    //                 if (value) {
+    //                     // console.log(`Field ${section}.${field} is required and filled: ${value}`);
+    //                 } else {
+    //                     // console.log(`Field ${section}.${field} is required but not filled.`);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // };
 
-    logRequiredFieldsStatus();
-
+    // logRequiredFieldsStatus();
+    // console.log('rules: ', validationRules);
     return validationRules;
 }

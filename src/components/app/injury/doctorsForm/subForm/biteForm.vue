@@ -1114,7 +1114,12 @@ watch(
             </div>
         </div>
         <div v-else class="flex justify-content-center">
-            <Fieldset style="width: 98%" pt:content:class="flex" :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '1rem' } } }">
+            <Fieldset
+                :class="{ 'bg-green-100': !patientStore.details.ABTC.immunization_schedule }"
+                style="width: 98%"
+                pt:content:class="flex"
+                :pt="{ legend: { style: { border: 'none', backgroundColor: 'transparent' } }, toggler: { style: { padding: '1rem' } } }"
+            >
                 <template #legend>
                     <span style="color: #000080" class="flex justify-content-center font-bold white-space-nowrap">Vaccine to be Given ( {{ patientStore.type_prophylaxis }} ) </span>
                     <span style="color: blue; font-size: x-small; cursor: pointer; transition: color 0.3s" @click="handleClick" @mouseover="hovering = true" @mouseleave="hovering = false" :style="{ color: hovering ? 'darkblue' : 'blue' }">
@@ -1171,8 +1176,8 @@ watch(
                                     <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_1_im" label="1-site IM" />
                                 </div>
                                 <div v-if="patientStore.details.ABTC.pvrv === 'Y'" style="width: 100%" class="flex justify-content-evenly mt-4">
-                                    <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_2" label="2-sites" />
-                                    <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_4" label="4-sites" />
+                                    <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_2" label="2-sites ID" />
+                                    <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pvrv_site_4" label="4-sites ID" />
                                 </div>
                             </div>
                             <div class="justify-content-center" :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '22%' : '13%', height: patientStore.details.ABTC.pcec === 'Y' ? '20vh' : '5vh' }">
@@ -1182,8 +1187,8 @@ watch(
                                     <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_1_im" label="1-site IM" />
                                 </div>
                                 <div v-if="patientStore.details.ABTC.pcec === 'Y'" style="width: 100%" class="flex justify-content-evenly mt-4">
-                                    <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_2" label="2-sites" />
-                                    <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_4" label="4-sites" />
+                                    <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_2" label="2-sites ID" />
+                                    <CheckBoxMultiple class="flex justify-content-center" style="width: 48%" v-model="patientStore.details.ABTC.pcec_site_4" label="4-sites ID" />
                                 </div>
                             </div>
                             <div style="width: 10%" :style="{ width: patientStore.type_prophylaxis === 'PRE-EXPOSURE' ? '0%' : '10%', height: patientStore.details.ABTC.pcec === 'Y' ? '20vh' : '5vh' }">

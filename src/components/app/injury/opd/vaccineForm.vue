@@ -18,22 +18,30 @@ const positive_negative_option = ['+', '-'];
 </script>
 <template>
     <div style="width: 98%" class="ml-4">
-        <label for="Finding" class="text-black text-xs" style="color: #000080"><i>Finding </i></label>
-        <SelectButton
-            v-model="PatientStore.details.followUp.finding"
-            :options="findingOption"
-            aria-labelledby="basic"
-            :pt="{
-                root: {
-                    style: { width: '100%' }
-                },
-                button: {
-                    style: {
-                        width: '49%'
+        <div class="flex flex-column" :class="{ 'bg-green-100': !PatientStore.details.followUp.finding }">
+            <div class="flex justify-content-between">
+                <label for="Finding" class="text-black text-xs" style="color: #000080"><i>Finding </i></label>
+                <div class="flex justify-content-end" v-if="!PatientStore.details.followUp.finding">
+                    <small :class="{ 'required-error': true, zoom: !PatientStore.details.followUp.finding }" class="text-red-800 text-s font-bold">Value is required</small>
+                </div>
+            </div>
+            <SelectButton
+                v-model="PatientStore.details.followUp.finding"
+                :options="findingOption"
+                aria-labelledby="basic"
+                :pt="{
+                    root: {
+                        style: { width: '100%' }
+                    },
+                    button: {
+                        style: {
+                            width: '49%'
+                        }
                     }
-                }
-            }"
-        />
+                }"
+            />
+        </div>
+
         <Transition>
             <Fieldset
                 v-if="PatientStore.details.followUp.finding === 'WITH FINDINGS'"

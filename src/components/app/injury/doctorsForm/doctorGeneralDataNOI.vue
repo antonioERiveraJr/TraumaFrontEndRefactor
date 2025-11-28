@@ -589,7 +589,7 @@ watch([newDate, newTime], ([newDateValue, newTimeValue]) => {
                         </div>
                     </div>
 
-                    <div v-if="dateSituation === 'Complete'" class="flex justify-content-center flex-wrap p-fluid">
+                    <div v-if="dateSituation === 'Complete'" :class="{ 'bg-green-100': !newTime || !newDate }" class="flex justify-content-center flex-wrap p-fluid">
                         <div class="m-3 flex justify-content-between" style="width: 100%">
                             <div style="width: 98%">
                                 <label for="date" class="p-float-label font-sans text-black-500 text-xs" style="color: #3366ff; width: 98%"><i>Date</i></label>
@@ -742,10 +742,6 @@ watch([newDate, newTime], ([newDateValue, newTimeValue]) => {
                                 :disabled="disableBrgy"
                                 showClear
                                 filter
-                                :class="{
-                                    'p-inputtext-filled font-bold mb-2  myCSS-inputtext-required': true,
-                                    'bg-green-100': patientStore.details.generalData.plc_bgycode === '' || patientStore.details.generalData.plc_bgycode == null
-                                }"
                                 :emptyMessage="'Please select a City first.'"
                             />
                         </div>
