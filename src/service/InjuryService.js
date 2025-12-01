@@ -879,12 +879,12 @@ export default class InjuryService {
             });
         return response;
     }
-    async insertPlan(enccode, plan, hpercode, isUpdateForm) {
+    async insertPlan(enccode, plan, hpercode, isUpdateForm, notes) {
         const user = useUserStore();
         const response = await axios
             .put(
                 'insertPlan',
-                { enccode: enccode, plan: plan, hpercode: hpercode, entryby: user.userInfo.employeeid, isUpdateForm: isUpdateForm},
+                { enccode: enccode, plan: plan, hpercode: hpercode, entryby: user.userInfo.employeeid, isUpdateForm: isUpdateForm, notes:notes},
                 {
                     headers: {
                         Authorization: 'Bearer ' + localStorage.getItem('authToken')

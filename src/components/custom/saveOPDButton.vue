@@ -181,8 +181,29 @@ const savePatientData = async () => {
     );
 
     // console.log('insertPlan: ', patientStore.enccode, patientStore.doctor_plan, patientStore.header.hpercode, user.userInfo.employeeid);
-    await injuryService.insertPlan(patientStore.enccode, patientStore.doctor_plan, patientStore.header.hpercode, isUpdateForm.value);
-    await injuryService.insertChiefComplaint(patientStore.enccode, patientStore.chief_complaint, patientStore.header.hpercode, isUpdateForm.value);
+    await injuryService.insertPlan(
+        patientStore.enccode,
+        plan.value,
+        patientStore.header.hpercode,
+        isUpdateForm.value,
+        'NOI: ' +
+            patientStore.details.ExternalCauseOfInjury.ext_bite_sp +
+            '\nPOI: ' +
+            `${regionName.value} , ` +
+            `${provinceName.value} ,` +
+            `${cityName.value} ,` +
+            `${barangayName.value} ` +
+            '\nDOI: ' +
+            patientStore.details.generalData.doctor_doi +
+            '\nTOI: ' +
+            patientStore.details.generalData.doctor_toi +
+            '\n' +
+            '\nDetail(s): \n' +
+            patientStore.header.final_doctor_details +
+            '\n\n' +
+            patientStore.header.final_doctor_objective
+    );
+    await injuryService.insertChiefComplaint(patientStore.enccode, chiefComplaint.value, patientStore.header.hpercode, isUpdateForm.value);
     // console.log('insertChiefComplaint: ', patientStore.enccode, patientStore.chief_complaint, patientStore.header.hpercode, user.userInfo.employeeid);
 
     if (!patientStore.ufiveID) {
@@ -271,7 +292,9 @@ const saveForm = async () => {
     Swal.fire('Saved!', '', 'success');
     await new Promise((resolve) => setTimeout(resolve, 3000)); // Add delay of 3 seconds
     // window.close();
-    window.location.href = `http://192.168.7.9:80/soapIndex?enccode=${patientStore.enccode}&id=-1#/`; // Redirect here
+    // window.location.href = `http://192.168.7.9:80/soapIndex?enccode=${patientStore.enccode}&id=-1#/`; // Redirect here
+    window.location.href = `http://192.168.7.111:8080/clinical-visit-tunnel?enccode=${patientStore.enccode}&employeeid=${user.userInfo.employeeid}`; // Redirect here
+    // href="//{{env('URL_EMR')}}/clinical-visit-tunnel?enccode={{ $enccode }}&employeeid={{ Auth::User()->empid }}">
 };
 const submitForm = async () => {
     const result = await v.value.$validate();

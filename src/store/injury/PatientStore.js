@@ -293,6 +293,9 @@ export const usePatientStore = defineStore('PatientStore', () => {
             tt_num: '',
             ats_num: '',
             vaccine_none: '',
+            vaccine_none_sp: '',
+            coveredDate: '',
+            opted: '',
             immunization_schedule: '',
             booster_regimen: '',
             medication: ''
@@ -320,6 +323,7 @@ export const usePatientStore = defineStore('PatientStore', () => {
             tt_num: '',
             ats_num: '',
             vaccine_none: '',
+            opted: '',
             ext_bite: 'N',
             vawc: 'N',
             ext_bite_sp: '',
@@ -622,6 +626,9 @@ export const usePatientStore = defineStore('PatientStore', () => {
             tt_num: '',
             ats_num: '',
             vaccine_none: '',
+            vaccine_none_sp: '',
+            coveredDate: '',
+            opted: '',
             immunization_schedule: '',
             booster_regimen: '',
             medication: ''
@@ -1690,6 +1697,9 @@ export const usePatientStore = defineStore('PatientStore', () => {
         details.value.ABTC.tt_num = '';
         details.value.ABTC.ats_num = '';
         details.value.ABTC.vaccine_none = '';
+        details.value.ABTC.vaccine_none_sp = '';
+        details.value.ABTC.coveredDate = '';
+        details.value.ABTC.opted = '';
         details.value.ExternalCauseOfInjury.ext_burn_r = 'N'; //
         details.value.ExternalCauseOfInjury.ref_burn_code = ''; //
         details.value.ExternalCauseOfInjury.ext_burn_sp = ''; //
