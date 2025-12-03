@@ -497,7 +497,7 @@ const confirmSaves = async (event) => {
             plc_provcode: 'POI PROVINCE',
             plc_ctycode: 'POI CITY'
         };
-        const vaccineFields = ['erig', 'pvrv', 'pcec', 'hrig', 'ats', 'tt', 'vaccine_none'];
+        const vaccineFields = ['erig', 'pvrv', 'pcec', 'hrig', 'ats', 'tt', 'vaccine_none', 'opted'];
         const missingVaccineFields = vaccineFields.some((field) => missingFields.value.includes(field));
 
         const missingFieldDescriptions = missingFields.value

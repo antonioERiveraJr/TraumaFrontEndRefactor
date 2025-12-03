@@ -91,6 +91,7 @@ export default function createValidationRules() {
                     patientStore.details.ABTC.pcec !== 'Y' &&
                     patientStore.details.ABTC.ats !== 'Y' &&
                     patientStore.details.ABTC.tt !== 'Y' &&
+                    patientStore.details.ABTC.opted !== 'Y' &&
                     patientStore.details.ABTC.vaccine_none !== 'Y'
             },
             pvrv: {
@@ -101,6 +102,7 @@ export default function createValidationRules() {
                     patientStore.details.ABTC.pcec !== 'Y' &&
                     patientStore.details.ABTC.ats !== 'Y' &&
                     patientStore.details.ABTC.tt !== 'Y' &&
+                    patientStore.details.ABTC.opted !== 'Y' &&
                     patientStore.details.ABTC.vaccine_none !== 'Y'
             },
             pcec: {
@@ -111,6 +113,7 @@ export default function createValidationRules() {
                     patientStore.details.ABTC.erig !== 'Y' &&
                     patientStore.details.ABTC.ats !== 'Y' &&
                     patientStore.details.ABTC.tt !== 'Y' &&
+                    patientStore.details.ABTC.opted !== 'Y' &&
                     patientStore.details.ABTC.vaccine_none !== 'Y'
             },
             hrig: {
@@ -121,6 +124,7 @@ export default function createValidationRules() {
                     patientStore.details.ABTC.pcec !== 'Y' &&
                     patientStore.details.ABTC.ats !== 'Y' &&
                     patientStore.details.ABTC.tt !== 'Y' &&
+                    patientStore.details.ABTC.opted !== 'Y' &&
                     patientStore.details.ABTC.vaccine_none !== 'Y'
             },
             ats: {
@@ -131,6 +135,7 @@ export default function createValidationRules() {
                     patientStore.details.ABTC.pcec !== 'Y' &&
                     patientStore.details.ABTC.hrig !== 'Y' &&
                     patientStore.details.ABTC.tt !== 'Y' &&
+                    patientStore.details.ABTC.opted !== 'Y' &&
                     patientStore.details.ABTC.vaccine_none !== 'Y'
             },
             tt: {
@@ -140,6 +145,7 @@ export default function createValidationRules() {
                     patientStore.details.ABTC.pvrv !== 'Y' &&
                     patientStore.details.ABTC.pcec !== 'Y' &&
                     patientStore.details.ABTC.ats !== 'Y' &&
+                    patientStore.details.ABTC.opted !== 'Y' &&
                     patientStore.details.ABTC.hrig !== 'Y' &&
                     patientStore.details.ABTC.vaccine_none !== 'Y'
             },
@@ -151,6 +157,18 @@ export default function createValidationRules() {
                     patientStore.details.ABTC.pcec !== 'Y' &&
                     patientStore.details.ABTC.ats !== 'Y' &&
                     patientStore.details.ABTC.tt !== 'Y' &&
+                    patientStore.details.ABTC.opted !== 'Y' &&
+                    patientStore.details.ABTC.hrig !== 'Y'
+            },
+            opted: {
+                requiredIf:
+                    patientStore.details.ExternalCauseOfInjury.ext_bite === 'Y' &&
+                    patientStore.details.ABTC.erig !== 'Y' &&
+                    patientStore.details.ABTC.pvrv !== 'Y' &&
+                    patientStore.details.ABTC.pcec !== 'Y' &&
+                    patientStore.details.ABTC.ats !== 'Y' &&
+                    patientStore.details.ABTC.tt !== 'Y' &&
+                    patientStore.details.ABTC.vaccine_none !== 'Y' &&
                     patientStore.details.ABTC.hrig !== 'Y'
             },
             pvrv_site_1_id: {

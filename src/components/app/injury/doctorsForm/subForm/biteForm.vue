@@ -21,13 +21,13 @@ const boosterRegimenOption = ['1-DAY REGIMEN', '2-DAY REGIMEN'];
 const immunizationOption = ['PRIMARY REGIMEN', 'BOOSTER'];
 const lastTetanusDoseCompleteDate = ref(null);
 const positive_negative_option = ['+', '-'];
-const vaccineNoneOption = ['NO ARV NEEDED', 'STILL COVERED'];
+const vaccineNoneOption = ['NO ARV NEEDED', 'STILL COVERED', 'NO ARV TODAY'];
 const patientStore = usePatientStore();
-const coveredDate = ref(null);
 const animal = ref();
 const cause = ref();
 // const typesOfProphylaxis = ['PRE-EXPOSURE', 'POST-EXPOSURE'];
 
+const coveredDate = ref(null);
 const handleCoverdDateSelect = () => {
     const formattedDate = moment(coveredDate.value).format('MM/DD/YYYY');
     patientStore.details.ABTC.coveredDate = formattedDate;
@@ -1175,7 +1175,7 @@ watch(
                         </div>
                     </div>
                     <div v-else>
-                        <div class="grid grid-cols-4 gap-4 flex justify-content-evenly">
+                        <div class="grid grid-cols-4 gap-1 flex justify-content-evenly">
                             <div
                                 class="justify-content-center"
                                 style="width: 26%"
@@ -1314,7 +1314,7 @@ watch(
                                         }
                                     }"
                                 />
-                                <div v-if="patientStore.details.ABTC.vaccine_none_sp === 'STILL COVERED' && patientStore.details.ABTC.vaccine_none === 'Y'">
+                                <div v-if="patientStore.details.ABTC.vaccine_none_sp === 'NO ARV TODAY' && patientStore.details.ABTC.vaccine_none === 'Y'">
                                     <label style="color: #000080; width: 100%; font-size: 11px">Follow-Up Date</label>
                                     <Calendar @date-select="handleCoverdDateSelect()" style="width: 92%" v-model="coveredDate" dateFormat="mm/dd/yy" placeholder="Complete Date" />
                                 </div>
